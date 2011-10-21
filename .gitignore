@@ -1,0 +1,4 @@
+.*.sw?
+??.xml
+cabal-dev
+dist

@@ -1,0 +1,9 @@
+Name            : kibr
+Version         : 0.0
+Build-Type      : Simple
+Cabal-Version   : >= 1.2
+
+Executable kibr
+  main-is       : Kibr/Main.hs
+  build-depends : base, blaze-html >= 0.4.2.0, css, happstack-server, HTF, hxt
+  ghc-options   : -Wall
