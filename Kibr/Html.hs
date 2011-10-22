@@ -35,9 +35,4 @@ word w = do
 
 wordList :: [Word] -> Html
 wordList ws =
-    Elem.dl $ mapM_ word $ filter isRoot ws
-  where
-    isRoot w =
-      case shape w of
-           Root _ _ -> True
-           _        -> False
+    Elem.dl $ mapM_ word $ ws

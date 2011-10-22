@@ -24,7 +24,8 @@ runHttp file args =
 
 index :: [Word] -> ServerPartT IO Response
 index db =
-    ok . toResponse . Html.master . wordList $ db
+    ok . toResponse . Html.master . wordList $
+        [w | w <- db, Root _ _ <- [shape w]]
 
 
 stylesheet :: ServerPartT IO Response
