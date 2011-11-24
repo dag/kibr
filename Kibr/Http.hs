@@ -7,7 +7,7 @@ import Language.CSS
 import Kibr.Css  as Css
 import Kibr.Data
 import Kibr.Html as Html
-import Kibr.Xml (mkDb)
+import Kibr.Xml (readDictionary)
 
 
 runHttp :: String -> [String] -> IO ()
@@ -15,17 +15,16 @@ runHttp file args =
   case parseConfig args of
     Left errors  -> mapM_ putStrLn errors
     Right config -> do
-        db <- mkDb file
+        dict <- readDictionary English file
         simpleHTTP config $ msum
-            [ nullDir >> index db
+            [ nullDir >> index dict
             , dir "master.css" stylesheet
             ]
 
 
-index :: [Word] -> ServerPartT IO Response
-index db =
-    ok . toResponse . Html.master . wordList $
-        [w | w <- db, Root _ _ <- [shape w]]
+index :: Dictionary -> ServerPartT IO Response
+index dict =
+    ok . toResponse . Html.master . wordList $ dict
 
 
 stylesheet :: ServerPartT IO Response
