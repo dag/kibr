@@ -3,6 +3,7 @@
 module Kibr.Test where
 
 import Data.Map as Map
+import Data.Set as Set
 import System.Exit (exitWith)
 
 import Test.Framework hiding (runTest)
@@ -25,7 +26,7 @@ test_fixtures =
 
 
 fixtures :: Dictionary
-fixtures = Map.fromList
-    [ ("ba'e", Word (Particle [] False BAhE) $ Map.fromList
-        [(English, Definition "forethought emphasis indicator." Nothing)])
+fixtures = Dictionary $ Set.fromList
+    [ Word "ba'e" (Particle [] False BAhE) $ Map.fromList
+        [(English, Definition "forethought emphasis indicator." Nothing)]
     ]

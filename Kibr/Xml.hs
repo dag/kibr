@@ -4,13 +4,14 @@ module Kibr.Xml where
 
 import Kibr.Data ( Word (Word)
                  , Shape (Particle, Root, Compound, Loan, Name, Cluster)
-                 , Dictionary
+                 , Dictionary (Dictionary)
                  , Language
                  , Grammar (Undefined)
                  , Definition (Definition)
                  )
 
 import Data.Map as Map
+import Data.Set as Set
 import Text.XML.HXT.Core
 
 
@@ -18,10 +19,10 @@ readDictionary :: Language -> String -> IO Dictionary
 readDictionary language file =
   do
     words <- runX $ readDocument [] file >>> getWord language
-    return $ Map.fromList words
+    return $ Dictionary $ Set.fromList words
 
 
-getWord :: ArrowXml a => Language -> a XmlTree (String, Word)
+getWord :: ArrowXml a => Language -> a XmlTree Word
 getWord language =
     deep $ hasName "valsi" >>> proc valsi ->
       do
@@ -36,7 +37,7 @@ getWord language =
             grammar     = getGrammar selma'o word
             definitions = Map.fromList [(language, Definition definition notes)]
 
-        returnA -< (word, Word shape definitions)
+        returnA -< Word word shape definitions
 
 
 getShape :: String -> [String] -> Grammar -> Shape

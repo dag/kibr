@@ -2,13 +2,11 @@
 
 module Kibr.Html where
 
-
-import Kibr.Data
-
 import Text.Blaze
 import Text.Groom
 
-import qualified Data.Map                    as Map
+import qualified Data.Set                    as Set
+import qualified Kibr.Data                   as DB
 import qualified Text.Blaze.Html5            as Elem
 import qualified Text.Blaze.Html5.Attributes as Attr
 
@@ -30,12 +28,12 @@ master content =
         Elem.body content
 
 
-word :: String -> Word -> Html
-word name word = do
-    Elem.dt $ toHtml name
+word :: DB.Word -> Html
+word word = do
+    Elem.dt $ toHtml $ DB.word word
     Elem.p $ Elem.dd $ toHtml $ groom word
 
 
-wordList :: Dictionary -> Html
+wordList :: DB.Dictionary -> Html
 wordList dict =
-    Elem.dl $ mapM_ (uncurry word) $ Map.toList dict
+    Elem.dl $ mapM_ word $ Set.elems $ DB.words dict

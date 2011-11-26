@@ -2,17 +2,21 @@ module Kibr.Data where
 
 
 import Data.Map
+import Data.Set
 
 
-type Dictionary = Map String Word
+data Dictionary
+    = Dictionary { words :: Set Word }
+      deriving (Eq, Show)
 
 
 data Word
     = Word
-        { shape       :: Shape
+        { word        :: String
+        , shape       :: Shape
         , definitions :: Map Language Definition
         }
-      deriving (Eq, Show)
+      deriving (Eq, Show, Ord)
 
 
 data Language
@@ -26,7 +30,7 @@ data Definition
         { definition :: String
         , notes      :: Maybe String
         }
-      deriving (Eq, Show)
+      deriving (Eq, Show, Ord)
 
 
 data Shape
@@ -43,7 +47,7 @@ data Shape
     | Loan
     | Name
     | Cluster
-      deriving (Eq, Show)
+      deriving (Eq, Show, Ord)
 
 
 data Grammar
@@ -199,4 +203,4 @@ data Grammar
     | ZOhU
     | ZOI
     | Undefined
-      deriving (Eq, Show, Read, Enum, Bounded)
+      deriving (Eq, Show, Read, Enum, Bounded, Ord)
