@@ -1,4 +1,4 @@
-all: test serve
+all: test
 
 build:
 	@cabal-dev install
