@@ -2,27 +2,21 @@
 
 module Kibr.Xml where
 
-import Kibr.Data ( Word (Word)
-                 , Shape (Particle, Root, Compound, Loan, Name, Cluster)
-                 , Dictionary (Dictionary)
-                 , Language
-                 , Grammar (Undefined)
-                 , Definition (Definition)
-                 )
-
-import Data.Map as Map
-import Data.Set as Set
 import Text.XML.HXT.Core
 
+import qualified Data.Map  as Map
+import qualified Data.Set  as Set
+import qualified Kibr.Data as DB
 
-readDictionary :: Language -> String -> IO Dictionary
+
+readDictionary :: DB.Language -> String -> IO DB.Dictionary
 readDictionary language file =
   do
     words <- runX $ readDocument [] file >>> getWord language
-    return $ Dictionary $ Set.fromList words
+    return $ DB.Dictionary $ Set.fromList words
 
 
-getWord :: ArrowXml a => Language -> a XmlTree Word
+getWord :: ArrowXml a => DB.Language -> a XmlTree DB.Word
 getWord language =
     deep $ hasName "valsi" >>> proc valsi ->
       do
@@ -35,26 +29,26 @@ getWord language =
 
         let shape       = getShape type_ rafsi grammar
             grammar     = getGrammar selma'o word
-            definitions = Map.fromList [(language, Definition definition notes)]
+            definitions = Map.fromList [(language, DB.Definition definition notes)]
 
-        returnA -< Word word shape definitions
+        returnA -< DB.Word word shape definitions
 
 
-getShape :: String -> [String] -> Grammar -> Shape
+getShape :: String -> [String] -> DB.Grammar -> DB.Shape
 getShape type_ rafsi grammar =
   case type_ of
-       "cmavo"              -> Particle rafsi False grammar
-       "experimental cmavo" -> Particle rafsi True  Undefined
-       "gismu"              -> Root     rafsi False
-       "experimental gismu" -> Root     rafsi True
-       "lujvo"              -> Compound
-       "fu'ivla"            -> Loan
-       "cmene"              -> Name
-       "cmavo cluster"      -> Cluster
+       "cmavo"              -> DB.Particle rafsi False grammar
+       "experimental cmavo" -> DB.Particle rafsi True  DB.Undefined
+       "gismu"              -> DB.Root     rafsi False
+       "experimental gismu" -> DB.Root     rafsi True
+       "lujvo"              -> DB.Compound
+       "fu'ivla"            -> DB.Loan
+       "cmene"              -> DB.Name
+       "cmavo cluster"      -> DB.Cluster
        _                    -> error $ "unrecognized word type " ++ show type_
 
 
-getGrammar :: Maybe String -> String -> Grammar
+getGrammar :: Maybe String -> String -> DB.Grammar
 getGrammar selma'o word =
   case selma'o of
        Just a  -> read a
