@@ -7,7 +7,6 @@ import Data.Set as Set
 import System.Exit (exitWith)
 
 import Test.Framework hiding (runTest)
-import Text.XML.HXT.Core
 
 import Kibr.Data
 import Kibr.Xml (readDictionary)
