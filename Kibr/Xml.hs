@@ -8,13 +8,11 @@ import qualified Data.Map  as Map
 import qualified Data.Set  as Set
 import qualified Kibr.Data as DB
 
-
 readDictionary :: DB.Language -> String -> IO DB.Dictionary
 readDictionary language file =
   do
     words <- runX $ readDocument [] file >>> getWord language
     return $ DB.Dictionary $ Set.fromList words
-
 
 getWord :: ArrowXml a => DB.Language -> a XmlTree DB.Word
 getWord language =
@@ -33,7 +31,6 @@ getWord language =
 
         returnA -< DB.Word word shape definitions
 
-
 getShape :: String -> [String] -> DB.Grammar -> DB.Shape
 getShape type_ rafsi grammar =
   case type_ of
@@ -47,13 +44,11 @@ getShape type_ rafsi grammar =
        "cmavo cluster"      -> DB.Cluster
        _                    -> error $ "unrecognized word type " ++ show type_
 
-
 getGrammar :: Maybe String -> String -> DB.Grammar
 getGrammar selma'o word =
   case selma'o of
        Just a  -> read a
        Nothing -> error $ "particle without grammatical class: " ++ show word
-
 
 getElemText :: ArrowXml a => String -> a XmlTree String
 getElemText name =
@@ -61,7 +56,6 @@ getElemText name =
     hasName name >>>
     getChildren  >>>
     getText
-
 
 getMaybe :: ArrowIf a => a b c -> a b (Maybe c)
 getMaybe a = (a >>> arr Just) `orElse` constA Nothing

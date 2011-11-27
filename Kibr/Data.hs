@@ -1,14 +1,11 @@
 module Kibr.Data where
 
-
 import Data.Map
 import Data.Set
-
 
 data Dictionary
     = Dictionary { words :: Set Word }
       deriving (Eq, Show)
-
 
 data Word
     = Word
@@ -18,12 +15,10 @@ data Word
         }
       deriving (Eq, Show, Ord)
 
-
 data Language
     = Lojban
     | English
       deriving (Eq, Show, Ord)
-
 
 data Definition
     = Definition
@@ -31,7 +26,6 @@ data Definition
         , notes      :: Maybe String
         }
       deriving (Eq, Show, Ord)
-
 
 data Shape
     = Particle
@@ -48,7 +42,6 @@ data Shape
     | Name
     | Cluster
       deriving (Eq, Show, Ord)
-
 
 data Grammar
     = A

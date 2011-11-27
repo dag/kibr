@@ -10,14 +10,12 @@ import qualified Kibr.Data                   as DB
 import qualified Text.Blaze.Html5            as Elem
 import qualified Text.Blaze.Html5.Attributes as Attr
 
-
 linkCss :: AttributeValue -> Html
 linkCss url =
     Elem.link
         ! Attr.href url
         ! Attr.rel "stylesheet"
         ! Attr.type_ "text/css"
-
 
 master :: Html -> Html
 master content =
@@ -27,12 +25,10 @@ master content =
             linkCss "/master.css"
         Elem.body content
 
-
 word :: DB.Word -> Html
 word word = do
     Elem.dt $ toHtml $ DB.word word
     Elem.p $ Elem.dd $ toHtml $ groom word
-
 
 wordList :: DB.Dictionary -> Html
 wordList dict =

@@ -9,7 +9,6 @@ import Kibr.Data
 import Kibr.Html as Html
 import Kibr.Xml (readDictionary)
 
-
 runHttp :: String -> [String] -> IO ()
 runHttp file args =
   case parseConfig args of
@@ -21,11 +20,9 @@ runHttp file args =
             , dir "master.css" stylesheet
             ]
 
-
 index :: Dictionary -> ServerPartT IO Response
 index dict =
     ok . toResponse . Html.master . wordList $ dict
-
 
 stylesheet :: ServerPartT IO Response
 stylesheet =

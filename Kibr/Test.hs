@@ -12,18 +12,15 @@ import Text.XML.HXT.Core
 import Kibr.Data
 import Kibr.Xml (readDictionary)
 
-
 runTest :: [String] -> IO ()
 runTest args =
     exitWith =<< runTestWithArgs args allHTFTests
-
 
 test_fixtures :: IO ()
 test_fixtures =
   do
     dictionary <- readDictionary English "fixtures.xml"
     assertEqual dictionary fixtures
-
 
 fixtures :: Dictionary
 fixtures = Dictionary $ Set.fromList

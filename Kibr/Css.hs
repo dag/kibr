@@ -4,7 +4,6 @@ module Kibr.Css where
 
 import Language.CSS
 
-
 master :: CSS Rule
 master = do
 
