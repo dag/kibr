@@ -4,6 +4,6 @@ Build-Type      : Simple
 Cabal-Version   : >= 1.2
 
 Executable kibr
-  main-is       : Kibr/Main.hs
+  main-is       : kibr.hs
   build-depends : base, blaze-html >= 0.4.2.0, containers, css, groom, happstack-server, HTF, hxt
   ghc-options   : -Wall
