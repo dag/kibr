@@ -19,11 +19,8 @@ $ cabal install cabal-dev
 ### Setup
 
 ```console
-$ export PATH="$PATH:cabal-dev/bin"
-$ cabal-dev install
-$ kibr --test
-$ wget "http://jbovlaste.lojban.org/export/xml-export.html?lang=en" -O en.xml
-$ kibr en.xml
+$ make        # build and run tests
+$ make serve  # run the server
 ```
 
 Browse [localhost:8000](http://localhost:8000/).
