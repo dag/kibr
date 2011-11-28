@@ -2,34 +2,32 @@
 
 module Kibr.Html where
 
+import Prelude hiding (head)
+
 import Text.Blaze
+import Text.Blaze.Html5
+import Text.Blaze.Html5.Attributes hiding (title)
 import Text.Groom
 
-import qualified Data.Set                    as Set
-import qualified Kibr.Data                   as DB
-import qualified Text.Blaze.Html5            as Elem
-import qualified Text.Blaze.Html5.Attributes as Attr
+import qualified Data.Set  as Set
+import qualified Kibr.Data as DB
 
 linkCss :: AttributeValue -> Html
-linkCss url =
-    Elem.link
-        ! Attr.href url
-        ! Attr.rel "stylesheet"
-        ! Attr.type_ "text/css"
+linkCss url = link ! href url ! rel "stylesheet" ! type_ "text/css"
 
 master :: Html -> Html
 master content =
-    Elem.docTypeHtml $ do
-        Elem.head $ do
-            Elem.title "Lojban Dictionary"
+    docTypeHtml $ do
+        head $ do
+            title "Lojban Dictionary"
             linkCss "/master.css"
-        Elem.body content
+        body content
 
 word :: DB.Word -> Html
 word word = do
-    Elem.dt $ toHtml $ DB.word word
-    Elem.dd $ Elem.pre $ toHtml $ groom word
+    dt $ toHtml $ DB.word word
+    dd $ pre $ toHtml $ groom word
 
 wordList :: DB.Dictionary -> Html
 wordList dict =
-    Elem.dl $ mapM_ word $ Set.elems $ DB.words dict
+    dl $ mapM_ word $ Set.elems $ DB.words dict
