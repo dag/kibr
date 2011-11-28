@@ -9,6 +9,8 @@ import Text.Blaze.Html5
 import Text.Blaze.Html5.Attributes hiding (title)
 import Text.Groom
 
+import Language.Haskell.HsColour.ACSS (hscolour)
+
 import qualified Data.Set  as Set
 import qualified Kibr.Data as DB
 
@@ -21,12 +23,13 @@ master content =
         head $ do
             title "Lojban Dictionary"
             linkCss "/master.css"
+            linkCss "http://code.haskell.org/~malcolm/hscolour/hscolour.css"
         body content
 
 word :: DB.Word -> Html
 word word = do
     dt $ toHtml $ DB.word word
-    dd $ pre $ toHtml $ groom word
+    dd $ preEscapedString $ hscolour False $ groom word
 
 wordList :: DB.Dictionary -> Html
 wordList dict =

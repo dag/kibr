@@ -8,8 +8,7 @@ master :: CSS Rule
 master = do
 
     rule "body" $ do
-        margin "1em auto"
-        maxWidth "600px"
+        margin "2em"
 
     rule "dt" $ do
         fontFamily "serif"
