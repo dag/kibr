@@ -27,7 +27,9 @@ getWord language =
 
         let shape       = getShape type_ rafsi grammar
             grammar     = getGrammar selma'o word
-            definitions = Map.fromList [(language, DB.Definition definition notes)]
+            revision    = DB.Revision definition' $ Just "Imported"
+            definition' = DB.Definition definition notes
+            definitions = Map.fromList [(language, [revision])]
 
         returnA -< DB.Word word shape definitions
 

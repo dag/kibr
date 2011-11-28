@@ -11,13 +11,20 @@ data Word
     = Word
         { word        :: String
         , shape       :: Shape
-        , definitions :: Map Language Definition
+        , definitions :: Map Language [Revision Definition]
         }
       deriving (Eq, Show, Ord)
 
 data Language
     = Lojban
     | English
+      deriving (Eq, Show, Ord)
+
+data Revision a
+    = Revision
+        { record  :: a
+        , comment :: Maybe String
+        }
       deriving (Eq, Show, Ord)
 
 data Definition
