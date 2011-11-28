@@ -28,7 +28,7 @@ master content =
 word :: DB.Word -> Html
 word word = do
     Elem.dt $ toHtml $ DB.word word
-    Elem.p $ Elem.dd $ toHtml $ groom word
+    Elem.dd $ Elem.pre $ toHtml $ groom word
 
 wordList :: DB.Dictionary -> Html
 wordList dict =

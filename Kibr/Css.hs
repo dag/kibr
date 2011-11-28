@@ -15,7 +15,3 @@ master = do
         fontFamily "serif"
         fontSize "150%"
         fontWeight "500"
-
-    rule "dd" $ do
-        fontFamily "monospace"
-        whiteSpace "pre-wrap"
