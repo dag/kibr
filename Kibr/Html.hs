@@ -17,12 +17,12 @@ import qualified Kibr.Data as DB
 linkCss :: AttributeValue -> Html
 linkCss url = link ! href url ! rel "stylesheet" ! type_ "text/css"
 
-master :: Html -> Html
-master content =
+master :: String -> Html -> Html
+master style content =
     docTypeHtml $ do
         head $ do
             title "Lojban Dictionary"
-            linkCss "/master.css"
+            linkCss $ toValue style
             linkCss "http://code.haskell.org/~malcolm/hscolour/hscolour.css"
         body content
 

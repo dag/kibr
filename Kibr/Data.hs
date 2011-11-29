@@ -1,7 +1,18 @@
+{-# LANGUAGE DeriveDataTypeable, TemplateHaskell #-}
+
 module Kibr.Data where
 
+import Data.Data
 import Data.Map
 import Data.Set
+import Web.Routes.TH
+
+data Sitemap
+    = Home
+    | Stylesheet
+      deriving (Eq, Ord, Read, Show, Data, Typeable)
+
+derivePathInfo ''Sitemap
 
 data Dictionary
     = Dictionary { words :: Set Word }
