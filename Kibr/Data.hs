@@ -4,6 +4,7 @@ module Kibr.Data where
 
 import Data.Data
 import Data.Map
+import Data.SafeCopy
 import Data.Set
 import Web.Routes.TH
 
@@ -16,7 +17,7 @@ derivePathInfo ''Sitemap
 
 data Dictionary
     = Dictionary { words :: Set Word }
-      deriving (Eq, Show)
+      deriving (Eq, Show, Data, Typeable)
 
 data Word
     = Word
@@ -24,26 +25,26 @@ data Word
         , shape       :: Shape
         , definitions :: Map Language [Revision Definition]
         }
-      deriving (Eq, Show, Ord)
+      deriving (Eq, Show, Ord, Data, Typeable)
 
 data Language
     = Lojban
     | English
-      deriving (Eq, Show, Ord)
+      deriving (Eq, Show, Ord, Data, Typeable)
 
 data Revision a
     = Revision
         { record  :: a
         , comment :: Maybe String
         }
-      deriving (Eq, Show, Ord)
+      deriving (Eq, Show, Ord, Data, Typeable)
 
 data Definition
     = Definition
         { definition :: String
         , notes      :: Maybe String
         }
-      deriving (Eq, Show, Ord)
+      deriving (Eq, Show, Ord, Data, Typeable)
 
 data Shape
     = Particle
@@ -59,7 +60,7 @@ data Shape
     | Loan
     | Name
     | Cluster
-      deriving (Eq, Show, Ord)
+      deriving (Eq, Show, Ord, Data, Typeable)
 
 data Grammar
     = A
@@ -214,4 +215,18 @@ data Grammar
     | ZOhU
     | ZOI
     | Undefined
-      deriving (Eq, Show, Read, Enum, Bounded, Ord)
+      deriving (Eq, Show, Read, Enum, Bounded, Ord, Data, Typeable)
+
+deriveSafeCopy 0 'base ''Grammar
+
+deriveSafeCopy 0 'base ''Shape
+
+deriveSafeCopy 0 'base ''Definition
+
+deriveSafeCopy 0 'base ''Revision
+
+deriveSafeCopy 0 'base ''Language
+
+deriveSafeCopy 0 'base ''Word
+
+deriveSafeCopy 0 'base ''Dictionary
