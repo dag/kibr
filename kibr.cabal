@@ -5,7 +5,7 @@ Cabal-Version   : >= 1.2
 
 Executable kibr
   main-is       : kibr.hs
-  build-depends : HTF,
+  build-depends : acid-state,
                   base,
                   blaze-html >= 0.4.2.0,
                   containers,
@@ -13,7 +13,9 @@ Executable kibr
                   groom,
                   happstack-server,
                   hscolour,
+                  HTF,
                   hxt,
+                  mtl,
                   safecopy,
                   web-routes,
                   web-routes-happstack,

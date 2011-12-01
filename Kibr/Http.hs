@@ -8,7 +8,7 @@ import Web.Routes.Happstack
 import Kibr.Css  as Css
 import Kibr.Data
 import Kibr.Html as Html
-import Kibr.Xml (readDictionary)
+import Kibr.State (openState, loadState)
 
 route :: Dictionary -> Sitemap -> RouteT Sitemap (ServerPartT IO) Response
 route db url =
@@ -19,12 +19,13 @@ route db url =
 site :: Dictionary -> Site Sitemap (ServerPartT IO Response)
 site db = setDefault Home $ mkSitePI $ runRouteT $ route db
 
-runHttp :: String -> [String] -> IO ()
-runHttp file args =
+runHttp :: [String] -> IO ()
+runHttp args =
   case parseConfig args of
     Left errors  -> mapM_ putStrLn errors
     Right config -> do
-        db <- readDictionary English file
+        state <- openState
+        db <- loadState state
         simpleHTTP config $ implSite "" "" $ site db
 
 index :: Dictionary -> RouteT Sitemap (ServerPartT IO) Response

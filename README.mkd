@@ -19,8 +19,9 @@ $ cabal install cabal-dev
 ### Setup
 
 ```console
-$ make        # build and run tests
-$ make serve  # run the server
+$ make         # build and run tests
+$ make import  # load fixture data
+$ make serve   # run the server
 ```
 
 Browse [localhost:8000](http://localhost:8000/).
