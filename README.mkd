@@ -6,10 +6,14 @@ Development Environment
 
 ### Prerequisites
 
-* [Haskell Platform](http://hackage.haskell.org/platform/) 2011.2.0.1
-* [cabal-dev](http://hackage.haskell.org/package/cabal-dev)
+I'm using these versions on Fedora 16; other versions may work fine:
 
-If your operating system doesn't have a package for cabal-dev:
+* GHC 7.0.4
+* Cabal 1.10.2.0
+* [cabal-dev](http://hackage.haskell.org/package/cabal-dev) 0.9
+
+If your operating system has a package for cabal-install *but not*
+cabal-dev you can install it this way:
 
 ```console
 $ cabal update
