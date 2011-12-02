@@ -1,23 +1,23 @@
 Name            : kibr
-Version         : 0.0
+Version         : 0.0.0
 Build-Type      : Simple
 Cabal-Version   : >= 1.2
 
 Executable kibr
   main-is       : kibr.hs
-  build-depends : acid-state,
-                  base,
-                  blaze-html >= 0.4.2.0,
-                  containers,
-                  css,
-                  groom,
-                  happstack-server,
-                  hscolour,
-                  HTF,
-                  hxt,
-                  mtl,
-                  safecopy,
-                  web-routes,
-                  web-routes-happstack,
-                  web-routes-th
+  build-depends : acid-state           == 0.6.*
+                , base                 == 4.*
+                , blaze-html           >= 0.4.2.0 && < 0.5
+                , containers           == 0.4.*
+                , css                  == 0.*
+                , groom                == 0.1.*
+                , happstack-server     == 6.*
+                , hscolour             >= 1.19 && < 2.0
+                , HTF                  == 0.8.*
+                , hxt                  == 9.1.*
+                , mtl                  == 2.*
+                , safecopy             == 0.6.*
+                , web-routes           == 0.25.*
+                , web-routes-happstack == 0.22.*
+                , web-routes-th        == 0.20.*
   ghc-options   : -Wall
