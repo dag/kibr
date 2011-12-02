@@ -10,12 +10,12 @@ import qualified Kibr.Data as DB
 
 readDictionary :: DB.Language -> String -> IO DB.Dictionary
 readDictionary language file
-  = do words <- runX $ readDocument [] file >>> getWord language
+  = do words <- runX $ readDocument [] file >>> deep (getWord language)
        return $ DB.Dictionary $ Set.fromList words
 
 getWord :: ArrowXml a => DB.Language -> a XmlTree DB.Word
 getWord language
-  = deep $ hasName "valsi" >>> proc valsi ->
+  = hasName "valsi" >>> proc valsi ->
     do word       <- getAttrValue "word"              -< valsi
        type_      <- getAttrValue "type"              -< valsi
        definition <- getElemText "definition"         -< valsi
