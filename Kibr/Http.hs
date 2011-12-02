@@ -35,5 +35,5 @@ index db = do
 
 stylesheet :: RouteT Sitemap (ServerPartT IO) Response
 stylesheet =
-    ok . setHeader "content-type" "text/css"
+    ok . setHeader "Content-Type" "text/css"
        . toResponse . renderCSS . runCSS $ Css.master
