@@ -16,7 +16,7 @@ $ cabal update
 $ cabal install cabal-dev
 ```
 
-### Setup
+### Workflow
 
 ```console
 $ make         # build and run tests
