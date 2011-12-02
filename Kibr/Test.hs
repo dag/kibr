@@ -23,7 +23,7 @@ fixtures :: Dictionary
 fixtures
   = let def d n = Map.fromList [(English, rev d n)]
         rev d n = [Revision (Definition d n) (Just "Imported")]
-    in  Dictionary $ Set.fromList
+     in Dictionary $ Set.fromList
           [ Word "ba'e" (Particle [] False BAhE) $
               def "forethought emphasis indicator." Nothing
           ]
