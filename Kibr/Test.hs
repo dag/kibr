@@ -26,4 +26,18 @@ fixtures
      in Dictionary $ Set.fromList
           [ Word "ba'e" (Particle [] False BAhE) $
               def "forethought emphasis indicator." Nothing
+          , Word "la'oi" (Particle [] True Undefined) $
+              def "single-word non-Lojban name." $
+                Just "See also {la'o}, {zo'oi}."
+          , Word "donri" (Root ["dor", "do'i"] False) $
+              def "$x_{1}$ is the daytime of day $x_{2}$." $
+                Just "See also {nicte}, {djedi}, {tcika}."
+          , Word "kibro" (Root [] True) $
+              def "$x_1$ pertains to the internet in aspect $x_2$." Nothing
+          , Word "jbobau" Compound $
+              def "$l_1=b_1$ is Lojban used by $b_2$." Nothing
+          , Word "pinpedi" Loan $
+              def "$x_1$ is a seal of species $x_2$." Nothing
+          , Word "sferies" Name $ def "Sweden." Nothing
+          , Word "ba'unai" Cluster $ def "discursive: understatement." Nothing
           ]

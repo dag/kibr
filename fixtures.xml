@@ -7,5 +7,39 @@
       <definition>forethought emphasis indicator.</definition>
     </valsi>
 
+    <valsi unofficial="true" word="la'oi" type="experimental cmavo">
+      <selmaho>ZOhOI</selmaho>
+      <definition>single-word non-Lojban name.</definition>
+      <notes>See also {la'o}, {zo'oi}.</notes>
+    </valsi>
+
+    <valsi word="donri" type="gismu">
+      <rafsi>dor</rafsi>
+      <rafsi>do'i</rafsi>
+      <definition>$x_{1}$ is the daytime of day $x_{2}$.</definition>
+      <notes>See also {nicte}, {djedi}, {tcika}.</notes>
+    </valsi>
+
+    <valsi unofficial="true" word="kibro" type="experimental gismu">
+      <definition>$x_1$ pertains to the internet in aspect $x_2$.</definition>
+    </valsi>
+
+    <valsi word="jbobau" type="lujvo">
+      <definition>$l_1=b_1$ is Lojban used by $b_2$.</definition>
+    </valsi>
+
+    <valsi word="pinpedi" type="fu'ivla">
+      <definition>$x_1$ is a seal of species $x_2$.</definition>
+    </valsi>
+
+    <valsi word="sferies" type="cmene">
+      <definition>Sweden.</definition>
+    </valsi>
+
+    <valsi word="ba'unai" type="cmavo cluster">
+      <selmaho>UI*3</selmaho>
+      <definition>discursive: understatement.</definition>
+    </valsi>
+
   </direction>
 </dictionary>
