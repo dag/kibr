@@ -19,12 +19,14 @@ linkCss url = link ! href url ! rel "stylesheet" ! type_ "text/css"
 
 master :: String -> Html -> Html
 master style content
-  = docTypeHtml $ do
-    head $ do
-      title "Lojban Dictionary"
-      linkCss $ toValue style
-      linkCss "http://code.haskell.org/~malcolm/hscolour/hscolour.css"
-    body content
+  = docTypeHtml $
+      do head $
+           do title "Lojban Dictionary"
+              linkCss $ toValue style
+              linkCss hscolourCss
+         body content
+  where
+    hscolourCss = "http://code.haskell.org/~malcolm/hscolour/hscolour.css"
 
 word :: DB.Word -> Html
 word word
