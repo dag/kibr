@@ -23,7 +23,8 @@ getWord language
        rafsi      <- listA    $ getElemText "rafsi"   -< valsi
        selma'o    <- getMaybe $ getElemText "selmaho" -< valsi
 
-       let shape       = getShape type_ rafsi grammar
+       let affixes     = Set.fromList rafsi
+           shape       = getShape type_ affixes grammar
            grammar     = getGrammar selma'o word
            revision    = DB.Revision definition' $ Just "Imported"
            definition' = DB.Definition definition notes
@@ -31,7 +32,7 @@ getWord language
 
        returnA -< DB.Word word shape definitions
 
-getShape :: String -> [String] -> DB.Grammar -> DB.Shape
+getShape :: String -> Set.Set String -> DB.Grammar -> DB.Shape
 getShape type_ rafsi grammar
   = case type_
       of "cmavo"              -> DB.Particle rafsi False grammar

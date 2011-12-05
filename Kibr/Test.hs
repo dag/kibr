@@ -24,15 +24,15 @@ fixtures
   = let def d n = Map.fromList [(English, rev d n)]
         rev d n = [Revision (Definition d n) (Just "Imported")]
      in Dictionary $ Set.fromList
-          [ Word "ba'e" (Particle [] False BAhE) $
+          [ Word "ba'e" (Particle Set.empty False BAhE) $
               def "forethought emphasis indicator." Nothing
-          , Word "la'oi" (Particle [] True Undefined) $
+          , Word "la'oi" (Particle Set.empty True Undefined) $
               def "single-word non-Lojban name." $
                 Just "See also {la'o}, {zo'oi}."
-          , Word "donri" (Root ["dor", "do'i"] False) $
+          , Word "donri" (Root (Set.fromList ["dor", "do'i"]) False) $
               def "$x_{1}$ is the daytime of day $x_{2}$." $
                 Just "See also {nicte}, {djedi}, {tcika}."
-          , Word "kibro" (Root [] True) $
+          , Word "kibro" (Root Set.empty True) $
               def "$x_1$ pertains to the internet in aspect $x_2$." Nothing
           , Word "jbobau" Compound $
               def "$l_1=b_1$ is Lojban used by $b_2$." Nothing

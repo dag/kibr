@@ -13,12 +13,12 @@ import Data.Set
 
 data Shape
   = Particle
-      { affixes      :: [String]
+      { affixes      :: Set String
       , experimental :: Bool
       , grammar      :: Grammar
       }
   | Root
-      { affixes      :: [String]
+      { affixes      :: Set String
       , experimental :: Bool
       }
   | Compound
