@@ -7,6 +7,7 @@ import Web.Routes.Happstack
 
 import Kibr.Css  as Css
 import Kibr.Data
+import Kibr.Data.Sitemap
 import Kibr.Html as Html
 import Kibr.State (openState, loadState)
 

@@ -1,0 +1,12 @@
+{-# LANGUAGE DeriveDataTypeable, TemplateHaskell #-}
+
+module Kibr.Data.Language where
+
+import Data.Data
+import Data.SafeCopy
+
+data Language
+  = Lojban
+  | English
+    deriving (Eq, Show, Ord, Data, Typeable)
+deriveSafeCopy 0 'base ''Language
