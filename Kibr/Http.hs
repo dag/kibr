@@ -13,6 +13,17 @@ import qualified Kibr.Css  as Css
 import qualified Kibr.Data as DB
 import qualified Kibr.Html as Html
 
+runHttp :: [String] -> IO ()
+runHttp args
+  = case parseConfig args
+      of Left errors  -> mapM_ putStrLn errors
+         Right config -> do state <- openState
+                            db    <- loadState state
+                            simpleHTTP config $ implSite "" "" $ site db
+
+site :: DB.Dictionary -> Site Sitemap (ServerPartT IO Response)
+site db = setDefault Home $ mkSitePI $ runRouteT $ route db
+
 type Controller = RouteT Sitemap (ServerPartT IO) Response
 
 route :: DB.Dictionary -> Sitemap -> Controller
@@ -21,17 +32,6 @@ route db url
       of Home -> home db
          Word w -> word db w
          Stylesheet -> stylesheet
-
-site :: DB.Dictionary -> Site Sitemap (ServerPartT IO Response)
-site db = setDefault Home $ mkSitePI $ runRouteT $ route db
-
-runHttp :: [String] -> IO ()
-runHttp args
-  = case parseConfig args
-      of Left errors  -> mapM_ putStrLn errors
-         Right config -> do state <- openState
-                            db    <- loadState state
-                            simpleHTTP config $ implSite "" "" $ site db
 
 home :: DB.Dictionary -> Controller
 home db
