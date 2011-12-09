@@ -13,7 +13,9 @@ import qualified Kibr.Css  as Css
 import qualified Kibr.Data as DB
 import qualified Kibr.Html as Html
 
-route :: DB.Dictionary -> Sitemap -> RouteT Sitemap (ServerPartT IO) Response
+type Controller = RouteT Sitemap (ServerPartT IO) Response
+
+route :: DB.Dictionary -> Sitemap -> Controller
 route db url
   = case url
       of Home -> index db
@@ -31,19 +33,19 @@ runHttp args
                             db    <- loadState state
                             simpleHTTP config $ implSite "" "" $ site db
 
-index :: DB.Dictionary -> RouteT Sitemap (ServerPartT IO) Response
+index :: DB.Dictionary -> Controller
 index db
   = do style <- showURL Stylesheet
        ok . toResponse . Html.master style . Html.wordList $ db
 
-word :: DB.Dictionary -> String -> RouteT Sitemap (ServerPartT IO) Response
+word :: DB.Dictionary -> String -> Controller
 word db w
   = do style <- showURL Stylesheet
        ok . toResponse . Html.master style . Html.word $ w'
   where w'  = Set.findMin . Set.filter p $ DB.words db
         p e = DB.word e == w
 
-stylesheet :: RouteT Sitemap (ServerPartT IO) Response
+stylesheet :: Controller
 stylesheet
   = ok . setHeader "Content-Type" "text/css"
        . toResponse . renderCSS . runCSS $ Css.master
