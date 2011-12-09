@@ -18,7 +18,7 @@ type Controller = RouteT Sitemap (ServerPartT IO) Response
 route :: DB.Dictionary -> Sitemap -> Controller
 route db url
   = case url
-      of Home -> index db
+      of Home -> home db
          Word w -> word db w
          Stylesheet -> stylesheet
 
@@ -33,8 +33,8 @@ runHttp args
                             db    <- loadState state
                             simpleHTTP config $ implSite "" "" $ site db
 
-index :: DB.Dictionary -> Controller
-index db
+home :: DB.Dictionary -> Controller
+home db
   = do style <- showURL Stylesheet
        ok . toResponse . Html.master style . Html.wordList $ db
 
