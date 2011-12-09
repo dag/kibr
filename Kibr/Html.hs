@@ -25,8 +25,7 @@ master styleUrl bodyContent
               linkCss $ toValue styleUrl
               linkCss hscolourCss
          body bodyContent
-  where
-    hscolourCss = "http://code.haskell.org/~malcolm/hscolour/hscolour.css"
+    where hscolourCss = "http://code.haskell.org/~malcolm/hscolour/hscolour.css"
 
 word :: DB.Word -> Html
 word w

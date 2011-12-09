@@ -42,8 +42,8 @@ word :: DB.Dictionary -> String -> Controller
 word db w
   = do style <- showURL Stylesheet
        ok . toResponse . Html.master style . Html.word $ w'
-  where w'  = Set.findMin . Set.filter p $ DB.words db
-        p e = DB.word e == w
+    where w'  = Set.findMin . Set.filter p $ DB.words db
+          p e = DB.word e == w
 
 stylesheet :: Controller
 stylesheet
