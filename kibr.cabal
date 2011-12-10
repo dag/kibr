@@ -28,6 +28,7 @@ Library
                   , groom                == 0.1.*
                   , happstack-server     == 6.*
                   , hscolour             >= 1.19 && < 2.0
+                  , hslogger             == 1.1.*
                   , HTF                  == 0.8.*
                   , hxt                  == 9.1.*
                   , mtl                  == 2.*

@@ -1,11 +1,8 @@
 module Kibr.Http where
 
-import Prelude hiding (log)
-
-import Control.Monad (msum, mzero)
-import Control.Monad.Trans (liftIO)
 import Happstack.Server
 import Language.CSS
+import System.Log.Logger
 import Web.Routes
 import Web.Routes.Happstack
 
@@ -21,18 +18,14 @@ runHttp :: [String] -> IO ()
 runHttp args
   = case parseConfig args
       of Left errors  -> mapM_ putStrLn errors
-         Right config -> do state <- openState
-                            db    <- loadState state
-                            simpleHTTP config $ controller db
-    where controller db = msum
-            [ log
-            , implSite "/" "" $ site db
-            ]
+         Right config -> server config
 
-log :: ServerPart Response
-log = do rq <- askRq
-         liftIO $ print rq
-         mzero
+server :: Conf -> IO ()
+server config
+  = do updateGlobalLogger rootLoggerName $ setLevel DEBUG
+       state <- openState
+       db    <- loadState state
+       simpleHTTP config $ implSite "/" "" $ site db
 
 site :: DB.Dictionary -> Site Sitemap (ServerPartT IO Response)
 site db = setDefault Home $ mkSitePI $ runRouteT $ route db
