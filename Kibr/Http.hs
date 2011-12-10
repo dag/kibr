@@ -35,8 +35,8 @@ type Controller = RouteT Sitemap (ServerPartT IO) Response
 route :: DB.Dictionary -> Sitemap -> Controller
 route db url
   = case url
-      of Home -> home db
-         Word w -> word db w
+      of Home       -> home db
+         Word w     -> word db w
          Stylesheet -> stylesheet
 
 home :: DB.Dictionary -> Controller
