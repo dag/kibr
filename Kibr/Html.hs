@@ -29,8 +29,8 @@ master styleUrl bodyContent
 
 word :: DB.Word -> Html
 word w
-  = do dt $ toHtml $ DB.word w
-       dd $ preEscapedString $ hscolour False $ groom w
+  = do dt . toHtml $ DB.word w
+       dd . preEscapedString . hscolour False $ groom w
 
 wordList :: DB.Dictionary -> Html
-wordList dict = dl $ mapM_ word $ Set.elems $ DB.words dict
+wordList dict = dl . mapM_ word . Set.elems $ DB.words dict

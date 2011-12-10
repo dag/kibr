@@ -1,11 +1,6 @@
-module Kibr.Data
-  ( module Kibr.Data.Dictionary
-  , module Kibr.Data.Grammar
-  , module Kibr.Data.Language
-  , module Kibr.Data.Revision
-  ) where
+module Kibr.Data (module DB) where
 
-import Kibr.Data.Dictionary
-import Kibr.Data.Grammar
-import Kibr.Data.Language
-import Kibr.Data.Revision
+import Kibr.Data.Dictionary as DB
+import Kibr.Data.Grammar    as DB
+import Kibr.Data.Language   as DB
+import Kibr.Data.Revision   as DB

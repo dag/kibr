@@ -26,10 +26,10 @@ fixtures
      in Dictionary $ Set.fromList
           [ Word "ba'e" (Particle Set.empty False BAhE) $
               def "forethought emphasis indicator." Nothing
-          , Word "la'oi" (Particle Set.empty True Undefined) $
+          , Word "la'oi" (Particle Set.empty True Undefined) .
               def "single-word non-Lojban name." $
                 Just "See also {la'o}, {zo'oi}."
-          , Word "donri" (Root (Set.fromList ["dor", "do'i"]) False) $
+          , Word "donri" (Root (Set.fromList ["dor", "do'i"]) False) .
               def "$x_{1}$ is the daytime of day $x_{2}$." $
                 Just "See also {nicte}, {djedi}, {tcika}."
           , Word "kibro" (Root Set.empty True) $

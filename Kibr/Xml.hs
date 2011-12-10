@@ -11,7 +11,7 @@ import qualified Kibr.Data as DB
 readDictionary :: DB.Language -> String -> IO DB.Dictionary
 readDictionary language file
   = do words <- runX $ readDocument [] file >>> deep (getWord language)
-       return $ DB.Dictionary $ Set.fromList words
+       return . DB.Dictionary $ Set.fromList words
 
 getWord :: ArrowXml a => DB.Language -> a XmlTree DB.Word
 getWord language

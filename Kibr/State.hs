@@ -28,5 +28,5 @@ runImport (file:args)
 openState :: IO (AcidState Dictionary)
 openState = openLocalState $ Dictionary Set.empty
 
-loadState :: (AcidState Dictionary) -> IO (EventResult ReadState)
+loadState :: AcidState Dictionary -> IO (EventResult ReadState)
 loadState st = query st ReadState

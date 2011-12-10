@@ -25,10 +25,10 @@ server config
   = do updateGlobalLogger rootLoggerName $ setLevel DEBUG
        state <- openState
        db    <- loadState state
-       simpleHTTP config $ implSite "/" "" $ site db
+       simpleHTTP config . implSite "/" "" $ site db
 
 site :: DB.Dictionary -> Site Sitemap (ServerPartT IO Response)
-site db = setDefault Home $ mkSitePI $ runRouteT $ route db
+site db = setDefault Home . mkSitePI . runRouteT $ route db
 
 type Controller = RouteT Sitemap (ServerPartT IO) Response
 
