@@ -4,11 +4,8 @@ import Prelude (,)
 import Preamble
 
 import Control.Monad        (mapM_)
-import Control.Monad.Trans  (liftIO)
 import System.IO            (putStrLn)
 
-import Data.Acid            (AcidState)
-import Data.Acid            (openLocalState, closeAcidState, query)
 import Happstack.Server     (Conf, ServerPartT, Response)
 import Happstack.Server     (parseConfig, simpleHTTP, ok, toResponse, setHeader)
 import Language.CSS         (renderCSS, runCSS)
@@ -23,6 +20,8 @@ import Kibr.State
 
 import qualified Data.Set  as Set
 
+import qualified Data.Acid as Acid
+
 import qualified Kibr.Css  as Css
 import qualified Kibr.Data as DB
 import qualified Kibr.Html as Html
@@ -36,16 +35,15 @@ runHttp args
 server :: Conf -> IO ()
 server config
   = do updateGlobalLogger rootLoggerName . setLevel $ DEBUG
-       state <- openLocalState DB.empty
+       state <- Acid.openLocalState DB.empty
        simpleHTTP config . implSite "/" ""
                          . setDefault Home
                          . mkSitePI
                          . runRouteT
                          . route
                          $ state
-       closeAcidState state
+       Acid.closeAcidState state
 
-type State      = AcidState DB.Dictionary
 type Controller = RouteT Sitemap (ServerPartT IO) Response
 
 route :: State -> Sitemap -> Controller
@@ -58,13 +56,13 @@ route st url
 home :: State -> Controller
 home st
   = do style <- showURL Stylesheet
-       db    <- liftIO . query st $ ReadState
+       db    <- query st ReadState
        ok . toResponse . Html.master style . Html.wordList $ db
 
 word :: State -> String -> Controller
 word st w
   = do style <- showURL Stylesheet
-       db    <- liftIO . query st $ ReadState
+       db    <- query st ReadState
        ok . toResponse . Html.master style . Html.word . w' $ db
     where w' db = Set.findMin . Set.filter p . DB.words $ db
           p e   = DB.word e == w
