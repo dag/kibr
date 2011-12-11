@@ -24,7 +24,7 @@ runHttp args
 server :: Conf -> IO ()
 server config
   = do updateGlobalLogger rootLoggerName $ setLevel DEBUG
-       state <- openState
+       state <- openLocalState DB.empty
        simpleHTTP config . implSite "/" ""
                          . setDefault Home
                          . mkSitePI

@@ -21,9 +21,6 @@ makeAcidic ''Dictionary ['writeState, 'readState]
 runImport :: [String] -> IO ()
 runImport (file:args)
   = do db    <- readDictionary English file
-       state <- openState
+       state <- openLocalState empty
        update state $ WriteState db
        closeAcidState state
-
-openState :: IO (AcidState Dictionary)
-openState = openLocalState $ Dictionary Set.empty

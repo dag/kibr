@@ -49,3 +49,6 @@ data Dictionary
   = Dictionary { words :: Set Word }
     deriving (Eq, Show, Data, Typeable)
 deriveSafeCopy 0 'base ''Dictionary
+
+empty :: Dictionary
+empty = Dictionary Data.Set.empty
