@@ -23,7 +23,7 @@ runHttp args
 
 server :: Conf -> IO ()
 server config
-  = do updateGlobalLogger rootLoggerName $ setLevel DEBUG
+  = do updateGlobalLogger rootLoggerName . setLevel $ DEBUG
        state <- openLocalState DB.empty
        simpleHTTP config . implSite "/" ""
                          . setDefault Home
@@ -53,7 +53,7 @@ word :: State -> String -> Controller
 word st w
   = do style <- showURL Stylesheet
        db    <- liftIO . query st $ ReadState
-       ok . toResponse . Html.master style . Html.word $ w' db
+       ok . toResponse . Html.master style . Html.word . w' $ db
     where w' db = Set.findMin . Set.filter p . DB.words $ db
           p e   = DB.word e == w
 
