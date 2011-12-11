@@ -2,11 +2,20 @@
 
 module Kibr.Xml where
 
+import Data.Acid
+import Kibr.State
 import Text.XML.HXT.Core
 
 import qualified Data.Map  as Map
 import qualified Data.Set  as Set
 import qualified Kibr.Data as DB
+
+runImport :: [String] -> IO ()
+runImport (file:args)
+  = do db    <- readDictionary DB.English file
+       state <- openLocalState DB.empty
+       update state $ WriteState db
+       closeAcidState state
 
 readDictionary :: DB.Language -> String -> IO DB.Dictionary
 readDictionary language file
