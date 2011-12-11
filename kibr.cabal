@@ -8,7 +8,8 @@ Executable kibr
   ghc-options     : -Wall
 
 Library
-  exposed-modules : Kibr.Css
+  exposed-modules : Preamble
+                  , Kibr.Css
                   , Kibr.Data
                   , Kibr.Data.Dictionary
                   , Kibr.Data.Grammar

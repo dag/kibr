@@ -1,16 +1,28 @@
 module Kibr.Http where
+ 
+import Prelude (,)
+import Preamble
 
-import Control.Monad.Trans
-import Data.Acid
-import Happstack.Server
+import Control.Monad        (mapM_)
+import Control.Monad.Trans  (liftIO)
+import System.IO            (putStrLn)
+
+import Data.Acid            (AcidState)
+import Data.Acid            (openLocalState, closeAcidState, query)
+import Happstack.Server     (Conf, ServerPartT, Response)
+import Happstack.Server     (parseConfig, simpleHTTP, ok, toResponse, setHeader)
+import Language.CSS         (renderCSS, runCSS)
+import System.Log.Logger    (Priority(DEBUG))
+import System.Log.Logger    (updateGlobalLogger, rootLoggerName, setLevel)
+import Web.Routes           (RouteT)
+import Web.Routes           (setDefault, mkSitePI, runRouteT, showURL)
+import Web.Routes.Happstack (implSite)
+
 import Kibr.Data.Sitemap
 import Kibr.State
-import Language.CSS
-import System.Log.Logger
-import Web.Routes
-import Web.Routes.Happstack
 
 import qualified Data.Set  as Set
+
 import qualified Kibr.Css  as Css
 import qualified Kibr.Data as DB
 import qualified Kibr.Html as Html
