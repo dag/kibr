@@ -54,7 +54,7 @@ word st w
   = do style <- showURL Stylesheet
        db    <- liftIO . query st $ ReadState
        ok . toResponse . Html.master style . Html.word $ w' db
-    where w' db = Set.findMin . Set.filter p $ DB.words db
+    where w' db = Set.findMin . Set.filter p . DB.words $ db
           p e   = DB.word e == w
 
 stylesheet :: Controller
