@@ -1,4 +1,5 @@
-{-# LANGUAGE DeriveDataTypeable, TemplateHaskell #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Kibr.Data.Dictionary where
 

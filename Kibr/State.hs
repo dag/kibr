@@ -1,4 +1,6 @@
-{-# LANGUAGE DeriveDataTypeable, TemplateHaskell, TypeFamilies #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Kibr.State where
 
