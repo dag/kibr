@@ -14,7 +14,7 @@ test: build
 
 .PHONY: hlint
 hlint:
-	@hlint --color Kibr/ kibr.hs
+	@hlint --color src
 
 .PHONY: import
 import:

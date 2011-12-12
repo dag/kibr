@@ -4,10 +4,12 @@ Build-Type        : Simple
 Cabal-Version     : >= 1.2
 
 Executable kibr
-  main-is         : kibr.hs
+  main-is         : Main.hs
+  hs-source-dirs  : src
   ghc-options     : -Wall
 
 Library
+  hs-source-dirs  : src
   exposed-modules : Preamble
                   , Kibr.Css
                   , Kibr.Data
