@@ -10,33 +10,37 @@ Executable kibr
 
 Library
   hs-source-dirs  : src
-  exposed-modules : Preamble
-                  , Kibr.Css
-                  , Kibr.Data
-                  , Kibr.Data.Dictionary
-                  , Kibr.Data.Grammar
-                  , Kibr.Data.Language
-                  , Kibr.Data.Revision
-                  , Kibr.Data.Sitemap
-                  , Kibr.Html
-                  , Kibr.Http
-                  , Kibr.State
-                  , Kibr.Test
-                  , Kibr.Xml
-  build-depends   : acid-state           == 0.6.*
-                  , base                 == 4.*
-                  , blaze-html           >= 0.4.2.0 && < 0.5
-                  , containers           == 0.4.*
-                  , css                  == 0.*
-                  , groom                == 0.1.*
-                  , happstack-server     == 6.*
-                  , hscolour             >= 1.19 && < 2.0
-                  , hslogger             == 1.1.*
-                  , HTF                  == 0.8.*
-                  , hxt                  == 9.1.*
-                  , mtl                  == 2.*
-                  , safecopy             == 0.6.*
-                  , web-routes           == 0.25.*
-                  , web-routes-happstack == 0.22.*
-                  , web-routes-th        == 0.20.*
   ghc-options     : -Wall
+  exposed-modules :
+    { Preamble
+    , Kibr.Css
+    , Kibr.Data
+    , Kibr.Data.Dictionary
+    , Kibr.Data.Grammar
+    , Kibr.Data.Language
+    , Kibr.Data.Revision
+    , Kibr.Data.Sitemap
+    , Kibr.Html
+    , Kibr.Http
+    , Kibr.State
+    , Kibr.Test
+    , Kibr.Xml
+    }
+  build-depends   :
+    { acid-state           == 0.6.*
+    , base                 == 4.*
+    , blaze-html           >= 0.4.2.0 && < 0.5
+    , containers           == 0.4.*
+    , css                  == 0.*
+    , groom                == 0.1.*
+    , happstack-server     == 6.*
+    , hscolour             >= 1.19 && < 2.0
+    , hslogger             == 1.1.*
+    , HTF                  == 0.8.*
+    , hxt                  == 9.1.*
+    , mtl                  == 2.*
+    , safecopy             == 0.6.*
+    , web-routes           == 0.25.*
+    , web-routes-happstack == 0.22.*
+    , web-routes-th        == 0.20.*
+    }
