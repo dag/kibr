@@ -3,48 +3,47 @@ module Kibr.Http where
 import Prelude (,)
 import Preamble
 
-import Control.Monad        (mapM_)
-import System.IO            (putStrLn)
+import Control.Monad (mapM_)
+import System.IO     (putStrLn)
 
-import Happstack.Server     (Conf, ServerPartT, Response)
-import Happstack.Server     (parseConfig, simpleHTTP, ok, toResponse, setHeader)
-import Language.CSS         (renderCSS, runCSS)
-import System.Log.Logger    (Priority(DEBUG))
-import System.Log.Logger    (updateGlobalLogger, rootLoggerName, setLevel)
-import Web.Routes           (RouteT)
-import Web.Routes           (setDefault, mkSitePI, runRouteT, showURL)
-import Web.Routes.Happstack (implSite)
+import Language.CSS  (renderCSS, runCSS)
 
 import Kibr.Data.Sitemap
 import Kibr.State
 
-import qualified Data.Set  as Set
+import qualified Data.Set             as Set
 
-import qualified Data.Acid as Acid
+import qualified Data.Acid            as Acid
+import qualified Happstack.Server     as H
+import qualified System.Log.Logger    as Log
+import qualified Web.Routes           as R
+import qualified Web.Routes.Happstack as R
 
-import qualified Kibr.Css  as Css
-import qualified Kibr.Data as DB
-import qualified Kibr.Html as Html
+import qualified Kibr.Css             as Css
+import qualified Kibr.Data            as DB
+import qualified Kibr.Html            as Html
 
 runHttp :: [String] -> IO ()
 runHttp args
-  = case parseConfig args
+  = case H.parseConfig args
       of Left errors  -> mapM_ putStrLn errors
          Right config -> server config
 
-server :: Conf -> IO ()
+server :: H.Conf -> IO ()
 server config
-  = do updateGlobalLogger rootLoggerName . setLevel $ DEBUG
+  = do Log.updateGlobalLogger Log.rootLoggerName
+         . Log.setLevel
+         $ Log.DEBUG
        state <- Acid.openLocalState DB.empty
-       simpleHTTP config . implSite "/" ""
-                         . setDefault Home
-                         . mkSitePI
-                         . runRouteT
-                         . route
-                         $ state
+       H.simpleHTTP config . R.implSite "/" ""
+                           . R.setDefault Home
+                           . R.mkSitePI
+                           . R.runRouteT
+                           . route
+                           $ state
        Acid.closeAcidState state
 
-type Controller = RouteT Sitemap (ServerPartT IO) Response
+type Controller = R.RouteT Sitemap (H.ServerPartT IO) H.Response
 
 route :: State -> Sitemap -> Controller
 route st url
@@ -55,19 +54,19 @@ route st url
 
 home :: State -> Controller
 home st
-  = do style <- showURL Stylesheet
+  = do style <- R.showURL Stylesheet
        db    <- query st ReadState
-       ok . toResponse . Html.master style . Html.wordList $ db
+       H.ok . H.toResponse . Html.master style . Html.wordList $ db
 
 word :: State -> String -> Controller
 word st w
-  = do style <- showURL Stylesheet
+  = do style <- R.showURL Stylesheet
        db    <- query st ReadState
-       ok . toResponse . Html.master style . Html.word . w' $ db
+       H.ok . H.toResponse . Html.master style . Html.word . w' $ db
     where w' db = Set.findMin . Set.filter p . DB.words $ db
           p e   = DB.word e == w
 
 stylesheet :: Controller
 stylesheet
-  = ok . setHeader "Content-Type" "text/css"
-       . toResponse . renderCSS . runCSS $ Css.master
+  = H.ok . H.setHeader "Content-Type" "text/css"
+         . H.toResponse . renderCSS . runCSS $ Css.master
