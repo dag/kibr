@@ -24,49 +24,56 @@ import qualified Kibr.Data            as DB
 import qualified Kibr.Html            as Html
 
 runHttp :: [String] -> IO ()
-runHttp args
-  = case H.parseConfig args
-      of Left errors  -> mapM_ putStrLn errors
-         Right config -> server config
+runHttp args =
+  case H.parseConfig args of
+    Left errors  -> mapM_ putStrLn errors
+    Right config -> server config
 
 server :: H.Conf -> IO ()
-server config
-  = do Log.updateGlobalLogger Log.rootLoggerName
-         . Log.setLevel
-         $ Log.DEBUG
-       state <- Acid.openLocalState DB.empty
-       H.simpleHTTP config . R.implSite "/" ""
-                           . R.setDefault Home
-                           . R.mkSitePI
-                           . R.runRouteT
-                           . route
-                           $ state
-       Acid.closeAcidState state
+server config =
+  do
+    setLogLevel Log.DEBUG
+    state <- Acid.openLocalState DB.empty
+    startServer state
+    Acid.closeAcidState state
+  where
+    setLogLevel =
+      Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel
+    startServer =
+      H.simpleHTTP config . R.implSite "/" "" . site
+    site =
+      R.setDefault Home . R.mkSitePI . R.runRouteT . route
 
 type Controller = R.RouteT Sitemap (H.ServerPartT IO) H.Response
 
 route :: State -> Sitemap -> Controller
-route st url
-  = case url
-      of Home       -> home st
-         Word w     -> word st w
-         Stylesheet -> stylesheet
+route st url =
+  case url of
+    Home       -> home st
+    Word w     -> word st w
+    Stylesheet -> stylesheet
 
 home :: State -> Controller
-home st
-  = do style <- R.showURL Stylesheet
-       db    <- query st ReadState
-       H.ok . H.toResponse . Html.master style . Html.wordList $ db
+home st =
+  do
+    style <- R.showURL Stylesheet
+    db    <- query st ReadState
+    H.ok . H.toResponse . Html.master style . Html.wordList $ db
 
 word :: State -> String -> Controller
-word st w
-  = do style <- R.showURL Stylesheet
-       db    <- query st ReadState
-       H.ok . H.toResponse . Html.master style . Html.word . w' $ db
-    where w' db = Set.findMin . Set.filter p . DB.words $ db
-          p e   = DB.word e == w
+word st w =
+  do
+    style <- R.showURL Stylesheet
+    db    <- query st ReadState
+    H.ok . H.toResponse . Html.master style . Html.word . w' $ db
+  where
+    w' db = Set.findMin . Set.filter p . DB.words $ db
+    p e   = DB.word e == w
 
 stylesheet :: Controller
-stylesheet
-  = H.ok . H.setHeader "Content-Type" "text/css"
-         . H.toResponse . renderCSS . runCSS $ Css.master
+stylesheet =
+    H.ok . H.setHeader "Content-Type" "text/css"
+         . H.toResponse
+         . renderCSS
+         . runCSS
+         $ Css.master
