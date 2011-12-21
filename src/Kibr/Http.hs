@@ -7,7 +7,6 @@ import Language.CSS  (renderCSS, runCSS)
 import Kibr.Data.Sitemap
 import Kibr.State
 
-import qualified Data.Set             as Set
 import qualified System.IO            as IO
 
 import qualified Data.Acid            as Acid
@@ -60,12 +59,13 @@ home st =
 word :: State -> String -> Controller
 word st w =
   do
-    style <- R.showURL Stylesheet
-    db    <- query st ReadState
-    H.ok . H.toResponse . Html.master style . Html.word . w' $ db
+    w' <- query st . LookupWord $ w
+    maybe mzero response w'
   where
-    w' db = Set.findMin . Set.filter p . DB.words $ db
-    p e   = DB.word e == w
+    response w'' =
+      do
+        style <- R.showURL Stylesheet
+        H.ok . H.toResponse . Html.master style . Html.word $ w''
 
 stylesheet :: Controller
 stylesheet =

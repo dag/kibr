@@ -14,6 +14,8 @@ import Control.Monad.Trans  (liftIO)
 
 import Kibr.Data
 
+import qualified Data.Set  as Set
+
 import qualified Data.Acid as Acid
 
 type State = Acid.AcidState Dictionary
@@ -30,4 +32,10 @@ writeState = put
 readState :: Acid.Query Dictionary Dictionary
 readState = ask
 
-Acid.makeAcidic ''Dictionary ['writeState, 'readState]
+lookupWord :: String -> Acid.Query Dictionary (Maybe Word)
+lookupWord w =
+  do
+    Dictionary words <- ask
+    return . listToMaybe . Set.elems . Set.filter ((== w) . word) $ words
+
+Acid.makeAcidic ''Dictionary ['writeState, 'readState, 'lookupWord]
