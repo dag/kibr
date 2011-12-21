@@ -1,10 +1,6 @@
 module Kibr.Http where
  
-import Prelude (,)
 import Preamble
-
-import Control.Monad (mapM_)
-import System.IO     (putStrLn)
 
 import Language.CSS  (renderCSS, runCSS)
 
@@ -12,6 +8,7 @@ import Kibr.Data.Sitemap
 import Kibr.State
 
 import qualified Data.Set             as Set
+import qualified System.IO            as IO
 
 import qualified Data.Acid            as Acid
 import qualified Happstack.Server     as H
@@ -23,13 +20,13 @@ import qualified Kibr.Css             as Css
 import qualified Kibr.Data            as DB
 import qualified Kibr.Html            as Html
 
-runHttp :: [String] -> IO ()
+runHttp :: [String] -> IO.IO ()
 runHttp args =
   case H.parseConfig args of
-    Left errors  -> mapM_ putStrLn errors
+    Left errors  -> mapM_ IO.putStrLn errors
     Right config -> server config
 
-server :: H.Conf -> IO ()
+server :: H.Conf -> IO.IO ()
 server config =
   do
     setLogLevel Log.DEBUG
@@ -44,7 +41,7 @@ server config =
     site =
       R.setDefault Home . R.mkSitePI . R.runRouteT . route
 
-type Controller = R.RouteT Sitemap (H.ServerPartT IO) H.Response
+type Controller = R.RouteT Sitemap (H.ServerPartT IO.IO) H.Response
 
 route :: State -> Sitemap -> Controller
 route st url =

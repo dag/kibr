@@ -7,10 +7,12 @@ Executable kibr
   main-is         : Main.hs
   hs-source-dirs  : src
   ghc-options     : -Wall
+  extensions      : NoImplicitPrelude
 
 Library
   hs-source-dirs  : src
   ghc-options     : -Wall
+  extensions      : NoImplicitPrelude
   exposed-modules :
     { Preamble
     , Kibr.Css

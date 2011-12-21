@@ -1,6 +1,9 @@
 module Main where
 
+import Preamble
+
 import System.Environment (getArgs)
+import System.IO (IO)
 
 import Kibr.Http (runHttp)
 import Kibr.Xml  (runImport)

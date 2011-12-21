@@ -2,9 +2,12 @@
 
 module Kibr.Test where
 
+import Preamble
+
 import Data.Map as Map
 import Data.Set as Set
 import System.Exit (exitWith)
+import System.IO (IO)
 
 import Test.Framework hiding (runTest)
 
