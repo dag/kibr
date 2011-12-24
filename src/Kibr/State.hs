@@ -44,7 +44,7 @@ reviseWord w l r =
         ds   = w' ^. definitions
         rs   = Map.insert l (r : ds ! l) ds
         ds'  = definitions ^= rs $ w'
-    words ~= (Set.delete w' . Set.insert ds' $ ws)
+    words %= Set.delete w' . Set.insert ds'
     return ()
 
 makeAcidic ''Dictionary
