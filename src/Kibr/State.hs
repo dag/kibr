@@ -41,10 +41,8 @@ reviseWord w l r =
     db <- get
     let ws   = db ^. words
         [w'] = Set.elems . Set.filter ((== w) . getL word) $ ws
-        ds   = w' ^. definitions
-        rs   = Map.insert l (r : ds ! l) ds
-        ds'  = definitions ^= rs $ w'
-    words %= Set.delete w' . Set.insert ds'
+        ds   = mapLens l . definitions ^%= map (r:) $ w'
+    words %= Set.delete w' . Set.insert ds
     return ()
 
 makeAcidic ''Dictionary
