@@ -5,36 +5,27 @@
 
 module Kibr.State where
 
-import Prelude (,)
 import Preamble
 
 import Control.Monad.Reader (ask)
 import Control.Monad.State  (get, put)
-import Control.Monad.Trans  (MonadIO)
-import Control.Monad.Trans  (liftIO)
+
+import Data.Acid
 
 import Kibr.Data as DB
 
 import qualified Data.Map  as Map
 import qualified Data.Set  as Set
 
-import qualified Data.Acid as Acid
+type State = AcidState Dictionary
 
-type State = Acid.AcidState Dictionary
-
-query :: (Acid.QueryEvent a, MonadIO m)
-      => Acid.AcidState (Acid.EventState a)
-      -> a
-      -> m (Acid.EventResult a)
-query st = liftIO . Acid.query st
-
-writeState :: Dictionary -> Acid.Update Dictionary ()
+writeState :: Dictionary -> Update Dictionary ()
 writeState = put
 
-readState :: Acid.Query Dictionary Dictionary
+readState :: Query Dictionary Dictionary
 readState = ask
 
-lookupWord :: String -> Acid.Query Dictionary (Maybe Word)
+lookupWord :: String -> Query Dictionary (Maybe Word)
 lookupWord w =
   do
     Dictionary words <- ask
@@ -43,7 +34,7 @@ lookupWord w =
 reviseWord :: String
            -> Language
            -> Revision Definition
-           -> Acid.Update Dictionary ()
+           -> Update Dictionary ()
 reviseWord w l r =
   do
     d@Dictionary{..} <- get
@@ -54,7 +45,7 @@ reviseWord w l r =
                       } words
           }
 
-Acid.makeAcidic ''Dictionary
+makeAcidic ''Dictionary
   [ 'writeState
   , 'readState
   , 'lookupWord

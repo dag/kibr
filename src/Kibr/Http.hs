@@ -2,7 +2,8 @@ module Kibr.Http where
  
 import Preamble
 
-import Language.CSS  (renderCSS, runCSS)
+import Data.Acid.Advanced (query')
+import Language.CSS       (renderCSS, runCSS)
 
 import Kibr.Data.Sitemap
 import Kibr.State
@@ -53,13 +54,13 @@ home :: State -> Controller
 home st =
   do
     style <- R.showURL Stylesheet
-    db    <- query st ReadState
+    db    <- query' st ReadState
     H.ok . H.toResponse . Html.master style . Html.wordList $ db
 
 word :: State -> String -> Controller
 word st w =
   do
-    w' <- query st . LookupWord $ w
+    w' <- query' st . LookupWord $ w
     maybe mzero response w'
   where
     response w'' =
