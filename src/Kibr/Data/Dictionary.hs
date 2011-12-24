@@ -3,24 +3,27 @@
 
 module Kibr.Data.Dictionary where
 
+import Preamble
+
 import Kibr.Data.Grammar
 import Kibr.Data.Language
 import Kibr.Data.Revision
 
 import Data.Data
+import Data.Lens.Template
 import Data.Map
 import Data.SafeCopy
 import Data.Set
 
 data Shape
   = Particle
-      { affixes      :: Set String
-      , experimental :: Bool
-      , grammar      :: Grammar
+      { _affixes      :: Set String
+      , _experimental :: Bool
+      , _grammar      :: Grammar
       }
   | Root
-      { affixes      :: Set String
-      , experimental :: Bool
+      { _affixes      :: Set String
+      , _experimental :: Bool
       }
   | Compound
   | Loan
@@ -28,28 +31,32 @@ data Shape
   | Cluster
     deriving (Eq, Show, Ord, Data, Typeable)
 deriveSafeCopy 0 'base ''Shape
+makeLens ''Shape
 
 data Definition
   = Definition
-      { definition :: String
-      , notes      :: Maybe String
+      { _definition :: String
+      , _notes      :: Maybe String
       }
     deriving (Eq, Show, Ord, Data, Typeable)
 deriveSafeCopy 0 'base ''Definition
+makeLens ''Definition
 
 data Word
   = Word
-      { word        :: String
-      , shape       :: Shape
-      , definitions :: Map Language [Revision Definition]
+      { _word        :: String
+      , _shape       :: Shape
+      , _definitions :: Map Language [Revision Definition]
       }
     deriving (Eq, Show, Ord, Data, Typeable)
 deriveSafeCopy 0 'base ''Word
+makeLens ''Word
 
 data Dictionary
-  = Dictionary { words :: Set Word }
+  = Dictionary { _words :: Set Word }
     deriving (Eq, Show, Data, Typeable)
 deriveSafeCopy 0 'base ''Dictionary
+makeLens ''Dictionary
 
 empty :: Dictionary
 empty = Dictionary Data.Set.empty

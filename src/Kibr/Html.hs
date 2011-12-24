@@ -2,8 +2,9 @@
 
 module Kibr.Html where
 
-import Prelude hiding (head)
+import Preamble
 
+import Data.Lens
 import Text.Blaze
 import Text.Blaze.Html5
 import Text.Blaze.Html5.Attributes hiding (title)
@@ -29,8 +30,8 @@ master styleUrl bodyContent
 
 word :: DB.Word -> Html
 word w
-  = do dt . toHtml $ DB.word w
+  = do dt . toHtml $ DB.word ^$ w
        dd . preEscapedString . hscolour False $ groom w
 
 wordList :: DB.Dictionary -> Html
-wordList dict = dl . mapM_ word . Set.elems $ DB.words dict
+wordList dict = dl . mapM_ word . Set.elems $ DB.words ^$ dict

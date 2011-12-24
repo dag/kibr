@@ -34,6 +34,8 @@ Library
     , blaze-html           >= 0.4.2.0 && < 0.5
     , containers           == 0.4.*
     , css                  == 0.*
+    , data-lens-fd         == 2.0.*
+    , data-lens-template   == 2.1.*
     , groom                == 0.1.*
     , happstack-server     == 6.*
     , hscolour             >= 1.19 && < 2.0

@@ -16,8 +16,8 @@ import Data.Function    as Export hiding ((.), id)
 import Data.Maybe       as Export
 import Data.Ord         as Export
 import Data.Tuple       as Export
-import Text.Read        as Export (read)
-import Text.Show        as Export (show)
+import Text.Read        as Export (Read, read)
+import Text.Show        as Export (Show, show)
 
 (++) :: MonadPlus m => m a -> m a -> m a
 (++) = mplus

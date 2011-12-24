@@ -1,5 +1,4 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 
@@ -9,8 +8,10 @@ import Preamble
 
 import Control.Monad.Reader (ask)
 import Control.Monad.State  (get, put)
+import Data.Map             ((!))
 
 import Data.Acid
+import Data.Lens
 
 import Kibr.Data as DB
 
@@ -29,7 +30,7 @@ lookupWord :: String -> Query Dictionary (Maybe Word)
 lookupWord w =
   do
     Dictionary words <- ask
-    return . listToMaybe . Set.elems . Set.filter ((== w) . word) $ words
+    return . listToMaybe . Set.elems . Set.filter ((== w) . getL word) $ words
 
 reviseWord :: String
            -> Language
@@ -37,13 +38,14 @@ reviseWord :: String
            -> Update Dictionary ()
 reviseWord w l r =
   do
-    d@Dictionary{..} <- get
-    let [w'@Word{..}] = Set.elems . Set.filter ((== w) . DB.word) $ words
-    put d { words = Set.delete w' $ Set.insert w'
-                      { definitions =
-                          Map.insert l (r : definitions Map.! l) definitions
-                      } words
-          }
+    db <- get
+    let ws   = db ^. words
+        [w'] = Set.elems . Set.filter ((== w) . getL word) $ ws
+        ds   = w' ^. definitions
+        rs   = Map.insert l (r : ds ! l) ds
+        ds'  = definitions ^= rs $ w'
+    words ~= (Set.delete w' . Set.insert ds' $ ws)
+    return ()
 
 makeAcidic ''Dictionary
   [ 'writeState
