@@ -27,7 +27,7 @@ lookupWord :: String -> Query Dictionary (Maybe Word)
 lookupWord w =
   do
     Dictionary ws <- ask
-    return . listToMaybe . Ix.toList $ ws @= ByWord w
+    return . getOne $ ws @= ByWord w
 
 reviseWord :: String
            -> Language
@@ -36,10 +36,13 @@ reviseWord :: String
 reviseWord w l r =
   do
     ws <- access words
-    let [w'] = Ix.toList $ ws @= ByWord w
-        ds   = mapLens l . definitions ^%= map (r:) $ w'
-    words %= updateIx (ByWord w) ds
-    return ()
+    case getOne $ ws @= ByWord w of
+      Just w' ->
+        do
+          words %= updateIx (ByWord w)
+                     (mapLens l . definitions ^%= map (r:) $ w')
+          return ()
+      Nothing -> return ()
 
 makeAcidic ''Dictionary
   [ 'writeState
