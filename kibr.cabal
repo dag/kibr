@@ -1,7 +1,18 @@
 Name              : kibr
 Version           : 0.0.0
+License           : OtherLicense
+License-File      : LICENSE
+Author            : Dag Odenhall
+Maintainer        : dag.odenhall@gmail.com
+Homepage          : https://github.com/dag/kibr
+Bug-Reports       : https://github.com/dag/kibr/issues
+Category          : Application, Language, Web
 Build-Type        : Simple
-Cabal-Version     : >= 1.2
+Cabal-Version     : >= 1.6
+
+Source-Repository head
+  type            : git
+  location        : git://github.com/dag/kibr.git
 
 Executable kibr
   main-is         : Main.hs
