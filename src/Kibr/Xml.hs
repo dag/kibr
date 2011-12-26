@@ -11,9 +11,10 @@ import Text.XML.HXT.Core
 
 import qualified System.IO as IO
 
-import qualified Data.Map  as Map
-import qualified Data.Set  as Set
-import qualified Kibr.Data as DB
+import qualified Data.IxSet as Ix
+import qualified Data.Map   as Map
+import qualified Data.Set   as Set
+import qualified Kibr.Data  as DB
 
 runImport :: [String] -> IO.IO ()
 runImport (file:args)
@@ -25,7 +26,7 @@ runImport (file:args)
 readDictionary :: DB.Language -> String -> IO.IO DB.Dictionary
 readDictionary language file
   = do words <- runX $ readDocument [] file >>> deep (getWord language)
-       return . DB.Dictionary $ Set.fromList words
+       return . DB.Dictionary $ Ix.fromList words
 
 getWord :: ArrowXml a => DB.Language -> a XmlTree DB.Word
 getWord language

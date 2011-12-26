@@ -6,6 +6,7 @@ import Preamble
 
 import Data.Map as Map
 import Data.Set as Set
+import Data.IxSet as Ix
 import System.Exit (exitWith)
 import System.IO (IO)
 
@@ -26,7 +27,7 @@ fixtures :: Dictionary
 fixtures
   = let def d n = Map.fromList [(English, rev d n)]
         rev d n = [Revision (Definition d n) (Just "Imported")]
-     in Dictionary $ Set.fromList
+     in Dictionary $ Ix.fromList
           [ Word "ba'e" (Particle Set.empty False BAhE) $
               def "forethought emphasis indicator." Nothing
           , Word "la'oi" (Particle Set.empty True Undefined) .

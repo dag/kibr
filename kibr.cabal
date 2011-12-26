@@ -42,6 +42,7 @@ Library
     , hslogger             == 1.1.*
     , HTF                  == 0.8.*
     , hxt                  == 9.1.*
+    , ixset                == 1.0.*
     , mtl                  == 2.*
     , safecopy             == 0.6.*
     , web-routes           == 0.25.*

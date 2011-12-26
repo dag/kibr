@@ -10,11 +10,10 @@ import Control.Monad.Reader (ask)
 import Control.Monad.State  (put)
 
 import Data.Acid
+import Data.IxSet as Ix
 import Data.Lens
 
 import Kibr.Data as DB
-
-import qualified Data.Set  as Set
 
 type State = AcidState Dictionary
 
@@ -28,7 +27,7 @@ lookupWord :: String -> Query Dictionary (Maybe Word)
 lookupWord w =
   do
     Dictionary ws <- ask
-    return . listToMaybe . Set.elems . Set.filter ((== w) . getL word) $ ws
+    return . listToMaybe . Ix.toList $ ws @= ByWord w
 
 reviseWord :: String
            -> Language
@@ -37,9 +36,9 @@ reviseWord :: String
 reviseWord w l r =
   do
     ws <- access words
-    let [w'] = Set.elems . Set.filter ((== w) . getL word) $ ws
+    let [w'] = Ix.toList $ ws @= ByWord w
         ds   = mapLens l . definitions ^%= map (r:) $ w'
-    words %= Set.delete w' . Set.insert ds
+    words %= updateIx (ByWord w) ds
     return ()
 
 makeAcidic ''Dictionary

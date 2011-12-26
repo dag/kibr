@@ -12,8 +12,8 @@ import Text.Groom
 
 import Language.Haskell.HsColour.ACSS (hscolour)
 
-import qualified Data.Set  as Set
-import qualified Kibr.Data as DB
+import qualified Data.IxSet as Ix
+import qualified Kibr.Data  as DB
 
 linkCss :: AttributeValue -> Html
 linkCss url = link ! href url ! rel "stylesheet" ! type_ "text/css"
@@ -34,4 +34,4 @@ word w
        dd . preEscapedString . hscolour False $ groom w
 
 wordList :: DB.Dictionary -> Html
-wordList dict = dl . mapM_ word . Set.elems $ DB.words ^$ dict
+wordList dict = dl . mapM_ word . Ix.toList $ DB.words ^$ dict

@@ -10,6 +10,7 @@ import Kibr.Data.Language
 import Kibr.Data.Revision
 
 import Data.Data
+import Data.IxSet as Ix
 import Data.Lens.Template
 import Data.Map
 import Data.SafeCopy
@@ -52,11 +53,17 @@ data Word
 deriveSafeCopy 0 'base ''Word
 makeLens ''Word
 
+newtype ByWord = ByWord String deriving (Eq, Ord, Typeable)
+
+instance Indexable Word
+  where
+    empty = ixSet [ixFun $ return . ByWord . _word]
+
 data Dictionary
-  = Dictionary { _words :: Set Word }
+  = Dictionary { _words :: IxSet Word }
     deriving (Eq, Show, Data, Typeable)
 deriveSafeCopy 0 'base ''Dictionary
 makeLens ''Dictionary
 
 empty :: Dictionary
-empty = Dictionary Data.Set.empty
+empty = Dictionary Ix.empty
