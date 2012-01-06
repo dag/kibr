@@ -13,6 +13,7 @@ import System.IO (IO)
 import Test.Framework hiding (runTest)
 
 import Kibr.Data
+import Kibr.Data.State
 import Kibr.Xml (readDictionary)
 
 runTest :: [String] -> IO ()
@@ -23,11 +24,11 @@ test_fixtures
   = do dictionary <- readDictionary English "fixtures.xml"
        assertEqual dictionary fixtures
 
-fixtures :: Dictionary
+fixtures :: State
 fixtures
   = let def d n = Map.fromList [(English, rev d n)]
         rev d n = [Revision (Definition d n) (Just "Imported")]
-     in Dictionary $ Ix.fromList
+     in State $ Ix.fromList
           [ Word "ba'e" (Particle Set.empty False BAhE) $
               def "forethought emphasis indicator." Nothing
           , Word "la'oi" (Particle Set.empty True Undefined) .

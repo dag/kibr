@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Kibr.Data.Dictionary where
+module Kibr.Data.Word where
 
 import Preamble
 
@@ -58,12 +58,3 @@ newtype ByWord = ByWord String deriving (Eq, Ord, Typeable)
 instance Indexable Word
   where
     empty = ixSet [ixFun $ return . ByWord . _word]
-
-data Dictionary
-  = Dictionary { _words :: IxSet Word }
-    deriving (Eq, Show, Data, Typeable)
-deriveSafeCopy 0 'base ''Dictionary
-makeLens ''Dictionary
-
-empty :: Dictionary
-empty = Dictionary Ix.empty

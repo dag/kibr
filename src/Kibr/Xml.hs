@@ -6,7 +6,7 @@ import Preamble
 import Prelude (error)
 
 import Data.Acid
-import Kibr.State
+import Kibr.Data.State
 import Text.XML.HXT.Core
 
 import qualified System.IO as IO
@@ -19,14 +19,14 @@ import qualified Kibr.Data  as DB
 runImport :: [String] -> IO.IO ()
 runImport (file:args)
   = do db    <- readDictionary DB.English file
-       state <- openLocalState DB.empty
+       state <- openLocalState $ State Ix.empty
        update state $ WriteState db
        closeAcidState state
 
-readDictionary :: DB.Language -> String -> IO.IO DB.Dictionary
+readDictionary :: DB.Language -> String -> IO.IO State
 readDictionary language file
   = do words <- runX $ readDocument [] file >>> deep (getWord language)
-       return . DB.Dictionary $ Ix.fromList words
+       return . State $ Ix.fromList words
 
 getWord :: ArrowXml a => DB.Language -> a XmlTree DB.Word
 getWord language

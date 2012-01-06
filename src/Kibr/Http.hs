@@ -6,18 +6,18 @@ import Data.Acid.Advanced (query')
 import Language.CSS       (renderCSS, runCSS)
 
 import Kibr.Data.Sitemap
-import Kibr.State
+import Kibr.Data.State
 
 import qualified System.IO            as IO
 
 import qualified Data.Acid            as Acid
+import qualified Data.IxSet           as Ix
 import qualified Happstack.Server     as H
 import qualified System.Log.Logger    as Log
 import qualified Web.Routes           as R
 import qualified Web.Routes.Happstack as R
 
 import qualified Kibr.Css             as Css
-import qualified Kibr.Data            as DB
 import qualified Kibr.Html            as Html
 
 runHttp :: [String] -> IO.IO ()
@@ -30,7 +30,7 @@ server :: H.Conf -> IO.IO ()
 server config =
   do
     setLogLevel Log.DEBUG
-    state <- Acid.openLocalState DB.empty
+    state <- Acid.openLocalState $ State Ix.empty
     startServer state
     Acid.closeAcidState state
   where
@@ -43,21 +43,21 @@ server config =
 
 type Controller = R.RouteT Sitemap (H.ServerPartT IO.IO) H.Response
 
-route :: State -> Sitemap -> Controller
+route :: Acid -> Sitemap -> Controller
 route st url =
   case url of
     Home       -> home st
     Word w     -> word st w
     Stylesheet -> stylesheet
 
-home :: State -> Controller
+home :: Acid -> Controller
 home st =
   do
     style <- R.showURL Stylesheet
     db    <- query' st ReadState
     H.ok . H.toResponse . Html.master style . Html.wordList $ db
 
-word :: State -> String -> Controller
+word :: Acid -> String -> Controller
 word st w =
   do
     w' <- query' st . LookupWord $ w

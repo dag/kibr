@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Kibr.State where
+module Kibr.Data.State where
 
 import Preamble
 
@@ -10,29 +10,38 @@ import Control.Monad.Reader (ask)
 import Control.Monad.State  (put)
 
 import Data.Acid
+import Data.Data
 import Data.IxSet as Ix
 import Data.Lens
+import Data.Lens.Template
+import Data.SafeCopy
 
 import Kibr.Data as DB
 
-type State = AcidState Dictionary
+data State
+  = State { _words :: IxSet Word }
+    deriving (Eq, Show, Data, Typeable)
+deriveSafeCopy 0 'base ''State
+makeLens ''State
 
-writeState :: Dictionary -> Update Dictionary ()
+type Acid = AcidState State
+
+writeState :: State -> Update State ()
 writeState = put
 
-readState :: Query Dictionary Dictionary
+readState :: Query State State
 readState = ask
 
-lookupWord :: String -> Query Dictionary (Maybe Word)
+lookupWord :: String -> Query State (Maybe Word)
 lookupWord w =
   do
-    Dictionary ws <- ask
+    State ws <- ask
     return . getOne $ ws @= ByWord w
 
 reviseWord :: String
            -> Language
            -> Revision Definition
-           -> Update Dictionary ()
+           -> Update State ()
 reviseWord w l r =
   do
     ws <- access words
@@ -44,7 +53,7 @@ reviseWord w l r =
           return ()
       Nothing -> return ()
 
-makeAcidic ''Dictionary
+makeAcidic ''State
   [ 'writeState
   , 'readState
   , 'lookupWord

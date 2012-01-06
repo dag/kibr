@@ -28,14 +28,14 @@ Library
     { Preamble
     , Kibr.Css
     , Kibr.Data
-    , Kibr.Data.Dictionary
     , Kibr.Data.Grammar
     , Kibr.Data.Language
     , Kibr.Data.Revision
     , Kibr.Data.Sitemap
+    , Kibr.Data.State
+    , Kibr.Data.Word
     , Kibr.Html
     , Kibr.Http
-    , Kibr.State
     , Kibr.Test
     , Kibr.Xml
     }

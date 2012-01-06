@@ -12,6 +12,8 @@ import Text.Groom
 
 import Language.Haskell.HsColour.ACSS (hscolour)
 
+import Kibr.Data.State
+
 import qualified Data.IxSet as Ix
 import qualified Kibr.Data  as DB
 
@@ -33,5 +35,5 @@ word w
   = do dt . toHtml $ DB.word ^$ w
        dd . preEscapedString . hscolour False $ groom w
 
-wordList :: DB.Dictionary -> Html
-wordList dict = dl . mapM_ word . Ix.toList $ DB.words ^$ dict
+wordList :: State -> Html
+wordList dict = dl . mapM_ word . Ix.toList $ words ^$ dict
