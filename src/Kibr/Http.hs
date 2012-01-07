@@ -3,6 +3,7 @@ module Kibr.Http where
 import Preamble
 
 import Data.Acid.Advanced (query')
+import Data.Lens
 import Language.CSS       (renderCSS, runCSS)
 
 import Kibr.Data.Sitemap
@@ -55,7 +56,7 @@ home st =
   do
     style <- R.showURL Stylesheet
     db    <- query' st ReadState
-    H.ok . H.toResponse . Html.master style . Html.wordList $ db
+    H.ok . H.toResponse . Html.master style . Html.wordList . Ix.toList $ db ^. words
 
 word :: Acid -> String -> Controller
 word st w =
@@ -66,7 +67,7 @@ word st w =
     response w'' =
       do
         style <- R.showURL Stylesheet
-        H.ok . H.toResponse . Html.master style . Html.word $ w''
+        H.ok . H.toResponse . Html.master style . Html.wordList $ [w'']
 
 stylesheet :: Controller
 stylesheet =

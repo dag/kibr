@@ -12,9 +12,6 @@ import Text.Groom
 
 import Language.Haskell.HsColour.ACSS (hscolour)
 
-import Kibr.Data.State
-
-import qualified Data.IxSet as Ix
 import qualified Kibr.Data  as DB
 
 linkCss :: AttributeValue -> Html
@@ -31,11 +28,8 @@ master styleUrl bodyContent = docTypeHtml $
   where
     hscolourCss = "http://code.haskell.org/~malcolm/hscolour/hscolour.css"
 
-word :: DB.Word -> Html
-word w =
+wordList :: [DB.Word] -> Html
+wordList ws = dl . forM_ ws $ \w ->
   do
     dt . toHtml $ DB.word ^$ w
     dd . preEscapedString . hscolour False $ groom w
-
-wordList :: State -> Html
-wordList dict = dl . mapM_ word . Ix.toList $ words ^$ dict
