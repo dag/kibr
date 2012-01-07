@@ -21,19 +21,21 @@ linkCss :: AttributeValue -> Html
 linkCss url = link ! href url ! rel "stylesheet" ! type_ "text/css"
 
 master :: String -> Html -> Html
-master styleUrl bodyContent
-  = docTypeHtml $
-      do head $
-           do title "Lojban Dictionary"
-              linkCss $ toValue styleUrl
-              linkCss hscolourCss
-         body bodyContent
-    where hscolourCss = "http://code.haskell.org/~malcolm/hscolour/hscolour.css"
+master styleUrl bodyContent = docTypeHtml $
+  do
+    head $ do
+      title "Lojban Dictionary"
+      linkCss $ toValue styleUrl
+      linkCss hscolourCss
+    body bodyContent
+  where
+    hscolourCss = "http://code.haskell.org/~malcolm/hscolour/hscolour.css"
 
 word :: DB.Word -> Html
-word w
-  = do dt . toHtml $ DB.word ^$ w
-       dd . preEscapedString . hscolour False $ groom w
+word w =
+  do
+    dt . toHtml $ DB.word ^$ w
+    dd . preEscapedString . hscolour False $ groom w
 
 wordList :: State -> Html
 wordList dict = dl . mapM_ word . Ix.toList $ words ^$ dict
