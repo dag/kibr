@@ -54,9 +54,9 @@ route st url =
 home :: Acid -> Controller
 home st =
   do
-    style <- R.showURL Stylesheet
-    db    <- query' st ReadState
-    H.ok . H.toResponse . Html.master style . Html.wordList . Ix.toList $ db ^. words
+    db <- query' st ReadState
+    page <- Html.master . Html.wordList . Ix.toList $ db ^. words
+    H.ok . H.toResponse $ page
 
 word :: Acid -> String -> Controller
 word st w =
@@ -66,8 +66,8 @@ word st w =
   where
     response w'' =
       do
-        style <- R.showURL Stylesheet
-        H.ok . H.toResponse . Html.master style . Html.wordList $ [w'']
+        page <- Html.master . Html.wordList $ [w'']
+        H.ok . H.toResponse $ page
 
 stylesheet :: Controller
 stylesheet =
