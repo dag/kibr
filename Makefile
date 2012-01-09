@@ -4,10 +4,6 @@ all: hlint test
 build:
 	@cabal-dev install
 
-.PHONY: pkg-list
-pkg-list:
-	@ghc-pkg -f cabal-dev/packages-*.conf list
-
 .PHONY: test
 test: build
 	@cabal-dev/bin/kibr --test
