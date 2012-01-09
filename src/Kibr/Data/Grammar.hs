@@ -3,6 +3,8 @@
 
 module Kibr.Data.Grammar where
 
+import Preamble
+
 import Data.Data
 import Data.SafeCopy
 

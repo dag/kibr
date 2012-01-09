@@ -3,8 +3,12 @@ module Preamble
   , filter
   , map
   , sum
+  , Prelude.Bounded
+  , Prelude.Enum
   , module Export
   ) where
+
+import qualified Prelude
 
 import Control.Category as Export
 import Control.Monad    as Export
