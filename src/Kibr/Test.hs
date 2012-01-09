@@ -10,14 +10,14 @@ import Data.IxSet as Ix
 import System.Exit (exitWith)
 import System.IO (IO)
 
-import Test.Framework hiding (runTest)
+import Test.Framework
 
 import Kibr.Data
 import Kibr.Data.State
 import Kibr.Xml (readDictionary)
 
-runTest :: [String] -> IO ()
-runTest args = exitWith =<< runTestWithArgs args allHTFTests
+run :: [String] -> IO ()
+run args = exitWith =<< runTestWithArgs args allHTFTests
 
 test_fixtures :: IO ()
 test_fixtures =

@@ -21,8 +21,8 @@ import qualified Web.Routes.Happstack as R
 import qualified Kibr.Css             as Css
 import qualified Kibr.Html            as Html
 
-runHttp :: [String] -> IO.IO ()
-runHttp args =
+run :: [String] -> IO.IO ()
+run args =
   case H.parseConfig args of
     Left errors  -> mapM_ IO.putStrLn errors
     Right config -> server config

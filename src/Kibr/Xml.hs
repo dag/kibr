@@ -16,8 +16,8 @@ import qualified Data.Map   as Map
 import qualified Data.Set   as Set
 import qualified Kibr.Data  as DB
 
-runImport :: [String] -> IO.IO ()
-runImport (file:args) =
+run :: [String] -> IO.IO ()
+run (file:_) =
   do
     db    <- readDictionary DB.English file
     state <- openLocalState $ State Ix.empty
