@@ -41,20 +41,20 @@ Library
     }
   build-depends   :
     { acid-state           == 0.6.*
-    , base                 == 4.*
+    , base                 == 4.3.*
     , blaze-html           >= 0.4.2.0 && < 0.5
     , containers           == 0.4.*
-    , css                  == 0.*
+    , css                  == 0.1.*
     , data-lens-fd         == 2.0.*
     , data-lens-template   == 2.1.*
     , groom                == 0.1.*
-    , happstack-server     == 6.*
+    , happstack-server     == 6.4.*
     , hscolour             >= 1.19 && < 2.0
     , hslogger             == 1.1.*
     , HTF                  == 0.8.*
     , hxt                  == 9.1.*
     , ixset                == 1.0.*
-    , mtl                  == 2.*
+    , mtl                  == 2.0.*
     , safecopy             == 0.6.*
     , web-routes           == 0.25.*
     , web-routes-happstack == 0.22.*
