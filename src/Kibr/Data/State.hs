@@ -6,7 +6,7 @@ module Kibr.Data.State where
 
 import Preamble
 
-import Control.Monad.Reader (ask)
+import Control.Monad.Reader (ask, asks)
 import Control.Monad.State  (put)
 
 import Data.Acid
@@ -17,6 +17,14 @@ import Data.Lens.Template
 import Data.SafeCopy
 
 import Kibr.Data as DB
+
+ixLens :: (Indexable a, Typeable a, Typeable k, Ord a)
+       => k -> Lens (IxSet a) (Maybe a)
+ixLens k = lens get set
+  where
+    get          = getOne . getEQ k
+    set (Just v) = updateIx k v
+    set Nothing  = deleteIx k
 
 data State
   = State { _words :: IxSet Word }
@@ -33,25 +41,16 @@ readState :: Query State State
 readState = ask
 
 lookupWord :: String -> Query State (Maybe Word)
-lookupWord w =
-  do
-    State ws <- ask
-    return . getOne $ ws @= ByWord w
+lookupWord w = asks . getL $ ixLens (ByWord w) . words
 
-reviseWord :: String
-           -> Language
-           -> Revision Definition
-           -> Update State ()
+reviseWord :: String -> Language -> Revision Definition -> Update State ()
 reviseWord w l r =
   do
-    ws <- access words
-    case getOne $ ws @= ByWord w of
-      Just w' ->
-        do
-          words %= updateIx (ByWord w)
-                     (mapLens l . definitions ^%= map (r:) $ w')
-          return ()
-      Nothing -> return ()
+    word . words %= map (lang . definitions ^%= map (r:))
+    return ()
+  where
+    word = ixLens $ ByWord w
+    lang = mapLens l
 
 makeAcidic ''State
   [ 'writeState
