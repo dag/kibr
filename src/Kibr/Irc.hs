@@ -2,16 +2,26 @@ module Kibr.Irc where
 
 import Preamble
 
+import Control.Concurrent (killThread)
+import System.IO          (IO, getLine)
+import Network
 import Network.IRC.Bot
 import Network.IRC.Bot.Part.Ping
 
 run :: [String] -> IO ()
 run _ = 
   do
-    simpleBot conf [pingPart]
-    return ()
+    threads <- simpleBot conf [pingPart]
+    getLine
+    mapM_ killThread threads
   where
     conf = nullBotConf { host = "irc.freenode.net"
+                       , port = Just $ PortNumber 6667
                        , nick = "kibr"
+                       , user = User { username = "kibr"
+                                     , hostname = "."
+                                     , servername = "."
+                                     , realname = "kibr bot"
+                                     }
                        , channel = "#sampla"
                        }

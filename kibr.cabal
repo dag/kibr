@@ -54,9 +54,10 @@ Library
     , hslogger             == 1.1.*
     , HTF                  == 0.8.*
     , hxt                  == 9.1.*
-    , ircbot               >= 0.1.4 && < 0.2
+    , ircbot               >= 0.1.5 && < 0.2
     , ixset                == 1.0.*
     , mtl                  == 2.0.*
+    , network              == 2.3.*
     , safecopy             == 0.6.*
     , web-routes           == 0.25.*
     , web-routes-happstack == 0.22.*
