@@ -13,18 +13,11 @@ import Data.Acid
 import Data.Data
 import Data.IxSet as Ix
 import Data.Lens
+import Data.Lens.IxSet
 import Data.Lens.Template
 import Data.SafeCopy
 
 import Kibr.Data as DB
-
-ixLens :: (Indexable a, Typeable a, Typeable k, Ord a)
-       => k -> Lens (IxSet a) (Maybe a)
-ixLens k = lens get set
-  where
-    get          = getOne . getEQ k
-    set (Just v) = updateIx k v
-    set Nothing  = deleteIx k
 
 data State
   = State { _words :: IxSet Word }
