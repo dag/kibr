@@ -36,10 +36,10 @@ master page =
       head $ do
         title "Lojban Dictionary"
         linkCss $ toValue stylesheet
-        linkCss hscolourCss
+        linkCss webfontsCss
       body contents
   where
-    hscolourCss = "http://code.haskell.org/~malcolm/hscolour/hscolour.css"
+    webfontsCss = "http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic|Ubuntu:400,400italic,700,700italic|Stoke"
 
 wordList :: [DB.Word] -> View
 wordList ws = do
