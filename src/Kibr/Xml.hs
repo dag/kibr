@@ -16,13 +16,11 @@ import qualified Data.Map   as Map
 import qualified Data.Set   as Set
 import qualified Kibr.Data  as DB
 
-run :: [String] -> IO.IO ()
-run (file:_) =
+run :: [String] -> Acid -> IO.IO ()
+run (file:_) state =
   do
     db    <- readDictionary DB.English file
-    state <- openLocalState $ State Ix.empty
     update state $ WriteState db
-    closeAcidState state
 
 readDictionary :: DB.Language -> String -> IO.IO State
 readDictionary language file =

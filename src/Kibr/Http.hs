@@ -11,7 +11,6 @@ import Kibr.Data.State
 
 import qualified System.IO            as IO
 
-import qualified Data.Acid            as Acid
 import qualified Data.IxSet           as Ix
 import qualified Happstack.Server     as H
 import qualified System.Log.Logger    as Log
@@ -21,19 +20,17 @@ import qualified Web.Routes.Happstack as R
 import qualified Kibr.Css             as Css
 import qualified Kibr.Html            as Html
 
-run :: [String] -> IO.IO ()
-run args =
+run :: [String] -> Acid -> IO.IO ()
+run args state =
   case H.parseConfig args of
     Left errors  -> mapM_ IO.putStrLn errors
-    Right config -> server config
+    Right config -> server config state
 
-server :: H.Conf -> IO.IO ()
-server config =
+server :: H.Conf -> Acid -> IO.IO ()
+server config state =
   do
     setLogLevel Log.DEBUG
-    state <- Acid.openLocalState $ State Ix.empty
     startServer state
-    Acid.closeAcidState state
   where
     setLogLevel =
       Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel

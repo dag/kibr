@@ -3,15 +3,16 @@ module Kibr.Irc where
 import Preamble
 
 import Control.Concurrent (killThread)
-import System.IO          (IO, getLine)
+import Kibr.Data.State
 import Network.IRC.Bot
 import Network.IRC.Bot.Part.Ping
+import System.IO          (IO, getLine)
 
-run :: [String] -> IO ()
-run _ = 
+run :: [String] -> Acid -> IO ()
+run _ _ =
   do
     threads <- simpleBot conf [pingPart]
-    getLine
+    _ <- getLine
     mapM_ killThread threads
   where
     conf = nullBotConf { host = "irc.freenode.net"
