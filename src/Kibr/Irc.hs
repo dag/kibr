@@ -8,7 +8,7 @@ import Kibr.Data.State
 import Network.IRC.Bot
 import Network.IRC.Bot.Part.Ping
 import System.IO          (IO, getLine)
-import Text.Parsec
+import Text.Parsec hiding ((<|>))
 
 run :: [String] -> Acid -> IO ()
 run _ state =
@@ -27,9 +27,11 @@ run _ state =
                        , channel = "#sampla"
                        }
 
-
 wordPart :: BotMonad m => Acid -> m ()
-wordPart state = parsecPart $ \target -> do
+wordPart state = parsecPart $ \target ->
+  do
     word <- char '!' >> many1 letter
     w <- query' state . LookupWord $ word
     sendCommand $ PrivMsg Nothing [target] (show w)
+  <|>
+    return ()
