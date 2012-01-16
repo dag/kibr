@@ -3,15 +3,17 @@ module Kibr.Irc where
 import Preamble
 
 import Control.Concurrent (killThread)
+import Data.Acid.Advanced (query')
 import Kibr.Data.State
 import Network.IRC.Bot
 import Network.IRC.Bot.Part.Ping
 import System.IO          (IO, getLine)
+import Text.Parsec
 
 run :: [String] -> Acid -> IO ()
-run _ _ =
+run _ state =
   do
-    threads <- simpleBot conf [pingPart]
+    threads <- simpleBot conf [pingPart, wordPart state]
     _ <- getLine
     mapM_ killThread threads
   where
@@ -24,3 +26,10 @@ run _ _ =
                                      }
                        , channel = "#sampla"
                        }
+
+
+wordPart :: BotMonad m => Acid -> m ()
+wordPart state = parsecPart $ \target -> do
+    word <- char '!' >> many1 letter
+    w <- query' state . LookupWord $ word
+    sendCommand $ PrivMsg Nothing [target] (show w)
