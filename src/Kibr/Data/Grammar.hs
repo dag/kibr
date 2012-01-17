@@ -160,6 +160,5 @@ data Grammar
   | ZO
   | ZOhU
   | ZOI
-  | Undefined
     deriving (Eq, Show, Read, Enum, Bounded, Ord, Data, Typeable)
 deriveSafeCopy 0 'base ''Grammar

@@ -50,10 +50,10 @@ getWord language = hasName "valsi" >>> proc valsi ->
 getShape :: String -> Set.Set String -> DB.Grammar -> DB.Shape
 getShape type_ rafsi grammar =
   case type_ of
-    "cmavo"              -> DB.Particle rafsi False grammar
-    "experimental cmavo" -> DB.Particle rafsi True  DB.Undefined
-    "gismu"              -> DB.Root     rafsi False
-    "experimental gismu" -> DB.Root     rafsi True
+    "cmavo"              -> DB.Particle rafsi grammar
+    "experimental cmavo" -> DB.ProposedParticle rafsi
+    "gismu"              -> DB.Root rafsi False
+    "experimental gismu" -> DB.Root rafsi True
     "lujvo"              -> DB.Compound
     "fu'ivla"            -> DB.Loan
     "cmene"              -> DB.Name

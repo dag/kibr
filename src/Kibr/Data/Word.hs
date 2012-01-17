@@ -19,8 +19,10 @@ import Data.Set
 data Shape
   = Particle
       { _affixes      :: Set String
-      , _experimental :: Bool
       , _grammar      :: Grammar
+      }
+  | ProposedParticle
+      { _affixies     :: Set String
       }
   | Root
       { _affixes      :: Set String

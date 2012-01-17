@@ -32,9 +32,9 @@ fixtures =
     rev d n = [Revision (Definition d n) (Just "Imported")]
   in
     State $ Ix.fromList
-      [ Word "ba'e" (Particle Set.empty False BAhE) $
+      [ Word "ba'e" (Particle Set.empty BAhE) $
           def "forethought emphasis indicator." Nothing
-      , Word "la'oi" (Particle Set.empty True Undefined) .
+      , Word "la'oi" (ProposedParticle Set.empty) .
           def "single-word non-Lojban name." $
             Just "See also {la'o}, {zo'oi}."
       , Word "donri" (Root (Set.fromList ["dor", "do'i"]) False) .
