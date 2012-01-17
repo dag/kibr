@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Kibr.Data.Word where
 
@@ -57,6 +58,27 @@ makeLens ''Word
 
 newtype ByWord = ByWord String deriving (Eq, Ord, Typeable)
 
+data ByShape
+  = IsParticle
+  | IsProposedParticle
+  | IsRoot
+  | IsCompound
+  | IsLoan
+  | IsName
+  | IsCluster
+    deriving (Eq, Ord, Typeable)
+
+byShape :: Shape -> ByShape
+byShape Particle{..}         = IsParticle
+byShape ProposedParticle{..} = IsProposedParticle
+byShape Root{..}             = IsRoot
+byShape Compound             = IsCompound
+byShape Loan                 = IsLoan
+byShape Name                 = IsName
+byShape Cluster              = IsCluster
+
 instance Indexable Word
   where
-    empty = ixSet [ixFun $ return . ByWord . _word]
+    empty = ixSet [ ixFun $ return . ByWord . _word
+                  , ixFun $ return . byShape . _shape
+                  ]
