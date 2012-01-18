@@ -22,8 +22,10 @@ import Data.Eq             as X
 import Data.Function       as X hiding ( (.), id )
 import Data.Functor        as X ( Functor, (<$), (<$>) )
 import Data.Int            as X
+import Data.Map            as X ( Map )
 import Data.Maybe          as X hiding ( fromJust )
 import Data.Ord            as X
+import Data.Set            as X ( Set )
 import Data.Text           as X ( Text )
 import Data.Tuple          as X
 import Data.Typeable       as X ( Typeable )

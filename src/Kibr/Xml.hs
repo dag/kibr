@@ -46,7 +46,7 @@ getWord language = hasName "valsi" >>> proc valsi ->
 
     returnA -< DB.Word (T.pack word) shape definitions
 
-getShape :: String -> Set.Set Text -> DB.Grammar -> DB.Shape
+getShape :: String -> Set Text -> DB.Grammar -> DB.Shape
 getShape type_ rafsi grammar =
   case type_ of
     "cmavo"              -> DB.Particle rafsi grammar

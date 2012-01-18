@@ -8,9 +8,7 @@ import Kibr.Data.Revision
 
 import Data.IxSet as Ix
 import Data.Lens.Template
-import Data.Map
 import Data.SafeCopy
-import Data.Set
 
 data Shape
   = Particle
