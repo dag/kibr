@@ -10,25 +10,23 @@ import Data.Acid
 import Kibr.Data.State
 import Text.XML.HXT.Core
 
-import qualified System.IO as IO
-
 import qualified Data.IxSet as Ix
 import qualified Data.Map   as Map
 import qualified Data.Set   as Set
 import qualified Data.Text  as T
 import qualified Kibr.Data  as DB
 
-run :: [String] -> Acid -> IO.IO ()
+run :: [String] -> Acid -> IO ()
 run (file:_) state =
   do
     db    <- readDictionary DB.English file
     update state $ WriteState db
 
-readDictionary :: DB.Language -> String -> IO.IO State
+readDictionary :: DB.Language -> String -> IO State
 readDictionary language file =
   do
     words <- runX $ readDocument [] file >>> deep (getWord language)
-    return . State $ Ix.fromList words
+    pure . State $ Ix.fromList words
 
 getWord :: ArrowXml a => DB.Language -> a XmlTree DB.Word
 getWord language = hasName "valsi" >>> proc valsi ->
@@ -49,7 +47,7 @@ getWord language = hasName "valsi" >>> proc valsi ->
 
     returnA -< DB.Word (T.pack word) shape definitions
 
-getShape :: String -> Set.Set T.Text -> DB.Grammar -> DB.Shape
+getShape :: String -> Set.Set Text -> DB.Grammar -> DB.Shape
 getShape type_ rafsi grammar =
   case type_ of
     "cmavo"              -> DB.Particle rafsi grammar

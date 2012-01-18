@@ -2,7 +2,7 @@
 
 module Kibr.Css where
 
-import Preamble
+import Preamble hiding (Text)
 
 import Data.Text.Lazy (Text)
 import Language.CSS

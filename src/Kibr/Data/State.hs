@@ -10,13 +10,11 @@ import Control.Monad.Reader (ask, asks)
 import Control.Monad.State  (put)
 
 import Data.Acid
-import Data.Data
 import Data.IxSet as Ix
 import Data.Lens
 import Data.Lens.IxSet
 import Data.Lens.Template
 import Data.SafeCopy
-import qualified Data.Text as T
 
 import Kibr.Data as DB
 
@@ -34,14 +32,14 @@ writeState = put
 readState :: Query State State
 readState = ask
 
-lookupWord :: T.Text -> Query State (Maybe Word)
+lookupWord :: Text -> Query State (Maybe Word)
 lookupWord w = asks . getL $ ixLens (ByWord w) . words
 
-reviseWord :: T.Text -> Language -> Revision Definition -> Update State ()
+reviseWord :: Text -> Language -> Revision Definition -> Update State ()
 reviseWord w l r =
   do
     word . words %= map (lang . definitions ^%= map (r:))
-    return ()
+    pure ()
   where
     word = ixLens $ ByWord w
     lang = mapLens l

@@ -5,7 +5,6 @@ module Kibr.Data.Revision where
 
 import Preamble
 
-import Data.Data
 import Data.Lens.Template
 import Data.SafeCopy
 

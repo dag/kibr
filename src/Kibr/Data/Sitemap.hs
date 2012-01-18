@@ -5,8 +5,6 @@ module Kibr.Data.Sitemap where
 
 import Preamble
 
-import Data.Data
-import Data.Text
 import Web.Routes.TH
 
 data Sitemap

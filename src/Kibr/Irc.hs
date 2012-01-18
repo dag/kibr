@@ -8,8 +8,8 @@ import Data.Text          (pack)
 import Kibr.Data.State
 import Network.IRC.Bot
 import Network.IRC.Bot.Part.Ping
-import System.IO          (IO, getLine)
-import Text.Parsec hiding ((<|>))
+import System.IO          (getLine)
+import Text.Parsec
 
 run :: [String] -> Acid -> IO ()
 run _ state =
@@ -35,4 +35,4 @@ wordPart state = parsecPart $ \target ->
     w <- query' state . LookupWord . pack $ word
     sendCommand $ PrivMsg Nothing [target] (show w)
   <|>
-    return ()
+    pure ()

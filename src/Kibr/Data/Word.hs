@@ -10,13 +10,11 @@ import Kibr.Data.Grammar
 import Kibr.Data.Language
 import Kibr.Data.Revision
 
-import Data.Data
 import Data.IxSet as Ix
 import Data.Lens.Template
 import Data.Map
 import Data.SafeCopy
 import Data.Set
-import Data.Text
 
 data Shape
   = Particle
@@ -80,6 +78,6 @@ byShape Cluster              = IsCluster
 
 instance Indexable Word
   where
-    empty = ixSet [ ixFun $ return . ByWord . _word
-                  , ixFun $ return . byShape . _shape
+    empty = ixSet [ ixFun $ pure . ByWord . _word
+                  , ixFun $ pure . byShape . _shape
                   ]

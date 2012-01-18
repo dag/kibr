@@ -32,7 +32,7 @@ master page =
   do
     contents <- page
     stylesheet <- showURL Stylesheet
-    return . docTypeHtml $ do
+    pure . docTypeHtml $ do
       head $ do
         title "Lojban Dictionary"
         linkCss webfontsCss
@@ -48,7 +48,7 @@ wordList ws = do
   wd <- forM ws $ \w -> do
     let word = DB.word ^$ w
     wurl <- showURL . Word $ word
-    return $ do
+    pure $ do
       dt . linkTo wurl . toHtml $ word
       dd . preEscapedString . hscolour False $ groom w
-  return . dl $ sequence_ wd
+  pure . dl $ sequence_ wd

@@ -8,7 +8,7 @@ import Data.Acid.Local    (createCheckpointAndClose)
 import Kibr.Data.State
 import System.Environment (getArgs)
 import System.Exit        (exitFailure)
-import System.IO          (IO, putStrLn)
+import System.IO          (putStrLn)
 
 import qualified Data.IxSet as Ix
 import qualified Kibr.Http  as Http

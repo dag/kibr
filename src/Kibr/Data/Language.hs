@@ -5,7 +5,6 @@ module Kibr.Data.Language where
 
 import Preamble
 
-import Data.Data
 import Data.SafeCopy
 
 data Language
