@@ -18,6 +18,7 @@ import Data.Char           as Export
 import Data.Either         as Export
 import Data.Eq             as Export
 import Data.Function       as Export hiding ((.), id)
+import Data.Int            as Export
 import Data.Maybe          as Export
 import Data.Ord            as Export
 import Data.Tuple          as Export
