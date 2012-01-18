@@ -4,7 +4,6 @@ import Preamble
 
 import Data.Lens
 import Happstack.Server (ServerPartT)
-import System.IO (IO)
 import Text.Blaze
 import Text.Blaze.Html5
 import Text.Blaze.Html5.Attributes hiding (title)
