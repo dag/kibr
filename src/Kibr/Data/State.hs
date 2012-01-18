@@ -24,6 +24,9 @@ makeLens ''State
 
 type Acid = AcidState State
 
+askL :: Lens a b -> Query a b
+askL = asks . getL
+
 writeState :: State -> Update State ()
 writeState = put
 
@@ -31,7 +34,7 @@ readState :: Query State State
 readState = ask
 
 lookupWord :: Text -> Query State (Maybe Word)
-lookupWord w = asks . getL $ ixLens (ByWord w) . words
+lookupWord w = askL $ ixLens (ByWord w) . words
 
 reviseWord :: Text -> Language -> Revision Definition -> Update State ()
 reviseWord w l r =
