@@ -37,11 +37,11 @@ getWord language = hasName "valsi" >>> proc valsi ->
     rafsi      <- listA    $ getElemText "rafsi"   -< valsi
     selma'o    <- getMaybe $ getElemText "selmaho" -< valsi
 
-    let affixes     = Set.fromList . map T.pack $ rafsi
+    let affixes     = Set.fromList $ T.pack <$> rafsi
         shape       = getShape type_ affixes grammar
         grammar     = getGrammar selma'o word
         revision    = DB.Revision definition' $ Just "Imported"
-        definition' = DB.Definition (T.pack definition) (map T.pack notes)
+        definition' = DB.Definition (T.pack definition) $ T.pack <$> notes
         definitions = Map.fromList [(language, [revision])]
 
     returnA -< DB.Word (T.pack word) shape definitions
