@@ -28,8 +28,10 @@ data Shape
   | Loan
   | Name
   | Cluster
-    deriving (Eq, Show, Ord, Data, Typeable)
+  deriving (Eq, Show, Ord, Data, Typeable)
+
 deriveSafeCopy 0 'base ''Shape
+
 makeLens ''Shape
 
 data Definition
@@ -37,8 +39,10 @@ data Definition
       { _definition :: Text
       , _notes      :: Maybe Text
       }
-    deriving (Eq, Show, Ord, Data, Typeable)
+  deriving (Eq, Show, Ord, Data, Typeable)
+
 deriveSafeCopy 0 'base ''Definition
+
 makeLens ''Definition
 
 data Word
@@ -47,8 +51,10 @@ data Word
       , _shape       :: Shape
       , _definitions :: Map Language [Revision Definition]
       }
-    deriving (Eq, Show, Ord, Data, Typeable)
+  deriving (Eq, Show, Ord, Data, Typeable)
+
 deriveSafeCopy 0 'base ''Word
+
 makeLens ''Word
 
 newtype ByWord = ByWord Text deriving (Eq, Ord, Typeable)
@@ -61,7 +67,7 @@ data ByShape
   | IsLoan
   | IsName
   | IsCluster
-    deriving (Eq, Ord, Typeable)
+  deriving (Eq, Ord, Typeable)
 
 byShape :: Shape -> ByShape
 byShape Particle{..}         = IsParticle
@@ -72,8 +78,7 @@ byShape Loan                 = IsLoan
 byShape Name                 = IsName
 byShape Cluster              = IsCluster
 
-instance Indexable Word
-  where
-    empty = ixSet [ ixFun $ pure . ByWord . _word
-                  , ixFun $ pure . byShape . _shape
-                  ]
+instance Indexable Word where
+  empty = ixSet [ ixFun $ pure . ByWord . _word
+                , ixFun $ pure . byShape . _shape
+                ]

@@ -16,8 +16,10 @@ import Kibr.Data as DB
 
 data State
   = State { _words :: IxSet Word }
-    deriving (Eq, Show, Data, Typeable)
+  deriving (Eq, Show, Data, Typeable)
+
 deriveSafeCopy 0 'base ''State
+
 makeLens ''State
 
 type Acid = AcidState State

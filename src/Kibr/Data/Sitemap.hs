@@ -8,5 +8,6 @@ data Sitemap
   = Home
   | Word Text
   | Stylesheet
-    deriving (Eq, Ord, Read, Show, Data, Typeable)
+  deriving (Eq, Ord, Read, Show, Data, Typeable)
+
 derivePathInfo ''Sitemap

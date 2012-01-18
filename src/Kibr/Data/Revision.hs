@@ -10,6 +10,8 @@ data Revision a
       { _record  :: a
       , _comment :: Maybe String
       }
-    deriving (Eq, Show, Ord, Data, Typeable)
+  deriving (Eq, Show, Ord, Data, Typeable)
+
 deriveSafeCopy 0 'base ''Revision
+
 makeLens ''Revision
