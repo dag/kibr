@@ -16,17 +16,18 @@ import Data.Lens.Template
 import Data.Map
 import Data.SafeCopy
 import Data.Set
+import Data.Text
 
 data Shape
   = Particle
-      { _affixes      :: Set String
+      { _affixes      :: Set Text
       , _grammar      :: Grammar
       }
   | ProposedParticle
-      { _affixies     :: Set String
+      { _affixies     :: Set Text
       }
   | Root
-      { _affixes      :: Set String
+      { _affixes      :: Set Text
       , _experimental :: Bool
       }
   | Compound
@@ -39,8 +40,8 @@ makeLens ''Shape
 
 data Definition
   = Definition
-      { _definition :: String
-      , _notes      :: Maybe String
+      { _definition :: Text
+      , _notes      :: Maybe Text
       }
     deriving (Eq, Show, Ord, Data, Typeable)
 deriveSafeCopy 0 'base ''Definition
@@ -48,7 +49,7 @@ makeLens ''Definition
 
 data Word
   = Word
-      { _word        :: String
+      { _word        :: Text
       , _shape       :: Shape
       , _definitions :: Map Language [Revision Definition]
       }
@@ -56,7 +57,7 @@ data Word
 deriveSafeCopy 0 'base ''Word
 makeLens ''Word
 
-newtype ByWord = ByWord String deriving (Eq, Ord, Typeable)
+newtype ByWord = ByWord Text deriving (Eq, Ord, Typeable)
 
 data ByShape
   = IsParticle

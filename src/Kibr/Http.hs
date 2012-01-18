@@ -11,6 +11,7 @@ import Kibr.Data.State
 
 import qualified System.IO            as IO
 
+import qualified Data.Text            as T
 import qualified Data.IxSet           as Ix
 import qualified Happstack.Server     as H
 import qualified System.Log.Logger    as Log
@@ -45,7 +46,7 @@ route :: Acid -> Sitemap -> Controller
 route st url =
   case url of
     Home       -> home st
-    Word w     -> word st w
+    Word w     -> word st . T.pack $ w
     Stylesheet -> stylesheet
 
 home :: Acid -> Controller
@@ -55,7 +56,7 @@ home st =
     page <- Html.master . Html.wordList . Ix.toList $ db ^. words
     H.ok . H.toResponse $ page
 
-word :: Acid -> String -> Controller
+word :: Acid -> T.Text -> Controller
 word st w =
   do
     w' <- query' st . LookupWord $ w

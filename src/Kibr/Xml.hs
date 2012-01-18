@@ -1,4 +1,5 @@
 {-# LANGUAGE Arrows #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Kibr.Xml where
 
@@ -14,6 +15,7 @@ import qualified System.IO as IO
 import qualified Data.IxSet as Ix
 import qualified Data.Map   as Map
 import qualified Data.Set   as Set
+import qualified Data.Text  as T
 import qualified Kibr.Data  as DB
 
 run :: [String] -> Acid -> IO.IO ()
@@ -38,16 +40,16 @@ getWord language = hasName "valsi" >>> proc valsi ->
     rafsi      <- listA    $ getElemText "rafsi"   -< valsi
     selma'o    <- getMaybe $ getElemText "selmaho" -< valsi
 
-    let affixes     = Set.fromList rafsi
+    let affixes     = Set.fromList . map T.pack $ rafsi
         shape       = getShape type_ affixes grammar
         grammar     = getGrammar selma'o word
         revision    = DB.Revision definition' $ Just "Imported"
-        definition' = DB.Definition definition notes
+        definition' = DB.Definition (T.pack definition) (map T.pack notes)
         definitions = Map.fromList [(language, [revision])]
 
-    returnA -< DB.Word word shape definitions
+    returnA -< DB.Word (T.pack word) shape definitions
 
-getShape :: String -> Set.Set String -> DB.Grammar -> DB.Shape
+getShape :: String -> Set.Set T.Text -> DB.Grammar -> DB.Shape
 getShape type_ rafsi grammar =
   case type_ of
     "cmavo"              -> DB.Particle rafsi grammar

@@ -16,6 +16,7 @@ import Data.Lens
 import Data.Lens.IxSet
 import Data.Lens.Template
 import Data.SafeCopy
+import qualified Data.Text as T
 
 import Kibr.Data as DB
 
@@ -33,10 +34,10 @@ writeState = put
 readState :: Query State State
 readState = ask
 
-lookupWord :: String -> Query State (Maybe Word)
+lookupWord :: T.Text -> Query State (Maybe Word)
 lookupWord w = asks . getL $ ixLens (ByWord w) . words
 
-reviseWord :: String -> Language -> Revision Definition -> Update State ()
+reviseWord :: T.Text -> Language -> Revision Definition -> Update State ()
 reviseWord w l r =
   do
     word . words %= map (lang . definitions ^%= map (r:))

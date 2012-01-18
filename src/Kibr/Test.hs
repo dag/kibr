@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -O0 -F -pgmF htfpp #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Kibr.Test where
 

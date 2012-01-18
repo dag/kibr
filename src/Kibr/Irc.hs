@@ -4,6 +4,7 @@ import Preamble
 
 import Control.Concurrent (killThread)
 import Data.Acid.Advanced (query')
+import Data.Text          (pack)
 import Kibr.Data.State
 import Network.IRC.Bot
 import Network.IRC.Bot.Part.Ping
@@ -31,7 +32,7 @@ wordPart :: BotMonad m => Acid -> m ()
 wordPart state = parsecPart $ \target ->
   do
     word <- char '!' >> many1 letter
-    w <- query' state . LookupWord $ word
+    w <- query' state . LookupWord . pack $ word
     sendCommand $ PrivMsg Nothing [target] (show w)
   <|>
     return ()
