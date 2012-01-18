@@ -1,5 +1,4 @@
 {-# LANGUAGE Arrows #-}
-{-# LANGUAGE OverloadedStrings #-}
 
 module Kibr.Xml where
 

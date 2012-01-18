@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Kibr.Css where
 
 import Preamble hiding (Text)

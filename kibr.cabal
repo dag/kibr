@@ -19,27 +19,37 @@ Executable kibr
   hs-source-dirs  : src
   ghc-options     : -Wall
   extensions      : NoImplicitPrelude
+                    DeriveDataTypeable
+                    GeneralizedNewtypeDeriving
+                    OverloadedStrings
+                    RecordWildCards
+                    TemplateHaskell
+                    TypeFamilies
 
 Library
   hs-source-dirs  : src
   ghc-options     : -Wall
   extensions      : NoImplicitPrelude
-  exposed-modules :
-    { Preamble
-    , Kibr.Css
-    , Kibr.Data
-    , Kibr.Data.Grammar
-    , Kibr.Data.Language
-    , Kibr.Data.Revision
-    , Kibr.Data.Sitemap
-    , Kibr.Data.State
-    , Kibr.Data.Word
-    , Kibr.Html
-    , Kibr.Http
-    , Kibr.Irc
-    , Kibr.Test
-    , Kibr.Xml
-    }
+                    DeriveDataTypeable
+                    GeneralizedNewtypeDeriving
+                    OverloadedStrings
+                    RecordWildCards
+                    TemplateHaskell
+                    TypeFamilies
+  exposed-modules : Preamble
+                    Kibr.Css
+                    Kibr.Data
+                    Kibr.Data.Grammar
+                    Kibr.Data.Language
+                    Kibr.Data.Revision
+                    Kibr.Data.Sitemap
+                    Kibr.Data.State
+                    Kibr.Data.Word
+                    Kibr.Html
+                    Kibr.Http
+                    Kibr.Irc
+                    Kibr.Test
+                    Kibr.Xml
   build-depends   :
     { acid-state           == 0.6.*
     , base                 == 4.3.*
