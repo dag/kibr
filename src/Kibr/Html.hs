@@ -17,7 +17,6 @@ import Language.Haskell.HsColour.ACSS (hscolour)
 
 import Kibr.Data.Sitemap
 
-import qualified Data.Text as T
 import qualified Kibr.Data as DB
 
 type View = RouteT Sitemap (ServerPartT IO) Html
@@ -48,7 +47,7 @@ wordList :: [DB.Word] -> View
 wordList ws = do
   wd <- forM ws $ \w -> do
     let word = DB.word ^$ w
-    wurl <- showURL . Word . T.unpack $ word
+    wurl <- showURL . Word $ word
     return $ do
       dt . linkTo wurl . toHtml $ word
       dd . preEscapedString . hscolour False $ groom w

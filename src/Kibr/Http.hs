@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Kibr.Http where
  
 import Preamble
@@ -36,7 +38,7 @@ server config state =
     setLogLevel =
       Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel
     startServer =
-      H.simpleHTTP config . R.implSite "/" "" . site
+      H.simpleHTTP config . R.implSite "" "" . site
     site =
       R.setDefault Home . R.mkSitePI . R.runRouteT . route
 
@@ -46,7 +48,7 @@ route :: Acid -> Sitemap -> Controller
 route st url =
   case url of
     Home       -> home st
-    Word w     -> word st . T.pack $ w
+    Word w     -> word st w
     Stylesheet -> stylesheet
 
 home :: Acid -> Controller
