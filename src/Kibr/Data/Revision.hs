@@ -8,7 +8,7 @@ import Data.SafeCopy
 data Revision a
   = Revision
       { _record  :: a
-      , _comment :: Maybe String
+      , _comment :: Maybe Text
       }
   deriving (Eq, Show, Ord, Data, Typeable)
 
