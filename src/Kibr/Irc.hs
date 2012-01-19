@@ -15,7 +15,7 @@ run :: [String] -> Acid -> IO ()
 run _ state =
   do
     threads <- simpleBot conf [pingPart, wordPart state]
-    _ <- getLine
+    getLine
     mapM_ killThread threads
   where
     conf = nullBotConf { host = "irc.freenode.net"
@@ -31,7 +31,8 @@ run _ state =
 wordPart :: BotMonad m => Acid -> m ()
 wordPart state = parsecPart $ \target ->
   do
-    word <- char '!' >> many1 letter
+    char '!'
+    word <- many1 letter
     w <- query' state . LookupWord . pack $ word
     sendCommand $ PrivMsg Nothing [target] (show w)
   <|>
