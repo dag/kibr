@@ -2,13 +2,14 @@ module Data.Kibr.State where
 
 import Preamble
 
-import Control.Monad.Reader (ask, asks)
+import Control.Monad.Reader (ask)
 import Control.Monad.State  (put)
 
 import Data.Acid
 import Data.IxSet as Ix
 import Data.Lens
 import Data.Lens.IxSet
+import Data.Lens.Reader
 import Data.Lens.Template
 import Data.SafeCopy
 
@@ -25,9 +26,6 @@ deriveSafeCopy 0 'base ''State
 makeLens ''State
 
 type Acid = AcidState State
-
-askL :: Lens a b -> Query a b
-askL = asks . getL
 
 writeState :: State -> Update State ()
 writeState = put
