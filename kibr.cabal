@@ -50,6 +50,8 @@ Library
     Data.Kibr.Sitemap
     Data.Kibr.State
     Data.Kibr.Word
+    Language.CSS.Extra
+    Language.CSS.YUI
     Network.Kibr.Http
     Network.Kibr.Irc
     Test.HUnit.Diff
