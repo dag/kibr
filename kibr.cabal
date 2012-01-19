@@ -57,6 +57,7 @@ Library
     Network.Kibr.Irc
     Test.HUnit.Diff
     Test.Kibr
+    Text.Blaze.Html5.Extra
     Text.Kibr.Css
     Text.Kibr.Html
     Text.Kibr.Xml

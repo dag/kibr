@@ -9,18 +9,13 @@ import Language.Haskell.HsColour.ACSS (hscolour)
 import Text.Blaze
 import Text.Blaze.Html5
 import Text.Blaze.Html5.Attributes hiding (title)
+import Text.Blaze.Html5.Extra
 import Text.Groom
 import Web.Routes
 
 import qualified Data.Kibr.Sitemap as Url
 
 type View = RouteT Url.Sitemap (ServerPartT IO) Html
-
-linkCss :: AttributeValue -> Html
-linkCss url = link ! href url ! rel "stylesheet" ! type_ "text/css"
-
-linkTo :: ToValue a => a -> Html -> Html
-linkTo url = a ! href (toValue url)
 
 master :: View -> View
 master page =
