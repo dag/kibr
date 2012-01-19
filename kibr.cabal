@@ -52,6 +52,7 @@ Library
     Data.Kibr.Word
     Network.Kibr.Http
     Network.Kibr.Irc
+    Test.HUnit.Diff
     Test.Kibr
     Text.Kibr.Css
     Text.Kibr.Html
