@@ -1,4 +1,4 @@
-module Kibr.Html where
+module Text.Kibr.Html where
 
 import Preamble
 
@@ -12,9 +12,9 @@ import Web.Routes
 
 import Language.Haskell.HsColour.ACSS (hscolour)
 
-import Kibr.Data.Sitemap
+import Data.Kibr.Sitemap
 
-import qualified Kibr.Data as DB
+import qualified Data.Kibr as DB
 
 type View = RouteT Sitemap (ServerPartT IO) Html
 

@@ -1,4 +1,4 @@
-module Kibr.Css where
+module Text.Kibr.Css where
 
 import Preamble hiding (Text)
 

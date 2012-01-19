@@ -1,4 +1,4 @@
-module Kibr.Data.Language where
+module Data.Kibr.Language where
 
 import Preamble
 

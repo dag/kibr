@@ -1,11 +1,11 @@
-module Kibr.Irc where
+module Network.Kibr.Irc where
 
 import Preamble
 
 import Control.Concurrent (killThread)
 import Data.Acid.Advanced (query')
+import Data.Kibr.State
 import Data.Text          (pack)
-import Kibr.Data.State
 import Network.IRC.Bot
 import Network.IRC.Bot.Part.Ping
 import System.IO          (getLine)

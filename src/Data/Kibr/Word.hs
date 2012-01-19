@@ -1,10 +1,10 @@
-module Kibr.Data.Word where
+module Data.Kibr.Word where
 
 import Preamble
 
-import Kibr.Data.Grammar
-import Kibr.Data.Language
-import Kibr.Data.Revision
+import Data.Kibr.Grammar
+import Data.Kibr.Language
+import Data.Kibr.Revision
 
 import Data.IxSet as Ix
 import Data.Lens.Template

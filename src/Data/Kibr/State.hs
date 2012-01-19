@@ -1,4 +1,4 @@
-module Kibr.Data.State where
+module Data.Kibr.State where
 
 import Preamble
 
@@ -12,7 +12,7 @@ import Data.Lens.IxSet
 import Data.Lens.Template
 import Data.SafeCopy
 
-import Kibr.Data as DB
+import Data.Kibr as DB
 
 data State
   = State { _words :: IxSet Word }

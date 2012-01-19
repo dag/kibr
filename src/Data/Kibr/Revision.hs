@@ -1,4 +1,4 @@
-module Kibr.Data.Revision where
+module Data.Kibr.Revision where
 
 import Preamble
 

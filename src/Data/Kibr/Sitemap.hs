@@ -1,4 +1,4 @@
-module Kibr.Data.Sitemap where
+module Data.Kibr.Sitemap where
 
 import Preamble
 

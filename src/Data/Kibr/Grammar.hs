@@ -1,4 +1,4 @@
-module Kibr.Data.Grammar where
+module Data.Kibr.Grammar where
 
 import Preamble
 

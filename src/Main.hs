@@ -5,16 +5,16 @@ import Preamble
 import Control.Exception  (bracket)
 import Data.Acid          (openLocalState)
 import Data.Acid.Local    (createCheckpointAndClose)
-import Kibr.Data.State
+import Data.Kibr.State
 import System.Environment (getArgs)
 import System.Exit        (exitFailure)
 import System.IO          (putStrLn)
 
-import qualified Data.IxSet as Ix
-import qualified Kibr.Http  as Http
-import qualified Kibr.Irc   as Irc
-import qualified Kibr.Test  as Test
-import qualified Kibr.Xml   as Xml
+import qualified Data.IxSet        as Ix
+import qualified Network.Kibr.Http as Http
+import qualified Network.Kibr.Irc  as Irc
+import qualified Test.Kibr         as Test
+import qualified Text.Kibr.Xml     as Xml
 
 main :: IO ()
 main = run =<< getArgs

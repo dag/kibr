@@ -1,4 +1,4 @@
-module Kibr.Http where
+module Network.Kibr.Http where
  
 import Preamble
 
@@ -6,8 +6,8 @@ import Data.Acid.Advanced (query')
 import Data.Lens
 import Language.CSS       (renderCSS, runCSS)
 
-import Kibr.Data.Sitemap
-import Kibr.Data.State
+import Data.Kibr.Sitemap
+import Data.Kibr.State
 
 import qualified System.IO            as IO
 
@@ -18,8 +18,8 @@ import qualified System.Log.Logger    as Log
 import qualified Web.Routes           as R
 import qualified Web.Routes.Happstack as R
 
-import qualified Kibr.Css             as Css
-import qualified Kibr.Html            as Html
+import qualified Text.Kibr.Css        as Css
+import qualified Text.Kibr.Html       as Html
 
 run :: [String] -> Acid -> IO.IO ()
 run args state =

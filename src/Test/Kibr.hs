@@ -1,4 +1,4 @@
-module Kibr.Test where
+module Test.Kibr where
 
 import Preamble
 
@@ -14,9 +14,9 @@ import Test.Framework.TH
 import Test.HUnit hiding (State)
 import Text.Groom
 
-import Kibr.Data
-import Kibr.Data.State
-import Kibr.Xml (readDictionary)
+import Data.Kibr
+import Data.Kibr.State
+import Text.Kibr.Xml (readDictionary)
 
 (@?==) :: (Eq a, Show a) => a -> a -> Assertion
 x @?== y =

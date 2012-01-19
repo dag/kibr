@@ -44,19 +44,19 @@ Library
     TypeFamilies
   exposed-modules :
     Preamble
-    Kibr.Css
-    Kibr.Data
-    Kibr.Data.Grammar
-    Kibr.Data.Language
-    Kibr.Data.Revision
-    Kibr.Data.Sitemap
-    Kibr.Data.State
-    Kibr.Data.Word
-    Kibr.Html
-    Kibr.Http
-    Kibr.Irc
-    Kibr.Test
-    Kibr.Xml
+    Data.Kibr
+    Data.Kibr.Grammar
+    Data.Kibr.Language
+    Data.Kibr.Revision
+    Data.Kibr.Sitemap
+    Data.Kibr.State
+    Data.Kibr.Word
+    Network.Kibr.Http
+    Network.Kibr.Irc
+    Test.Kibr
+    Text.Kibr.Css
+    Text.Kibr.Html
+    Text.Kibr.Xml
   build-depends   :
     acid-state           == 0.6.*,
     ansi-terminal        == 0.5.*,

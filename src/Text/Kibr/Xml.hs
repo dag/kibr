@@ -1,19 +1,19 @@
 {-# LANGUAGE Arrows #-}
 
-module Kibr.Xml where
+module Text.Kibr.Xml where
 
 import Preamble
 import Prelude (error)
 
 import Data.Acid
-import Kibr.Data.State
+import Data.Kibr.State
 import Text.XML.HXT.Core
 
 import qualified Data.IxSet as Ix
+import qualified Data.Kibr  as DB
 import qualified Data.Map   as Map
 import qualified Data.Set   as Set
 import qualified Data.Text  as T
-import qualified Kibr.Data  as DB
 
 run :: [String] -> Acid -> IO ()
 run (file:_) state =
