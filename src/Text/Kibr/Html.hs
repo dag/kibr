@@ -6,9 +6,7 @@ import Data.Kibr.Word
 import Data.Lens
 import Happstack.Server (ServerPartT)
 import Language.Haskell.HsColour.ACSS (hscolour)
-import Text.Blaze
 import Text.Blaze.Html5
-import Text.Blaze.Html5.Attributes hiding (title)
 import Text.Blaze.Html5.Extra
 import Text.Groom
 import Web.Routes

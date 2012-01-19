@@ -2,7 +2,6 @@ module Text.Blaze.Html5.Extra where
 
 import Preamble
 
-import Text.Blaze
 import Text.Blaze.Html5
 import Text.Blaze.Html5.Attributes
 
