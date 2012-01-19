@@ -31,12 +31,15 @@ server :: H.Conf -> Acid -> IO.IO ()
 server config state =
   do
     setLogLevel Log.DEBUG
-    startServer state
+    startServer
   where
     setLogLevel =
       Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel
     startServer =
-      H.simpleHTTP config . R.implSite "" "" . site
+      H.simpleHTTP config $ sum
+        [ H.dir "resources" $ H.serveDirectory H.DisableBrowsing [] "resources"
+        , R.implSite "" "" . site $ state
+        ]
     site =
       R.setDefault Home . R.mkSitePI . R.runRouteT . route
 

@@ -58,6 +58,7 @@ Library
     Test.HUnit.Diff
     Test.Kibr
     Text.Blaze.Html5.Extra
+    Text.Blaze.Html5.Highlight
     Text.Kibr.Css
     Text.Kibr.Html
     Text.Kibr.Xml
@@ -74,7 +75,7 @@ Library
     Diff                 == 0.1.*,
     groom                == 0.1.*,
     happstack-server     == 6.4.*,
-    hscolour             >= 1.19 && < 2.0,
+    highlighter          == 0.2.*,
     hslogger             == 1.1.*,
     HUnit                == 1.2.*,
     hxt                  == 9.1.*,

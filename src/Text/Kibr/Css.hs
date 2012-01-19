@@ -11,7 +11,6 @@ master = do
   typography
   layout
   skin
-  hsColour
 
 typography :: CSS Rule
 typography = do
@@ -50,14 +49,3 @@ skin = do
   "pre" `rule` do
     background "#fafafa"
     borderLeftColor "#eee"
-
-hsColour :: CSS Rule
-hsColour = do
-  ".hs-str" `rule` do
-    background "#fff0f0"
-    color "#dd2200"
-  ".hs-conid" `rule` do
-    color "#888"
-    fontWeight "bold"
-  ".hs-keyglyph" `rule` do
-    color "#080"
