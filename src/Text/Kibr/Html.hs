@@ -2,6 +2,8 @@ module Text.Kibr.Html where
 
 import Preamble
 
+import Data.Kibr.Language
+import Data.Kibr.Message
 import Data.Kibr.Word
 import Data.Lens
 import Happstack.Server (ServerPartT)
@@ -17,6 +19,9 @@ import qualified Text.Highlighter.Lexers.Haskell as Haskell
 
 type View = RouteT Url.Sitemap (ServerPartT IO) Html
 
+translate :: Message -> Html
+translate = toHtml . msg English
+
 master :: View -> View
 master page =
   do
@@ -24,7 +29,7 @@ master page =
     stylesheet <- showURL Url.Stylesheet
     pure . docTypeHtml $ do
       head $ do
-        title "Lojban Dictionary"
+        title $ translate LojbanDictionary
         linkCss webfontsCss
         linkCss yuiCss
         linkCss highlighterCss

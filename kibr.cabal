@@ -46,6 +46,7 @@ Library
     Preamble
     Data.Kibr.Grammar
     Data.Kibr.Language
+    Data.Kibr.Message
     Data.Kibr.Revision
     Data.Kibr.Sitemap
     Data.Kibr.State
