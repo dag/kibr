@@ -1,7 +1,9 @@
 module Language.CSS.YUI where
 
-import Data.Int       (Int)
-import Data.Text.Lazy (Text)
+import Prelude
+
+import Data.Text.Lazy (Text, pack)
+import Text.Printf
 
 pxToPercent :: Int -> Text
 pxToPercent 10 = "77%"
@@ -21,4 +23,8 @@ pxToPercent 23 = "174%"
 pxToPercent 24 = "182%"
 pxToPercent 25 = "189%"
 pxToPercent 26 = "197%"
-pxToPercent _  = "100%"
+pxToPercent px =
+    pack . printf "%.1f%%" $ percentage
+  where
+    percentage :: Double
+    percentage = fromIntegral px * (13 / 100)
