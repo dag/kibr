@@ -7,27 +7,30 @@ import Prelude (error)
 
 import Data.Acid
 import Data.Kibr.State
+import Data.Kibr.Language
 import Text.XML.HXT.Core
 
-import qualified Data.IxSet as Ix
-import qualified Data.Kibr  as DB
-import qualified Data.Map   as Map
-import qualified Data.Set   as Set
-import qualified Data.Text  as T
+import qualified Data.IxSet         as Ix
+import qualified Data.Kibr.Grammar  as DB
+import qualified Data.Kibr.Revision as DB
+import qualified Data.Kibr.Word     as DB
+import qualified Data.Map           as Map
+import qualified Data.Set           as Set
+import qualified Data.Text          as T
 
 run :: [String] -> Acid -> IO ()
 run (file:_) state =
   do
-    db    <- readDictionary DB.English file
+    db    <- readDictionary English file
     update state $ WriteState db
 
-readDictionary :: DB.Language -> String -> IO State
+readDictionary :: Language -> String -> IO State
 readDictionary language file =
   do
     words <- runX $ readDocument [] file >>> deep (getWord language)
     pure . State $ Ix.fromList words
 
-getWord :: ArrowXml a => DB.Language -> a XmlTree DB.Word
+getWord :: ArrowXml a => Language -> a XmlTree DB.Word
 getWord language = hasName "valsi" >>> proc valsi ->
   do
     word       <- getAttrValue "word"              -< valsi

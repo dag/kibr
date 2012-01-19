@@ -14,8 +14,11 @@ import Test.Framework.TH
 import Test.HUnit hiding (State)
 import Text.Groom
 
-import Data.Kibr
+import Data.Kibr.Grammar
+import Data.Kibr.Language
+import Data.Kibr.Revision
 import Data.Kibr.State
+import Data.Kibr.Word
 import Text.Kibr.Xml (readDictionary)
 
 (@?==) :: (Eq a, Show a) => a -> a -> Assertion

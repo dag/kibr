@@ -12,7 +12,9 @@ import Data.Lens.IxSet
 import Data.Lens.Template
 import Data.SafeCopy
 
-import Data.Kibr as DB
+import Data.Kibr.Language
+import Data.Kibr.Revision
+import Data.Kibr.Word
 
 data State
   = State { _words :: IxSet Word }

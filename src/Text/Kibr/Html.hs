@@ -2,21 +2,19 @@ module Text.Kibr.Html where
 
 import Preamble
 
+import Data.Kibr.Word
 import Data.Lens
 import Happstack.Server (ServerPartT)
+import Language.Haskell.HsColour.ACSS (hscolour)
 import Text.Blaze
 import Text.Blaze.Html5
 import Text.Blaze.Html5.Attributes hiding (title)
 import Text.Groom
 import Web.Routes
 
-import Language.Haskell.HsColour.ACSS (hscolour)
+import qualified Data.Kibr.Sitemap as Url
 
-import Data.Kibr.Sitemap
-
-import qualified Data.Kibr as DB
-
-type View = RouteT Sitemap (ServerPartT IO) Html
+type View = RouteT Url.Sitemap (ServerPartT IO) Html
 
 linkCss :: AttributeValue -> Html
 linkCss url = link ! href url ! rel "stylesheet" ! type_ "text/css"
@@ -28,7 +26,7 @@ master :: View -> View
 master page =
   do
     contents <- page
-    stylesheet <- showURL Stylesheet
+    stylesheet <- showURL Url.Stylesheet
     pure . docTypeHtml $ do
       head $ do
         title "Lojban Dictionary"
@@ -40,12 +38,12 @@ master page =
     webfontsCss = "http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic|Ubuntu:400,400italic,700,700italic|Stoke"
     yuiCss = "http://yui.yahooapis.com/combo?3.4.1/build/cssfonts/cssfonts-min.css&3.4.1/build/cssreset/cssreset-min.css&3.4.1/build/cssbase/cssbase-min.css"
 
-wordList :: [DB.Word] -> View
+wordList :: [Word] -> View
 wordList ws = do
   wd <- forM ws $ \w -> do
-    let word = DB.word ^$ w
-    wurl <- showURL . Word $ word
+    let w' = word ^$ w
+    wurl <- showURL . Url.Word $ w'
     pure $ do
-      dt . linkTo wurl . toHtml $ word
+      dt . linkTo wurl . toHtml $ w'
       dd . preEscapedString . hscolour False $ groom w
   pure . dl $ sequence_ wd
