@@ -27,7 +27,7 @@ master page =
         title "Lojban Dictionary"
         linkCss webfontsCss
         linkCss yuiCss
-        linkCss $ toValue stylesheet
+        linkCss stylesheet
       body contents
   where
     webfontsCss = "http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic|Ubuntu:400,400italic,700,700italic|Stoke"
