@@ -20,3 +20,7 @@ import:
 serve:
 	@echo "Launching server on http://localhost:8000/"
 	@cabal-dev/bin/kibr http
+
+.PHONY: gvim
+gvim:
+	@gvim kibr.cabal "+cd src"
