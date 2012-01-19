@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -O0 -F -pgmF htfpp #-}
-
 module Kibr.Test where
 
 import Preamble
@@ -7,22 +5,24 @@ import Preamble
 import Data.Map as Map
 import Data.Set as Set
 import Data.IxSet as Ix
-import System.Exit (exitWith)
+import System.Environment (withArgs)
 
-import Test.Framework
+import Test.Framework.Providers.HUnit
+import Test.Framework.TH
+import Test.HUnit hiding (State)
 
 import Kibr.Data
 import Kibr.Data.State
 import Kibr.Xml (readDictionary)
 
 run :: [String] -> IO ()
-run args = exitWith =<< runTestWithArgs args allHTFTests
+run args = withArgs args $defaultMainGenerator
 
-test_fixtures :: IO ()
-test_fixtures =
+case_fixtures :: Assertion
+case_fixtures =
   do
     dictionary <- readDictionary English "fixtures.xml"
-    assertEqual dictionary fixtures
+    dictionary @?= fixtures
 
 fixtures :: State
 fixtures =
