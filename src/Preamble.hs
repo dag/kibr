@@ -10,7 +10,8 @@ module Preamble
 
 import qualified Prelude
 
-import Control.Applicative as X ( Applicative, pure , (<*>), (*>), (<*), (<**>))
+import Control.Applicative as X ( Applicative, pure
+                                , (<*>), (*>), (<*), (<**>) )
 import Control.Category    as X
 import Control.Monad       as X hiding ( fmap, return, fail, liftM, liftM2
                                        , liftM3, liftM4, liftM5, ap )
