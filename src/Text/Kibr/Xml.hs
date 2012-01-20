@@ -6,7 +6,7 @@ import Preamble
 import Prelude (error)
 
 import Data.Acid
-import Data.Kibr.State
+import Data.Kibr.State hiding (words)
 import Data.Kibr.Language
 import Text.XML.HXT.Core
 
@@ -23,6 +23,7 @@ run (file:_) state =
   do
     db    <- readDictionary English file
     update state $ WriteState db
+run _ _ = error "usage: kibr import <file>"
 
 readDictionary :: Language -> String -> IO State
 readDictionary language file =

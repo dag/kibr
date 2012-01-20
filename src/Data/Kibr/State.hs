@@ -39,11 +39,11 @@ lookupWord w = askL $ ixLens (ByWord w) . words
 reviseWord :: Text -> Language -> Revision Definition -> Update State ()
 reviseWord w l r =
   do
-    word . words %= map (lang . definitions ^%= map (r:))
+    byWord . words %= map (lang . definitions ^%= map (r:))
     pure ()
   where
-    word = ixLens $ ByWord w
-    lang = mapLens l
+    byWord = ixLens $ ByWord w
+    lang   = mapLens l
 
 makeAcidic ''State
   [ 'writeState
