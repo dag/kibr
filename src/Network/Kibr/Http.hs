@@ -16,7 +16,6 @@ import Data.Kibr.Language
 import Data.Kibr.Sitemap
 import Data.Kibr.State
 
-import qualified Data.Text            as T
 import qualified Data.IxSet           as Ix
 import qualified System.Log.Logger    as Log
 import qualified Web.Routes           as R
@@ -80,7 +79,7 @@ home st lang =
     db <- query' st ReadState
     respond lang . Html.wordList . Ix.toList $ db ^. words
 
-word :: Acid -> Language -> T.Text -> Controller
+word :: Acid -> Language -> Text -> Controller
 word st lang w =
   do
     w' <- query' st . LookupWord $ w
