@@ -83,6 +83,4 @@ word :: Acid -> Language -> Text -> Controller
 word st lang w =
   do
     w' <- query' st . LookupWord $ w
-    maybe mzero response w'
-  where
-    response w'' = respond lang . Html.wordList $ [w'']
+    maybe mzero (respond lang . Html.wordList . pure) w'
