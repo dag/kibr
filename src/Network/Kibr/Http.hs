@@ -45,7 +45,12 @@ server config state =
       Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel
     startServer =
       simpleHTTP config $ sum
-        [ dir "resources" $ serveDirectory DisableBrowsing [] "resources"
+        [ dir "resources" $ sum
+            [ dir "master.css" $ do
+                nullDir
+                ok . toResponse $ Css.master
+            , serveDirectory DisableBrowsing [] "resources"
+            ]
         , nullDir >> seeOther ("/en/"::Text) (toResponse (""::Text))
         , locale "/en" English
         , locale "/jbo" Lojban
@@ -60,12 +65,8 @@ type Controller = R.RouteT Sitemap (ServerPartT IO) Response
 route :: Acid -> Language -> Sitemap -> Controller
 route st lang url =
   case url of
-    Stylesheet -> stylesheet
     Home       -> home st lang
     Word w     -> word st lang w
-
-stylesheet :: Controller
-stylesheet = ok . toResponse $ Css.master
 
 home :: Acid -> Language -> Controller
 home st lang =
