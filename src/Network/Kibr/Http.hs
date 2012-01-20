@@ -38,26 +38,21 @@ server :: Conf -> Acid -> IO ()
 server config state =
   do
     setLogLevel Log.DEBUG
-    startServer
+    simpleHTTP config $ sum
+      [ dir "resources" $ sum
+          [ dir "master.css" $ do
+              nullDir
+              ok . toResponse $ Css.master
+          , serveDirectory DisableBrowsing [] "resources"
+          ]
+      , nullDir >> seeOther ("/en/"::Text) (toResponse (""::Text))
+      , locale "/en" English
+      , locale "/jbo" Lojban
+      ]
   where
-    setLogLevel =
-      Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel
-    startServer =
-      simpleHTTP config $ sum
-        [ dir "resources" $ sum
-            [ dir "master.css" $ do
-                nullDir
-                ok . toResponse $ Css.master
-            , serveDirectory DisableBrowsing [] "resources"
-            ]
-        , nullDir >> seeOther ("/en/"::Text) (toResponse (""::Text))
-        , locale "/en" English
-        , locale "/jbo" Lojban
-        ]
-    site =
-      R.setDefault Home . R.mkSitePI . R.runRouteT . route state
-    locale code =
-      R.implSite "" code . site
+    setLogLevel = Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel
+    site        = R.setDefault Home . R.mkSitePI . R.runRouteT . route state
+    locale code = R.implSite "" code . site
 
 type Controller = R.RouteT Sitemap (ServerPartT IO) Response
 
