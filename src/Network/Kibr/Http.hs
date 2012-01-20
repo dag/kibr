@@ -1,10 +1,13 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+
 module Network.Kibr.Http where
  
 import Preamble
 
 import Data.Acid.Advanced (query')
 import Data.Lens
-import Language.CSS       (renderCSS, runCSS)
+import Language.CSS
 
 import Data.Kibr.Language
 import Data.Kibr.Sitemap
@@ -21,6 +24,10 @@ import qualified Web.Routes.Happstack as R
 
 import qualified Text.Kibr.Css        as Css
 import qualified Text.Kibr.Html       as Html
+
+instance H.ToMessage (CSS Rule) where
+  toContentType _ = "text/css; charset=UTF-8"
+  toMessage = H.toMessage . renderCSS . runCSS
 
 run :: [String] -> Acid -> IO.IO ()
 run args state =
@@ -76,9 +83,4 @@ word st lang w =
         H.ok . H.toResponse $ page
 
 stylesheet :: Controller
-stylesheet =
-    H.ok . H.setHeader "Content-Type" "text/css"
-         . H.toResponse
-         . renderCSS
-         . runCSS
-         $ Css.master
+stylesheet = H.ok . H.toResponse $ Css.master
