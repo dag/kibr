@@ -62,6 +62,12 @@ server config state =
 
 type Controller = R.RouteT Sitemap (ServerPartT IO) Response
 
+respond :: Language -> Html.View -> Controller
+respond lang page =
+  do
+    html <- Html.master lang page
+    ok . toResponse $ html
+
 route :: Acid -> Language -> Sitemap -> Controller
 route st lang url =
   case url of
@@ -72,8 +78,7 @@ home :: Acid -> Language -> Controller
 home st lang =
   do
     db <- query' st ReadState
-    page <- Html.master lang . Html.wordList . Ix.toList $ db ^. words
-    ok . toResponse $ page
+    respond lang . Html.wordList . Ix.toList $ db ^. words
 
 word :: Acid -> Language -> T.Text -> Controller
 word st lang w =
@@ -81,7 +86,4 @@ word st lang w =
     w' <- query' st . LookupWord $ w
     maybe mzero response w'
   where
-    response w'' =
-      do
-        page <- Html.master lang . Html.wordList $ [w'']
-        ok . toResponse $ page
+    response w'' = respond lang . Html.wordList $ [w'']
