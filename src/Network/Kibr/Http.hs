@@ -6,6 +6,7 @@ import Data.Acid.Advanced (query')
 import Data.Lens
 import Language.CSS       (renderCSS, runCSS)
 
+import Data.Kibr.Language
 import Data.Kibr.Sitemap
 import Data.Kibr.State
 
@@ -38,36 +39,40 @@ server config state =
     startServer =
       H.simpleHTTP config $ sum
         [ H.dir "resources" $ H.serveDirectory H.DisableBrowsing [] "resources"
-        , R.implSite "" "" . site $ state
+        , H.nullDir >> H.seeOther ("/en/"::Text) (H.toResponse (""::Text))
+        , locale "/en" English
+        , locale "/jbo" Lojban
         ]
     site =
-      R.setDefault Home . R.mkSitePI . R.runRouteT . route
+      R.setDefault Home . R.mkSitePI . R.runRouteT . route state
+    locale code =
+      R.implSite "" code . site
 
 type Controller = R.RouteT Sitemap (H.ServerPartT IO.IO) H.Response
 
-route :: Acid -> Sitemap -> Controller
-route st url =
+route :: Acid -> Language -> Sitemap -> Controller
+route st lang url =
   case url of
-    Home       -> home st
-    Word w     -> word st w
+    Home       -> home st lang
+    Word w     -> word st lang w
     Stylesheet -> stylesheet
 
-home :: Acid -> Controller
-home st =
+home :: Acid -> Language -> Controller
+home st lang =
   do
     db <- query' st ReadState
-    page <- Html.master . Html.wordList . Ix.toList $ db ^. words
+    page <- Html.master lang . Html.wordList . Ix.toList $ db ^. words
     H.ok . H.toResponse $ page
 
-word :: Acid -> T.Text -> Controller
-word st w =
+word :: Acid -> Language -> T.Text -> Controller
+word st lang w =
   do
     w' <- query' st . LookupWord $ w
     maybe mzero response w'
   where
     response w'' =
       do
-        page <- Html.master . Html.wordList $ [w'']
+        page <- Html.master lang . Html.wordList $ [w'']
         H.ok . H.toResponse $ page
 
 stylesheet :: Controller

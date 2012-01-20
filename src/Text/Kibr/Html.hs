@@ -19,11 +19,8 @@ import qualified Text.Highlighter.Lexers.Haskell as Haskell
 
 type View = RouteT Url.Sitemap (ServerPartT IO) Html
 
-translate :: Message -> Html
-translate = toHtml . msg English
-
-master :: View -> View
-master page =
+master :: Language -> View -> View
+master lang page =
   do
     contents <- page
     stylesheet <- showURL Url.Stylesheet
@@ -36,6 +33,7 @@ master page =
         linkCss stylesheet
       body contents
   where
+    translate      = toHtml . msg lang
     webfontsCss    = "http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic|Ubuntu:400,400italic,700,700italic|Stoke"
     yuiCss         = "http://yui.yahooapis.com/combo?3.4.1/build/cssfonts/cssfonts-min.css&3.4.1/build/cssreset/cssreset-min.css&3.4.1/build/cssbase/cssbase-min.css"
     highlighterCss = "/resources/highlighter.css"
