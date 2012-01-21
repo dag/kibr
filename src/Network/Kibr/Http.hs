@@ -12,6 +12,7 @@ import Data.Lens
 import Happstack.Server
 import Language.CSS
 
+import Data.Kibr.Environment
 import Data.Kibr.Language
 import Data.Kibr.Sitemap
 import Data.Kibr.State
@@ -50,32 +51,33 @@ server config state =
       , locale "/jbo" Lojban
       ]
   where
-    setLogLevel = Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel
-    site        = R.setDefault Home . R.mkSitePI . R.runRouteT . route state
-    locale code = R.implSite "" code . site
+    setLogLevel      = Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel
+    site             = R.setDefault Home . R.mkSitePI . R.runRouteT . route
+    locale code lang = let env = Environment { language = lang, state = state }
+                       in R.implSite "" code . site $ env
 
 type Controller = R.RouteT Sitemap (ServerPartT IO) Response
 
-respond :: Language -> Html.View -> Controller
-respond lang page =
+respond :: Environment -> Html.View -> Controller
+respond env@Environment{..} page =
   do
-    html <- Html.master lang page
+    html <- Html.master env page
     ok . toResponse $ html
 
-route :: Acid -> Language -> Sitemap -> Controller
-route st lang url =
+route :: Environment -> Sitemap -> Controller
+route env url =
   case url of
-    Home       -> home st lang
-    Word w     -> word st lang w
+    Home   -> home env
+    Word w -> word env w
 
-home :: Acid -> Language -> Controller
-home st lang =
+home :: Environment -> Controller
+home env@Environment{..} =
   do
-    db <- query' st ReadState
-    respond lang . Html.wordList . Ix.toList $ db ^. words
+    db <- query' state ReadState
+    respond env . Html.wordList . Ix.toList $ db ^. words
 
-word :: Acid -> Language -> Text -> Controller
-word st lang w =
+word :: Environment -> Text -> Controller
+word env@Environment{..} w =
   do
-    w' <- query' st . LookupWord $ w
-    maybe mzero (respond lang . Html.wordList . pure) w'
+    w' <- query' state . LookupWord $ w
+    maybe mzero (respond env . Html.wordList . pure) w'

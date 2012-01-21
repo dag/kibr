@@ -44,6 +44,7 @@ Library
     TypeFamilies
   exposed-modules :
     Preamble
+    Data.Kibr.Environment
     Data.Kibr.Grammar
     Data.Kibr.Language
     Data.Kibr.Message
