@@ -17,7 +17,6 @@ import Data.Kibr.Environment
 import Data.Kibr.Language
 import Data.Kibr.Sitemap
 import Data.Kibr.State
-import Text.Blaze (Html)
 
 import qualified Data.IxSet           as Ix
 import qualified System.Log.Logger    as Log
@@ -76,11 +75,11 @@ route lang st url this =
 
 type Controller = ReaderT Environment (ServerPartT IO) Response
 
-respond :: (Environment -> Html) -> Controller
+respond :: Html.View -> Controller
 respond page =
   do
     env <- ask
-    pure . toResponse . Html.master env $ page env
+    pure . toResponse . runReader (Html.master page) $ env
 
 home :: Controller
 home =
