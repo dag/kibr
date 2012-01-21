@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
@@ -8,7 +9,8 @@ import Preamble
 import Prelude (error)
 
 import Control.Monad.Reader
-import Data.Acid.Advanced (query')
+import Data.Acid (QueryEvent, EventResult)
+import Data.Acid.Advanced (query', MethodState)
 import Data.Lens
 import Happstack.Server
 import Language.CSS
@@ -73,6 +75,17 @@ route lang st url this =
                 Home   -> home
                 Word w -> word w
 
+query :: ( MethodState event ~ State
+         , QueryEvent event
+         , MonadIO m
+         , MonadReader Environment m
+         )
+      => event -> m (EventResult event)
+query ev =
+  do
+    st <- asks state
+    query' st ev
+
 type Controller = ReaderT Environment (ServerPartT IO) Response
 
 respond :: Html.View -> Controller
@@ -84,13 +97,11 @@ respond page =
 home :: Controller
 home =
   do
-    st <- asks state
-    db <- query' st ReadState
+    db <- query ReadState
     respond . Html.wordList . Ix.toList $ db ^. words
 
 word :: Text -> Controller
 word w =
   do
-    st <- asks state
-    w' <- query' st . LookupWord $ w
+    w' <- query $ LookupWord w
     maybe mzero (respond . Html.wordList . pure) w'
