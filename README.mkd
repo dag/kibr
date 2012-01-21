@@ -22,10 +22,26 @@ $ cabal install cabal-dev
 
 ### Workflow
 
+Just run make:
+
 ```console
-$ make         # build and run tests
-$ make import  # load fixture data
-$ make serve   # run the server
+$ make
 ```
 
-Browse [localhost:8000](http://localhost:8000/).
+This will:
+
+1. Run HLint on the source code
+2. Set up a cabal-dev environment if one isn't already set up, and install
+   the dependencies into it
+3. Build the application
+4. Run the tests
+5. Import the fixtures into the persistent state, if not already imported
+6. Launch the HTTP server on [localhost:8000](http://localhost:8000/)
+
+Sometimes, this is not enough -- for example if a new dependency is added
+or the fixtures are modified.  In that case you can simply ask make to run
+all targets unconditionally:
+
+```console
+$ make -B
+```

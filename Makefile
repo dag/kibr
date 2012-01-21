@@ -1,25 +1,29 @@
-all: hlint test
+KIBR = dist/build/kibr/kibr
+
+all: hlint test serve
+
+cabal-dev:
+	@cabal-dev install
 
 .PHONY: build
-build:
-	@cabal-dev install
+build: cabal-dev
+	@cabal-dev build
 
 .PHONY: test
 test: build
-	@cabal-dev/bin/kibr test
+	@$(KIBR) test
 
 .PHONY: hlint
 hlint:
 	@hlint --color src
 
-.PHONY: import
-import:
-	@cabal-dev/bin/kibr import fixtures.xml
+state:
+	@$(KIBR) import fixtures.xml
 
 .PHONY: serve
-serve:
+serve: state
 	@echo "Launching server on http://localhost:8000/"
-	@cabal-dev/bin/kibr http
+	@$(KIBR) http
 
 .PHONY: gvim
 gvim:
