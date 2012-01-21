@@ -16,8 +16,10 @@ import Data.Kibr.Environment
 import Data.Kibr.Language
 import Data.Kibr.Sitemap
 import Data.Kibr.State
+import Text.Blaze (Html)
 
 import qualified Data.IxSet           as Ix
+import qualified Data.Text            as T
 import qualified System.Log.Logger    as Log
 import qualified Web.Routes           as R
 import qualified Web.Routes.Happstack as R
@@ -53,16 +55,17 @@ server config state =
   where
     setLogLevel      = Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel
     site             = R.setDefault Home . R.mkSitePI . R.runRouteT . route
-    locale code lang = let env = Environment { language = lang, state = state }
-                       in R.implSite "" code . site $ env
+    locale code lang = R.implSite "" code . site $ env
+      where
+        env = Environment { language = lang
+                          , state = state
+                          , url = T.append code . R.toPathInfo
+                          }
 
 type Controller = R.RouteT Sitemap (ServerPartT IO) Response
 
-respond :: Environment -> Html.View -> Controller
-respond env@Environment{..} page =
-  do
-    html <- Html.master env page
-    ok . toResponse $ html
+respond :: Environment -> (Environment -> Html) -> Controller
+respond env@Environment{..} page = ok . toResponse . Html.master env $ page env
 
 route :: Environment -> Sitemap -> Controller
 route env url =
