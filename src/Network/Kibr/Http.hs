@@ -14,9 +14,11 @@ import Data.Acid.Advanced (query', MethodState)
 import Data.Lens
 import Happstack.Server
 import Language.CSS
+import Text.Blaze (toHtml)
 
 import Data.Kibr.Environment
 import Data.Kibr.Language
+import Data.Kibr.Message
 import Data.Kibr.Sitemap
 import Data.Kibr.State
 
@@ -68,6 +70,7 @@ route lang st url this =
   where
     environ = Environment
                 { language = lang
+                , msg = toHtml . message lang
                 , state = st
                 , url = \s -> url s []
                 }

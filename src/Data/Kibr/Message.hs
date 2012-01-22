@@ -8,10 +8,10 @@ data Message
   = LojbanDictionary
   deriving (Eq, Show)
 
-msg :: Language -> Message -> Text
+message :: Language -> Message -> Text
 
-msg English m = case m of
+message English m = case m of
   LojbanDictionary -> "Lojban Dictionary"
 
-msg Lojban m = case m of
+message Lojban m = case m of
   LojbanDictionary -> "vlaste fu la lojban"

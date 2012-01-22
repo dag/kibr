@@ -21,12 +21,11 @@ type View = Reader Environment Html
 master :: View -> View
 master page =
   do
-    lang <- asks language
-    let translate = toHtml . msg lang
+    msg <- asks msg
     page' <- page
     pure . docTypeHtml $ do
       head $ do
-        title $ translate LojbanDictionary
+        title $ msg LojbanDictionary
         linkCss webfontsCss
         linkCss yuiCss
         linkCss highlighterCss
