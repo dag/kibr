@@ -7,6 +7,7 @@ import Data.Map   as Map
 import Data.Set   as Set
 import System.Environment (withArgs)
 import Test.Framework.Providers.HUnit
+import Test.Framework.Providers.QuickCheck2
 import Test.Framework.TH
 import Test.HUnit hiding (State)
 import Test.HUnit.Diff
@@ -16,16 +17,13 @@ import Data.Kibr.Language
 import Data.Kibr.Revision
 import Data.Kibr.State
 import Data.Kibr.Word
+import Language.CSS.YUI
 import Text.Kibr.Xml (readDictionary)
+
+import qualified Data.Text.Lazy as LT
 
 run :: [String] -> IO ()
 run args = withArgs args $defaultMainGenerator
-
-case_fixtures :: Assertion
-case_fixtures =
-  do
-    dictionary <- readDictionary English "fixtures.xml"
-    dictionary @?== fixtures
 
 fixtures :: State
 fixtures =
@@ -51,3 +49,23 @@ fixtures =
       , Word "sferies" Name $ def "Sweden." Nothing
       , Word "ba'unai" Cluster $ def "discursive: understatement." Nothing
       ]
+
+case_readDictionary :: Assertion
+case_readDictionary =
+  do
+    dictionary <- readDictionary English "fixtures.xml"
+    dictionary @?== fixtures
+
+case_pxToPercent_computed :: Assertion
+case_pxToPercent_computed =
+  do
+    pxToPercent 9  @?== "69.2%"
+    pxToPercent 28 @?== "215.4%"
+
+prop_pxToPercent_starts_with_digit :: Int -> Bool
+prop_pxToPercent_starts_with_digit px
+  | px >= 0   = isDigit . LT.head . pxToPercent $ px
+  | otherwise = LT.head (pxToPercent px) == '-'
+
+prop_pxToPercent_ends_in_percent_sign :: Int -> Bool
+prop_pxToPercent_ends_in_percent_sign px = LT.last (pxToPercent px) == '%'

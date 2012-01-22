@@ -27,4 +27,4 @@ pxToPercent px =
     pack . printf "%.1f%%" $ percentage
   where
     percentage :: Double
-    percentage = fromIntegral px * (13 / 100)
+    percentage = fromIntegral px * (100/13)

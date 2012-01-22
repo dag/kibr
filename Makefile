@@ -11,7 +11,7 @@ build: cabal-dev
 
 .PHONY: test
 test: build
-	@$(KIBR) test
+	@$(KIBR) test -a 10000
 
 .PHONY: hlint
 hlint:
