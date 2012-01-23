@@ -34,6 +34,10 @@ import System.IO           as X ( IO )
 import Text.Read           as X ( Read, read )
 import Text.Show           as X ( Show, show )
 
+#if DEVELOPMENT
+import Debug.FileLocation  as X
+#endif
+
 (++) :: MonadPlus m => m a -> m a -> m a
 (++) = mplus
 
