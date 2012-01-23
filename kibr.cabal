@@ -34,7 +34,7 @@ Executable kibr
 
   if flag(development)
     CPP-Options: -DDEVELOPMENT
-    GHC-Options: -Wall -threaded -O0
+    GHC-Options: -Wall -threaded
                  -fno-warn-unused-do-bind
   else
     GHC-Options: -Wall -threaded -O2 -rtsopts
@@ -108,8 +108,8 @@ Library
       test-framework-quickcheck2 == 0.2.*,
       test-framework-th          == 0.2.*
     CPP-Options: -DDEVELOPMENT
-    GHC-Options: -Wall -threaded -O0
+    GHC-Options: -Wall
                  -fno-warn-unused-do-bind
   else
-    GHC-Options: -Wall -threaded -O2 -rtsopts
+    GHC-Options: -Wall -O2
                  -fno-warn-unused-do-bind

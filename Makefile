@@ -3,7 +3,7 @@ KIBR = dist/build/kibr/kibr
 all: hlint test http
 
 cabal-dev:
-	@cabal-dev install -fdevelopment
+	@cabal-dev install -fdevelopment --disable-optimization
 
 .PHONY: build
 build: cabal-dev
