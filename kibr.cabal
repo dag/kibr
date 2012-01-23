@@ -1,5 +1,7 @@
 Name          : kibr
 Version       : 0.0.0
+Synopsis      : Lojban Internet services.
+Description   : Lojban Internet services.
 License       : OtherLicense
 License-File  : LICENSE
 Author        : Dag Odenhall
