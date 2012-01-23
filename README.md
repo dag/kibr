@@ -17,6 +17,13 @@ I'm using these versions on Fedora 16; other versions may or may not work:
 $ sudo yum install ghc cabal-dev hlint
 ```
 
+The Happstack server builds with support for HTTPS by default, which
+requires some foreign libraries:
+
+```console
+$ sudo yum install openssl-devel cryptopp-devel
+```
+
 If your operating system has a package for cabal-install *but not*
 cabal-dev and/or HLint you can install either of them this way:
 
@@ -29,13 +36,6 @@ Make sure to add `~/.cabal/bin` to your `$PATH`:
 
 ```bash
 export PATH="$HOME/.cabal/bin:$PATH"
-```
-
-The Happstack server builds with support for HTTPS by default, which
-requires some foreign libraries:
-
-```console
-$ sudo yum install openssl-devel cryptopp-devel
 ```
 
 This might work on Debian derivatives:
