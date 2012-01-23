@@ -38,7 +38,7 @@ wordPart :: BotMonad m => Acid -> m ()
 wordPart state = parsecPart $ \target ->
   do
     char '!'
-    word <- many1 letter
+    word <- many1 . oneOf $ "abcdefghijklmnoprstuvxyz'."
     w <- query' state . LookupWord . pack $ word
     sendCommand $ PrivMsg Nothing [target] (show w)
   <|>

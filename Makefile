@@ -1,6 +1,6 @@
 KIBR = dist/build/kibr/kibr
 
-all: hlint test serve
+all: hlint test http
 
 cabal-dev:
 	@cabal-dev install
@@ -20,10 +20,14 @@ hlint:
 state:
 	@$(KIBR) import fixtures.xml
 
-.PHONY: serve
-serve: state
+.PHONY: http
+http: state
 	@echo "Launching server on http://localhost:8000/"
 	@$(KIBR) http
+
+.PHONY: irc
+irc: state
+	@$(KIBR) irc
 
 .PHONY: gvim
 gvim:

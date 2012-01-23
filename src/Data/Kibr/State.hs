@@ -17,6 +17,8 @@ import Data.Kibr.Language
 import Data.Kibr.Revision
 import Data.Kibr.Word
 
+import qualified Data.Text as T
+
 data State
   = State { _words :: IxSet Word }
   deriving (Eq, Show, Data, Typeable)
@@ -34,7 +36,9 @@ readState :: Query State State
 readState = ask
 
 lookupWord :: Text -> Query State (Maybe Word)
-lookupWord w = askL $ ixLens (ByWord w) . words
+lookupWord w = askL $ ixLens (ByWord w') . words
+  where
+    w' = T.replace "h" "'" . T.replace "." T.empty $ w
 
 reviseWord :: Text -> Language -> Revision Definition -> Update State ()
 reviseWord w l r =
