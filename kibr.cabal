@@ -1,27 +1,30 @@
-Name              : kibr
-Version           : 0.0.0
-License           : OtherLicense
-License-File      : LICENSE
-Author            : Dag Odenhall
-Maintainer        : dag.odenhall@gmail.com
-Homepage          : https://github.com/dag/kibr
-Bug-Reports       : https://github.com/dag/kibr/issues
-Category          : Application, Language, Web
-Build-Type        : Simple
-Cabal-Version     : >= 1.6
+Name          : kibr
+Version       : 0.0.0
+License       : OtherLicense
+License-File  : LICENSE
+Author        : Dag Odenhall
+Maintainer    : dag.odenhall@gmail.com
+Homepage      : https://github.com/dag/kibr
+Bug-Reports   : https://github.com/dag/kibr/issues
+Category      : Application, Language, Web
+Build-Type    : Simple
+Cabal-Version : >= 1.6
 
 Source-Repository head
-  type            : git
-  location        : git://github.com/dag/kibr.git
+  Type     : git
+  Location : git://github.com/dag/kibr.git
+
+Flag development
+  Description : Development mode.
+  Default     : False
 
 Executable kibr
-  main-is         : Main.hs
-  hs-source-dirs  : src
-  ghc-options     :
-    -Wall
-    -fno-warn-unused-do-bind
-  extensions      :
+  Main-Is        : Main.hs
+  HS-Source-Dirs : src
+
+  Extensions:
     NoImplicitPrelude
+    CPP
     DeriveDataTypeable
     GeneralizedNewtypeDeriving
     OverloadedStrings
@@ -29,20 +32,28 @@ Executable kibr
     TemplateHaskell
     TypeFamilies
 
+  if flag(development)
+    CPP-Options: -DDEVELOPMENT
+    GHC-Options: -Wall -threaded -O0
+                 -fno-warn-unused-do-bind
+  else
+    GHC-Options: -Wall -threaded -O2 -rtsopts
+                 -fno-warn-unused-do-bind
+
 Library
-  hs-source-dirs  : src
-  ghc-options     :
-    -Wall
-    -fno-warn-unused-do-bind
-  extensions      :
+  HS-Source-Dirs: src
+
+  Extensions:
     NoImplicitPrelude
+    CPP
     DeriveDataTypeable
     GeneralizedNewtypeDeriving
     OverloadedStrings
     RecordWildCards
     TemplateHaskell
     TypeFamilies
-  exposed-modules :
+
+  Exposed-Modules:
     Preamble
     Data.Kibr.Environment
     Data.Kibr.Grammar
@@ -57,37 +68,47 @@ Library
     Language.CSS.YUI
     Network.Kibr.Http
     Network.Kibr.Irc
-    Test.Kibr
     Text.Blaze.Html5.Extra
     Text.Blaze.Html5.Highlight
     Text.Kibr.Css
     Text.Kibr.Html
     Text.Kibr.Xml
-  build-depends   :
-    acid-state                 == 0.6.*,
-    base                       == 4.3.*,
-    blaze-html                 >= 0.4.2.0 && < 0.5,
-    containers                 == 0.4.*,
-    css                        == 0.1.*,
-    data-lens-fd               == 2.0.*,
-    data-lens-ixset            == 0.1.* && >= 0.1.1,
-    data-lens-template         == 2.1.*,
-    groom                      == 0.1.*,
-    happstack-server           == 6.4.*,
-    highlighter                == 0.2.*,
-    hslogger                   == 1.1.*,
-    HUnit                      == 1.2.*,
-    HUnit-Diff                 == 0.1.*,
-    hxt                        == 9.1.*,
-    ircbot                     == 0.2.* && >= 0.2.1,
-    ixset                      == 1.0.*,
-    mtl                        == 2.0.*,
-    parsec                     == 3.1.*,
-    safecopy                   == 0.6.*,
-    test-framework-hunit       == 0.2.*,
-    test-framework-quickcheck2 == 0.2.*,
-    test-framework-th          == 0.2.*,
-    text                       == 0.11.*,
-    web-routes                 == 0.26.*,
-    web-routes-happstack       == 0.23.*,
-    web-routes-th              == 0.21.*
+
+  Build-Depends:
+    acid-state           == 0.6.*,
+    base                 == 4.3.*,
+    blaze-html           == 0.4.* && >= 0.4.2.0,
+    containers           == 0.4.*,
+    css                  == 0.1.*,
+    data-lens-fd         == 2.0.*,
+    data-lens-ixset      == 0.1.* && >= 0.1.1,
+    data-lens-template   == 2.1.*,
+    groom                == 0.1.*,
+    happstack-server     == 6.4.*,
+    highlighter          == 0.2.*,
+    hslogger             == 1.1.*,
+    hxt                  == 9.1.*,
+    ircbot               == 0.2.* && >= 0.2.1,
+    ixset                == 1.0.*,
+    mtl                  == 2.0.*,
+    parsec               == 3.1.*,
+    safecopy             == 0.6.*,
+    text                 == 0.11.*,
+    web-routes           == 0.26.*,
+    web-routes-happstack == 0.23.*,
+    web-routes-th        == 0.21.*
+
+  if flag(development)
+    Exposed-Modules: Test.Kibr
+    Build-Depends:
+      HUnit                      == 1.2.*,
+      HUnit-Diff                 == 0.1.*,
+      test-framework-hunit       == 0.2.*,
+      test-framework-quickcheck2 == 0.2.*,
+      test-framework-th          == 0.2.*
+    CPP-Options: -DDEVELOPMENT
+    GHC-Options: -Wall -threaded -O0
+                 -fno-warn-unused-do-bind
+  else
+    GHC-Options: -Wall -threaded -O2 -rtsopts
+                 -fno-warn-unused-do-bind

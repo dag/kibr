@@ -3,7 +3,7 @@ KIBR = dist/build/kibr/kibr
 all: hlint test http
 
 cabal-dev:
-	@cabal-dev install
+	@cabal-dev install -fdevelopment
 
 .PHONY: build
 build: cabal-dev
@@ -11,7 +11,7 @@ build: cabal-dev
 
 .PHONY: test
 test: build
-	@$(KIBR) test -a 10000
+	@$(KIBR) test -a 1000
 
 .PHONY: hlint
 hlint:

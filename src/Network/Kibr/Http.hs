@@ -43,7 +43,11 @@ run args state =
 server :: Conf -> Acid -> IO ()
 server config state =
   do
+#if DEVELOPMENT
     setLogLevel Log.DEBUG
+#else
+    setLogLevel Log.WARNING
+#endif
     simpleHTTP config $ sum
       [ dir "resources" $ sum
           [ dir "master.css" $ do
