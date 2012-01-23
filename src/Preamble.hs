@@ -1,4 +1,4 @@
-module Preamble 
+module Preamble
   ( (++)
   , filter
   , map
