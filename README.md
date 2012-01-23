@@ -6,7 +6,7 @@ Development Environment
 
 ### Prerequisites
 
-I'm using these versions on Fedora 16; other versions may or may not work fine:
+I'm using these versions on Fedora 16; other versions may or may not work:
 
 * GHC 7.0.4
 * Cabal 1.10.2.0
@@ -25,6 +25,12 @@ $ cabal update
 $ cabal install cabal-dev hlint
 ```
 
+Make sure to add `~/.cabal/bin` to your `$PATH`:
+
+```bash
+export PATH="$HOME/.cabal/bin:$PATH"
+```
+
 The Happstack server builds with support for HTTPS by default, which
 requires some foreign libraries:
 
@@ -38,12 +44,6 @@ This might work on Debian derivatives:
 $ sudo apt-get install ghc cabal-install hlint libssl-dev libcrypto++-dev
 $ cabal update
 $ cabal install cabal-dev
-```
-
-Make sure to add `~/.cabal/bin` to your `$PATH`:
-
-```bash
-export PATH="$HOME/.cabal/bin:$PATH"
 ```
 
 ### Workflow
