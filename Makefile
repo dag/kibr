@@ -32,3 +32,8 @@ irc: state
 .PHONY: gvim
 gvim:
 	@gvim kibr.cabal "+cd src"
+
+.PHONY: watch
+watch: build
+	scripts/watch.sh
+	$(MAKE) watch
