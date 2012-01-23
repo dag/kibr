@@ -79,7 +79,7 @@ Library
     HUnit                      == 1.2.*,
     HUnit-Diff                 == 0.1.*,
     hxt                        == 9.1.*,
-    ircbot                     >= 0.1.5 && < 0.2,
+    ircbot                     == 0.2.* && >= 0.2.1,
     ixset                      == 1.0.*,
     mtl                        == 2.0.*,
     parsec                     == 3.1.*,
