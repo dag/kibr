@@ -89,7 +89,7 @@ Library
     happstack-server     == 6.5.* && >= 6.5.2,
     highlighter          == 0.2.*,
     hslogger             == 1.1.*,
-    hxt                  == 9.1.*,
+    hxt                  == 9.2.*,
     ircbot               == 0.2.* && >= 0.2.1,
     ixset                == 1.0.*,
     mtl                  == 2.0.*,
