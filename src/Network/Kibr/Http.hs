@@ -30,6 +30,10 @@ import qualified Web.Routes.Happstack as R
 import qualified Text.Kibr.Css        as Css
 import qualified Text.Kibr.Html       as Html
 
+#ifndef DEVELOPMENT
+import Happstack.Server.Compression
+#endif
+
 instance ToMessage (CSS Rule) where
   toContentType _ = "text/css; charset=UTF-8"
   toMessage = toMessage . renderCSS . runCSS
@@ -45,10 +49,11 @@ server config state =
   do
 #if DEVELOPMENT
     setLogLevel Log.DEBUG
+    simpleHTTP config $ sum
 #else
     setLogLevel Log.WARNING
+    simpleHTTP config $ compressedResponseFilter >> sum
 #endif
-    simpleHTTP config $ sum
       [ dir "resources" $ sum
           [ dir "master.css" $ do
               nullDir
