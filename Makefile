@@ -29,9 +29,12 @@ http: state
 irc: state
 	$(KIBR) irc
 
+src/tags:
+	cd src && hasktags -c .
+
 .PHONY: gvim
-gvim:
-	@gvim kibr.cabal "+cd src"
+gvim: src/tags
+	gvim kibr.cabal "+cd src"
 
 .PHONY: watch
 watch: build
