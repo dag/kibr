@@ -17,7 +17,6 @@ instance Adler32 Response where
 instance CRC32 Response where
   crc32Update n = crc32Update n . rsBody
 
-
 setETag :: (WebMonad Response m, ServerMonad m, FilterMonad Response m)
         => String -> m ()
 setETag etag =
