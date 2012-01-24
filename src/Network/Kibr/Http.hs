@@ -12,6 +12,7 @@ import Control.Monad.Reader
 import Data.Acid (QueryEvent, EventResult)
 import Data.Acid.Advanced (query', MethodState)
 import Data.Lens
+import Data.List (last)
 import Happstack.Server
 import Happstack.Server.ETag
 import Language.CSS
@@ -56,9 +57,7 @@ server config state =
     simpleHTTP config $ compressedResponseFilter >> sum
 #endif
       [ dir "resources" $ sum
-          [ dir "master.css" $ do nullDir
-                                  adler32ETagFilter
-                                  pure . toResponse $ Css.master
+          [ dir "master.css" stylesheet
           , serveDirectory DisableBrowsing [] "resources"
           ]
       , nullDir >> seeOther ("/en/"::Text) (toResponse (""::Text))
@@ -70,6 +69,15 @@ server config state =
     locale code lang = do adler32ETagFilter
                           R.implSite "" code . R.setDefault Home . R.mkSitePI
                             $ route lang state
+
+stylesheet :: ServerPart Response
+stylesheet =
+  do
+    nullDir
+    guardRq $ \rq -> last (rqUri rq) /= '/'
+    methodM [GET, HEAD]
+    adler32ETagFilter
+    pure . toResponse $ Css.master
 
 route :: Language
       -> Acid
