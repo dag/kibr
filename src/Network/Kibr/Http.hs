@@ -11,9 +11,9 @@ import Prelude (error)
 import Control.Monad.Reader
 import Data.Acid (QueryEvent, EventResult)
 import Data.Acid.Advanced (query', MethodState)
-import Data.Digest.Adler32
 import Data.Lens
 import Happstack.Server
+import Happstack.Server.ETag
 import Language.CSS
 import Text.Blaze (toHtml)
 
@@ -23,7 +23,6 @@ import Data.Kibr.Message
 import Data.Kibr.Sitemap
 import Data.Kibr.State
 
-import qualified Data.ByteString.Char8 as B
 import qualified Data.IxSet            as Ix
 import qualified System.Log.Logger     as Log
 import qualified Web.Routes            as R
@@ -36,23 +35,9 @@ import qualified Text.Kibr.Html as Html
 import Happstack.Server.Compression
 #endif
 
-instance Adler32 Response where
-  adler32Update n = adler32Update n . rsBody
-
 instance ToMessage (CSS Rule) where
   toContentType _ = "text/css; charset=UTF-8"
   toMessage = toMessage . renderCSS . runCSS
-
-eTagFilter :: ServerPart ()
-eTagFilter =
-  do
-    oldETag <- getHeaderM "If-None-Match"
-    composeFilter $ \response -> do
-      let curETag = show . show . adler32 $ response
-      case oldETag of
-        Just etag | etag == B.pack curETag ->
-          noContentLength . result 304 $ ""
-        _ -> setHeader "ETag" curETag response
 
 run :: [String] -> Acid -> IO ()
 run args state =
@@ -72,7 +57,7 @@ server config state =
 #endif
       [ dir "resources" $ sum
           [ dir "master.css" $ do nullDir
-                                  eTagFilter
+                                  adler32ETagFilter
                                   pure . toResponse $ Css.master
           , serveDirectory DisableBrowsing [] "resources"
           ]
@@ -82,7 +67,7 @@ server config state =
       ]
   where
     setLogLevel      = Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel
-    locale code lang = do eTagFilter
+    locale code lang = do adler32ETagFilter
                           R.implSite "" code . R.setDefault Home . R.mkSitePI
                             $ route lang state
 

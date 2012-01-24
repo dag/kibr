@@ -66,6 +66,7 @@ Library
     Data.Kibr.State
     Data.Kibr.Word
     Data.Lens.Reader
+    Happstack.Server.ETag
     Language.CSS.Extra
     Language.CSS.YUI
     Network.Kibr.Http
