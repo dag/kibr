@@ -1,6 +1,6 @@
 KIBR = dist/build/kibr/kibr
 
-all: hlint test http
+all: hlint test
 
 cabal-dev:
 	cabal-dev install -fdevelopment --disable-optimization
@@ -21,7 +21,7 @@ state:
 	$(KIBR) import fixtures.xml
 
 .PHONY: http
-http: state
+http: build state
 	@echo "Launching server on http://localhost:8000/"
 	$(KIBR) http
 
@@ -37,7 +37,7 @@ gvim: src/tags
 	gvim kibr.cabal "+cd src"
 
 .PHONY: watch
-watch: build
+watch:
 	$(MAKE) http & \
 	git ls-files | inotifywait --fromfile=- -e modify; \
 	kill $$!
