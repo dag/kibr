@@ -38,5 +38,7 @@ gvim: src/tags
 
 .PHONY: watch
 watch: build
-	scripts/watch.sh
+	$(MAKE) http & \
+	find src -name '*.hs' | inotifywait --fromfile=- -e modify; \
+	kill $$!
 	$(MAKE) watch
