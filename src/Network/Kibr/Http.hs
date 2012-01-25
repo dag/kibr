@@ -75,7 +75,7 @@ stylesheet =
   do
     nullDir
     guardRq $ \rq -> last (rqUri rq) /= '/'
-    methodM [GET, HEAD]
+    method [GET, HEAD]
     adler32ETagFilter
     pure . toResponse $ Css.master
 
