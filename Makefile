@@ -26,7 +26,7 @@ http: build state
 	$(KIBR) http
 
 .PHONY: irc
-irc: state
+irc: build state
 	$(KIBR) irc
 
 src/tags:
