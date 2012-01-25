@@ -78,40 +78,40 @@ Library
     Text.Kibr.Xml
 
   Build-Depends:
-    acid-state           == 0.6.*,
-    base                 == 4.3.*,
-    blaze-html           == 0.4.* && >= 0.4.2.0,
-    bytestring           == 0.9.*,
-    containers           == 0.4.*,
+    acid-state           == 0.6.3.*,
+    base                 == 4.3.1.*,
+    blaze-html           == 0.4.3.*,
+    bytestring           == 0.9.1.*,
+    containers           == 0.4.0.*,
     css                  == 0.1.*,
     data-lens-fd         == 2.0.*,
-    data-lens-ixset      == 0.1.* && >= 0.1.1,
-    data-lens-template   == 2.1.*,
-    digest               == 0.0.*,
-    groom                == 0.1.*,
-    happstack-server     == 6.5.* && >= 6.5.2,
+    data-lens-ixset      == 0.1.4.*,
+    data-lens-template   == 2.1.3.*,
+    digest               == 0.0.1.*,
+    groom                == 0.1.1.*,
+    happstack-server     == 6.5.3.*,
     highlighter          == 0.2.*,
-    hslogger             == 1.1.*,
-    hxt                  == 9.2.*,
-    ircbot               == 0.2.* && >= 0.2.1,
-    ixset                == 1.0.*,
-    mtl                  == 2.0.*,
-    parsec               == 3.1.*,
-    safecopy             == 0.6.*,
-    text                 == 0.11.*,
-    web-routes           == 0.26.*,
-    web-routes-happstack == 0.23.*,
-    web-routes-th        == 0.21.*
+    hslogger             == 1.1.4.*,
+    hxt                  == 9.2.0.*,
+    ircbot               == 0.2.1.*,
+    ixset                == 1.0.2.*,
+    mtl                  == 2.0.1.*,
+    parsec               == 3.1.1.*,
+    safecopy             == 0.6.1.*,
+    text                 == 0.11.0.*,
+    web-routes           == 0.26.2.*,
+    web-routes-happstack == 0.23.0.*,
+    web-routes-th        == 0.21.1.*
 
   if flag(development)
     Exposed-Modules: Test.Kibr
     Build-Depends:
-      file-location              == 0.4.*,
-      HUnit                      == 1.2.*,
+      file-location              == 0.4.2.*,
+      HUnit                      == 1.2.2.*,
       HUnit-Diff                 == 0.1.*,
-      test-framework-hunit       == 0.2.*,
-      test-framework-quickcheck2 == 0.2.*,
-      test-framework-th          == 0.2.*
+      test-framework-hunit       == 0.2.6.*,
+      test-framework-quickcheck2 == 0.2.10.*,
+      test-framework-th          == 0.2.2.*
     CPP-Options: -DDEVELOPMENT
     GHC-Options: -Wall
                  -fno-warn-unused-do-bind
