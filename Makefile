@@ -2,6 +2,10 @@ KIBR = dist/build/kibr/kibr
 
 all: hlint test
 
+.PHONY: hlint
+hlint:
+	hlint --color src
+
 cabal-dev:
 	cabal-dev install -fdevelopment --disable-optimization
 
@@ -13,10 +17,6 @@ build: cabal-dev
 test: build
 	$(KIBR) test -a 1000
 
-.PHONY: hlint
-hlint:
-	hlint --color src
-
 state:
 	$(KIBR) import fixtures.xml
 
@@ -24,6 +24,13 @@ state:
 http: build state
 	@echo "Launching server on http://localhost:8000/"
 	$(KIBR) http
+
+.PHONY: watch
+watch:
+	$(MAKE) http & \
+	git ls-files | inotifywait --fromfile=- -e modify; \
+	kill $$!
+	$(MAKE) watch
 
 .PHONY: irc
 irc: build state
@@ -35,10 +42,3 @@ src/tags:
 .PHONY: gvim
 gvim: src/tags
 	gvim kibr.cabal "+cd src"
-
-.PHONY: watch
-watch:
-	$(MAKE) http & \
-	git ls-files | inotifywait --fromfile=- -e modify; \
-	kill $$!
-	$(MAKE) watch
