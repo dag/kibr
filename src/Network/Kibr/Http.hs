@@ -24,10 +24,11 @@ import Data.Kibr.Message
 import Data.Kibr.Sitemap
 import Data.Kibr.State
 
-import qualified Data.IxSet            as Ix
-import qualified System.Log.Logger     as Log
-import qualified Web.Routes            as R
-import qualified Web.Routes.Happstack  as R
+import qualified Data.IxSet           as Ix
+import qualified Data.Text            as T
+import qualified System.Log.Logger    as Log
+import qualified Web.Routes           as R
+import qualified Web.Routes.Happstack as R
 
 import qualified Text.Kibr.Css  as Css
 import qualified Text.Kibr.Html as Html
@@ -60,9 +61,8 @@ server config state =
           [ dir "master.css" stylesheet
           , serveDirectory DisableBrowsing [] "resources"
           ]
-      , nullDir >> seeOther ("/en/"::Text) (toResponse (""::Text))
-      , locale "/en" English
-      , locale "/jbo" Lojban
+      , nullDir >> seeOther ("/English/"::Text) (toResponse (""::Text))
+      , sum [ locale (T.pack ('/' : show lang)) lang | lang <- enumerate ]
       ]
   where
     setLogLevel      = Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel

@@ -3,6 +3,7 @@ module Preamble
   , filter
   , map
   , sum
+  , enumerate
   , Prelude.Bounded
   , Prelude.Enum
   , module X
@@ -49,3 +50,6 @@ map = (<$>)
 
 sum :: MonadPlus m => [m a] -> m a
 sum = msum
+
+enumerate :: (Prelude.Enum a, Prelude.Bounded a) => [a]
+enumerate = [Prelude.minBound ..]
