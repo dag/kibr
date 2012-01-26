@@ -39,7 +39,7 @@ Executable kibr
     GHC-Options: -Wall -threaded
                  -fno-warn-unused-do-bind
   else
-    GHC-Options: -Wall -threaded -O2 -rtsopts -with-rtsopts=-N
+    GHC-Options: -Wall -threaded -rtsopts -with-rtsopts=-N
                  -fno-warn-unused-do-bind
 
 Library
@@ -116,5 +116,5 @@ Library
     GHC-Options: -Wall
                  -fno-warn-unused-do-bind
   else
-    GHC-Options: -Wall -O2
+    GHC-Options: -Wall
                  -fno-warn-unused-do-bind
