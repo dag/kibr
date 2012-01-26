@@ -6,43 +6,22 @@ Development Environment
 
 ### Prerequisites
 
-I'm using these versions on Fedora 16; other versions may or may not work:
+#### Fedora 16
 
-* GHC 7.0.4
-* Cabal 1.10.2.0
-* [cabal-dev](http://hackage.haskell.org/package/cabal-dev) 0.9
-* [HLint](http://community.haskell.org/~ndm/hlint/) 1.8.13
+I have verified that these packages should be enough to build the project:
 
 ```console
-$ sudo yum install ghc cabal-dev hlint
+$ sudo yum install ghc cabal-dev hlint happy ghc-zlib-devel openssl-devel cryptopp-devel pcre-devel
 ```
 
-The Happstack server builds with support for HTTPS by default, which
-requires some foreign libraries:
+#### Debian/Ubuntu
+
+This might work:
 
 ```console
-$ sudo yum install openssl-devel cryptopp-devel
-```
-
-If your operating system has a package for cabal-install *but not*
-cabal-dev and/or HLint you can install either of them this way:
-
-```console
+$ sudo apt-get install ghc cabal-install hlint happy libghc-zlib-dev libssl-dev libcrypto++-dev libpcre3-dev
 $ cabal update
-$ cabal install cabal-dev hlint
-```
-
-Make sure to add `~/.cabal/bin` to your `$PATH`:
-
-```bash
-export PATH="$HOME/.cabal/bin:$PATH"
-```
-
-This might work on Debian derivatives:
-
-```console
-$ sudo apt-get install ghc cabal-install hlint libssl-dev libcrypto++-dev
-$ cabal update
+$ export PATH="$HOME/.cabal/bin:$PATH"  # should go in ~/.bashrc too
 $ cabal install cabal-dev
 ```
 
