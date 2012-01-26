@@ -29,7 +29,7 @@ http: build state
 watch:
 	$(MAKE) http & \
 	git ls-files | inotifywait --fromfile=- -e modify; \
-	kill $$!
+	kill $$! || true
 	$(MAKE) watch
 
 .PHONY: irc
