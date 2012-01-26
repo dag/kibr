@@ -8,6 +8,7 @@ hlint:
 	hlint --color src
 
 cabal-dev:
+	cabal update
 	cabal-dev install -fdevelopment --disable-optimization
 
 .PHONY: build
