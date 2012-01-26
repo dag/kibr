@@ -11,6 +11,7 @@ import Prelude (error)
 import Control.Monad.Reader
 import Data.Acid (QueryEvent, EventResult)
 import Data.Acid.Advanced (query', MethodState)
+import Data.FileEmbed
 import Data.Lens
 import Data.List (last)
 import Happstack.Server
@@ -59,7 +60,7 @@ server config state =
 #endif
       [ dir "resources" $ sum
           [ dir "master.css" stylesheet
-          , serveDirectory DisableBrowsing [] "data"
+          , dir "highlighter.css" highlighter
           ]
       , nullDir >> seeOther ("/English/"::Text) (toResponse (""::Text))
       , sum [ locale (T.pack ('/' : show lang)) lang | lang <- enumerate ]
@@ -70,13 +71,25 @@ server config state =
                           R.implSite "" code . R.setDefault Home . R.mkSitePI
                             $ route lang state
 
-stylesheet :: ServerPart Response
-stylesheet =
+filePart :: ServerPart ()
+filePart =
   do
     nullDir
     guardRq $ \rq -> last (rqUri rq) /= '/'
     method [GET, HEAD]
     adler32ETagFilter
+
+highlighter :: ServerPart Response
+highlighter =
+  do
+    filePart
+    setHeaderM "Content-Type" "text/css; charset=UTF-8"
+    pure . toResponse $ $(embedFile "data/highlighter.css")
+
+stylesheet :: ServerPart Response
+stylesheet =
+  do
+    filePart
     pure . toResponse $ Css.master
 
 route :: Language
