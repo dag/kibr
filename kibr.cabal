@@ -1,16 +1,24 @@
 Name          : kibr
 Version       : 0.0.0
+Stability     : alpha
+
 Synopsis      : Lojban Internet services.
 Description   : Lojban Internet services.
-License       : OtherLicense
-License-File  : LICENSE
-Author        : Dag Odenhall
-Maintainer    : dag.odenhall@gmail.com
 Homepage      : https://github.com/dag/kibr
 Bug-Reports   : https://github.com/dag/kibr/issues
 Category      : Application, Language, Web
+
+Author        : Dag Odenhall
+Maintainer    : dag.odenhall@gmail.com
+Copyright     : (c) 2011-2012, Dag Odenhall
+License       : OtherLicense
+License-File  : LICENSE
+
 Build-Type    : Simple
 Cabal-Version : >= 1.6
+Tested-With   : GHC == 7.0.4
+Data-Dir      : data
+Data-Files    : *.xml *.css
 
 Source-Repository head
   Type     : git

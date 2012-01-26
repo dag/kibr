@@ -20,7 +20,7 @@ test: build
 	$(KIBR) test -a 1000
 
 state:
-	$(KIBR) import fixtures.xml
+	$(KIBR) import data/fixtures.xml
 
 .PHONY: http
 http: build state

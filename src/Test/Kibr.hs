@@ -53,7 +53,7 @@ fixtures =
 case_readDictionary :: Assertion
 case_readDictionary =
   do
-    dictionary <- readDictionary English "fixtures.xml"
+    dictionary <- readDictionary English "data/fixtures.xml"
     dictionary @?== fixtures
 
 case_pxToPercent_computed :: Assertion

@@ -59,7 +59,7 @@ server config state =
 #endif
       [ dir "resources" $ sum
           [ dir "master.css" stylesheet
-          , serveDirectory DisableBrowsing [] "resources"
+          , serveDirectory DisableBrowsing [] "data"
           ]
       , nullDir >> seeOther ("/English/"::Text) (toResponse (""::Text))
       , sum [ locale (T.pack ('/' : show lang)) lang | lang <- enumerate ]
