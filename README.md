@@ -6,9 +6,10 @@ Development Environment
 
 ### Prerequisites
 
-#### Fedora 16
+#### Fedora
 
-I have verified that these packages should be enough to build the project:
+I have verified that these packages are enough to build the project on
+Fedora 16:
 
 ```console
 $ sudo yum install ghc cabal-dev hlint happy ghc-zlib-devel openssl-devel cryptopp-devel pcre-devel
@@ -16,10 +17,11 @@ $ sudo yum install ghc cabal-dev hlint happy ghc-zlib-devel openssl-devel crypto
 
 #### Debian/Ubuntu
 
-This might work:
+I have verified that these steps are enough to build the project on Ubuntu
+Server 11.10:
 
 ```console
-$ sudo apt-get install ghc cabal-install hlint happy libghc-zlib-dev libssl-dev libcrypto++-dev libpcre3-dev
+$ sudo apt-get install make ghc cabal-install hlint happy libghc-zlib-dev libssl-dev libcrypto++-dev libpcre3-dev
 $ cabal update
 $ export PATH="$HOME/.cabal/bin:$PATH"  # should go in ~/.bashrc too
 $ cabal install cabal-dev
