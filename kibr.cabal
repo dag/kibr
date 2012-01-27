@@ -44,9 +44,11 @@ Executable kibr
   if flag(development)
     CPP-Options: -DDEVELOPMENT
     GHC-Options: -Wall -threaded
+                 -fwarn-tabs
                  -fno-warn-unused-do-bind
   else
     GHC-Options: -Wall -threaded -rtsopts -with-rtsopts=-N
+                 -fwarn-tabs
                  -fno-warn-unused-do-bind
 
 Library
@@ -121,7 +123,9 @@ Library
       test-framework-th          == 0.2.2.*
     CPP-Options: -DDEVELOPMENT
     GHC-Options: -Wall
+                 -fwarn-tabs
                  -fno-warn-unused-do-bind
   else
     GHC-Options: -Wall
+                 -fwarn-tabs
                  -fno-warn-unused-do-bind
