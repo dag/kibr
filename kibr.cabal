@@ -117,7 +117,7 @@ Library
       HUnit                      == 1.2.2.*,
       HUnit-Diff                 == 0.1.*,
       test-framework-hunit       == 0.2.7.*,
-      test-framework-quickcheck2 == 0.2.11.*,
+      test-framework-quickcheck2 == 0.2.12.*,
       test-framework-th          == 0.2.2.*
     CPP-Options: -DDEVELOPMENT
     GHC-Options: -Wall
