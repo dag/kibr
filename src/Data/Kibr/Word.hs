@@ -68,13 +68,13 @@ data ByShape
   deriving (Eq, Ord, Typeable)
 
 byShape :: Shape -> ByShape
-byShape Particle{..}         = IsParticle
-byShape ProposedParticle{..} = IsProposedParticle
-byShape Root{..}             = IsRoot
-byShape Compound             = IsCompound
-byShape Loan                 = IsLoan
-byShape Name                 = IsName
-byShape Cluster              = IsCluster
+byShape Particle{}         = IsParticle
+byShape ProposedParticle{} = IsProposedParticle
+byShape Root{}             = IsRoot
+byShape Compound           = IsCompound
+byShape Loan               = IsLoan
+byShape Name               = IsName
+byShape Cluster            = IsCluster
 
 instance Indexable Word where
   empty = ixSet [ ixFun $ pure . ByWord . _word
