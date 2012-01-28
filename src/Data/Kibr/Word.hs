@@ -6,6 +6,7 @@ import Data.Kibr.Grammar
 import Data.Kibr.Language
 import Data.Kibr.Revision
 
+import Data.DeriveByConstructor
 import Data.IxSet as Ix
 import Data.Lens.Template
 import Data.SafeCopy
@@ -57,24 +58,7 @@ makeLens ''Word
 
 newtype ByWord = ByWord Text deriving (Eq, Ord, Typeable)
 
-data ByShape
-  = IsParticle
-  | IsProposedParticle
-  | IsRoot
-  | IsCompound
-  | IsLoan
-  | IsName
-  | IsCluster
-  deriving (Eq, Ord, Typeable)
-
-byShape :: Shape -> ByShape
-byShape Particle{}         = IsParticle
-byShape ProposedParticle{} = IsProposedParticle
-byShape Root{}             = IsRoot
-byShape Compound           = IsCompound
-byShape Loan               = IsLoan
-byShape Name               = IsName
-byShape Cluster            = IsCluster
+deriveByConstructor ''Shape [''Eq, ''Ord, ''Typeable]
 
 instance Indexable Word where
   empty = ixSet [ ixFun $ pure . ByWord . _word
