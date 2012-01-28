@@ -1,11 +1,11 @@
-module Data.DeriveByConstructor where
+module Data.ConstructorTag where
 
 import Prelude
 
 import Language.Haskell.TH
 
-deriveByConstructor :: Name -> [Name] -> Q [Dec]
-deriveByConstructor t ds =
+makeConstructorTags :: Name -> [Name] -> Q [Dec]
+makeConstructorTags t ds =
   do
     TyConI (DataD _ _ _ cs _) <- reify t
     return [ DataD [] typeName [] [NormalC (mkCon c) [] | c <- cs] ds
@@ -18,6 +18,6 @@ deriveByConstructor t ds =
     mkCon                    = mkName . ("Is" ++) . nameBase . getName
     getName (NormalC name _) = name
     getName (RecC name _)    = name
-    getName _                = error "deriveByConstructor used on non-record"
+    getName _                = error "makeConstructorTags used on non-record"
     typeName                 = mkName . ("By" ++) . nameBase $ t
     funcName                 = mkName . ("by" ++) . nameBase $ t

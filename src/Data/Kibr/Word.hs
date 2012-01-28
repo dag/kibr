@@ -6,7 +6,7 @@ import Data.Kibr.Grammar
 import Data.Kibr.Language
 import Data.Kibr.Revision
 
-import Data.DeriveByConstructor
+import Data.ConstructorTag
 import Data.IxSet as Ix
 import Data.Lens.Template
 import Data.SafeCopy
@@ -58,7 +58,7 @@ makeLens ''Word
 
 newtype ByWord = ByWord Text deriving (Eq, Ord, Typeable)
 
-deriveByConstructor ''Shape [''Eq, ''Ord, ''Typeable]
+makeConstructorTags ''Shape [''Eq, ''Ord, ''Typeable]
 
 instance Indexable Word where
   empty = ixSet [ ixFun $ pure . ByWord . _word

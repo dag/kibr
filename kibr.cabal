@@ -65,7 +65,7 @@ Library
 
   Exposed-Modules:
     Preamble
-    Data.DeriveByConstructor
+    Data.ConstructorTag
     Data.Kibr.Environment
     Data.Kibr.Grammar
     Data.Kibr.Language
