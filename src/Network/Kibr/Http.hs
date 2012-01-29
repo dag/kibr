@@ -3,7 +3,7 @@
 module Network.Kibr.Http where
  
 import Preamble
-import Prelude                (error)
+import Prelude                (error, all)
 
 import Control.Monad.Trans    (MonadIO)
 import Control.Monad.Reader   (ReaderT, MonadReader, ask, asks
@@ -57,8 +57,10 @@ server config st =
           [ dir "master.css" stylesheet
           , dir "highlighter.css" highlighter
           ]
-      , root
       , sum [ locale (T.pack ('/' : show lang)) lang | lang <- enumerate ]
+      , root
+      , do method $ \m -> all (m /=) [GET, HEAD]
+           resp 405 $ toResponse T.empty
       ]
   where
     setLogLevel      = Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel
