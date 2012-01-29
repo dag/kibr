@@ -17,11 +17,9 @@ import Data.List (last)
 import Happstack.Server
 import Happstack.Server.ETag
 import Language.CSS
-import Text.Blaze (toHtml)
 
 import Data.Kibr.Environment
 import Data.Kibr.Language
-import Data.Kibr.Message
 import Data.Kibr.Sitemap
 import Data.Kibr.State
 
@@ -102,9 +100,8 @@ route lang st url' this =
   where
     environ = Environment
                 { language = lang
-                , msg = toHtml . message lang
-                , state = st
-                , url = \s -> url' s []
+                , state    = st
+                , url      = \s -> url' s []
                 }
     handler = case this of
                 Home   -> home

@@ -18,10 +18,16 @@ import qualified Text.Highlighter.Lexers.Haskell as Haskell
 
 type View = Reader Env.Environment Html
 
+makeTranslator :: Reader Env.Environment (Message -> Html)
+makeTranslator =
+  do
+    lang <- asks Env.language
+    return $ toHtml . message lang
+
 master :: View -> View
 master page =
   do
-    msg <- asks Env.msg
+    msg <- makeTranslator
     page' <- page
     pure . docTypeHtml $ do
       head $ do
