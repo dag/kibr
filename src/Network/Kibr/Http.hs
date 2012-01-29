@@ -3,16 +3,18 @@
 module Network.Kibr.Http where
  
 import Preamble
-import Prelude (error)
+import Prelude                (error)
 
-import Control.Monad.Reader
+import Control.Monad.Trans    (MonadIO)
+import Control.Monad.Reader   (ReaderT, MonadReader, ask, asks
+                              ,runReader, runReaderT)
 import Data.Acid              (QueryEvent, EventResult)
 import Data.Acid.Advanced     (query', MethodState)
-import Data.FileEmbed
-import Data.Lens
+import Data.FileEmbed         (embedFile)
+import Data.Lens              ((^.))
 import Data.List              (last)
 import Happstack.Server
-import Happstack.Server.ETag
+import Happstack.Server.ETag  (adler32ETagFilter)
 import Language.CSS.Happstack ()
 
 import Data.Kibr.Environment
@@ -26,8 +28,8 @@ import qualified System.Log.Logger    as Log
 import qualified Web.Routes           as R
 import qualified Web.Routes.Happstack as R
 
-import qualified Text.Kibr.Css  as Css
-import qualified Text.Kibr.Html as Html
+import qualified Text.Kibr.Css        as Css
+import qualified Text.Kibr.Html       as Html
 
 #ifndef DEVELOPMENT
 import Happstack.Server.Compression
