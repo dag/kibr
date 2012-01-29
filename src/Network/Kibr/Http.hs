@@ -43,13 +43,13 @@ instance ToMessage (CSS Rule) where
   toMessage = toMessage . renderCSS . runCSS
 
 run :: [String] -> Acid -> IO ()
-run args state =
+run args st =
   case parseConfig args of
     Left errors  -> error . join $ errors
-    Right config -> server config state
+    Right config -> server config st
 
 server :: Conf -> Acid -> IO ()
-server config state =
+server config st =
   do
 #if DEVELOPMENT
     setLogLevel Log.DEBUG
@@ -69,7 +69,7 @@ server config state =
     setLogLevel      = Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel
     locale code lang = do adler32ETagFilter
                           R.implSite "" code . R.setDefault Home . R.mkSitePI
-                            $ route lang state
+                            $ route lang st
 
 filePart :: ServerPart ()
 filePart =
@@ -97,14 +97,14 @@ route :: Language
       -> (Sitemap -> [(Text, Maybe Text)] -> Text)
       -> Sitemap
       -> ServerPart Response
-route lang st url this =
+route lang st url' this =
     runReaderT handler environ
   where
     environ = Environment
                 { language = lang
                 , msg = toHtml . message lang
                 , state = st
-                , url = \s -> url s []
+                , url = \s -> url' s []
                 }
     handler = case this of
                 Home   -> home

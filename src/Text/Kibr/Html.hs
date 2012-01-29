@@ -3,7 +3,6 @@ module Text.Kibr.Html where
 import Preamble
 
 import Control.Monad.Reader
-import Data.Kibr.Environment
 import Data.Kibr.Message
 import Data.Kibr.Word
 import Data.Lens
@@ -12,16 +11,17 @@ import Text.Blaze.Html5.Extra
 import Text.Blaze.Html5.Highlight
 import Text.Groom
 
-import qualified Data.Kibr.Sitemap as Url
-import qualified Data.Text as T
+import qualified Data.Kibr.Sitemap               as Url
+import qualified Data.Kibr.Environment           as Env
+import qualified Data.Text                       as T
 import qualified Text.Highlighter.Lexers.Haskell as Haskell
 
-type View = Reader Environment Html
+type View = Reader Env.Environment Html
 
 master :: View -> View
 master page =
   do
-    msg <- asks msg
+    msg <- asks Env.msg
     page' <- page
     pure . docTypeHtml $ do
       head $ do
@@ -42,7 +42,7 @@ master page =
 wordList :: [Word] -> View
 wordList ws =
   do
-    url <- asks url
+    url <- asks Env.url
     pure . dl . forM_ ws $ \w -> do
       let w' = word ^$ w
       dt . linkTo (url $ Url.Word w') . toHtml $ w'
