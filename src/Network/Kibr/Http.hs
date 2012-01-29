@@ -1,7 +1,4 @@
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 
 module Network.Kibr.Http where
  
@@ -9,14 +6,14 @@ import Preamble
 import Prelude (error)
 
 import Control.Monad.Reader
-import Data.Acid (QueryEvent, EventResult)
-import Data.Acid.Advanced (query', MethodState)
+import Data.Acid              (QueryEvent, EventResult)
+import Data.Acid.Advanced     (query', MethodState)
 import Data.FileEmbed
 import Data.Lens
-import Data.List (last)
+import Data.List              (last)
 import Happstack.Server
 import Happstack.Server.ETag
-import Language.CSS
+import Language.CSS.Happstack ()
 
 import Data.Kibr.Environment
 import Data.Kibr.Language
@@ -35,10 +32,6 @@ import qualified Text.Kibr.Html as Html
 #ifndef DEVELOPMENT
 import Happstack.Server.Compression
 #endif
-
-instance ToMessage (CSS Rule) where
-  toContentType _ = "text/css; charset=UTF-8"
-  toMessage = toMessage . renderCSS . runCSS
 
 run :: [String] -> Acid -> IO ()
 run args st =

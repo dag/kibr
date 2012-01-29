@@ -77,6 +77,7 @@ Library
     Data.Lens.Reader
     Happstack.Server.ETag
     Language.CSS.Extra
+    Language.CSS.Happstack
     Language.CSS.YUI
     Network.Kibr.Http
     Network.Kibr.Irc
