@@ -5,9 +5,9 @@ module Network.Kibr.Http where
 import Preamble
 import Prelude                (error, all)
 
+import Control.Monad.Identity (runIdentity)
+import Control.Monad.Reader   (MonadReader, ask, asks)
 import Control.Monad.Trans    (MonadIO)
-import Control.Monad.Reader   (ReaderT, MonadReader, ask, asks
-                              ,runReader, runReaderT)
 import Data.Acid              (QueryEvent, EventResult)
 import Data.Acid.Advanced     (query', MethodState)
 import Data.FileEmbed         (embedFile)
@@ -106,7 +106,7 @@ route :: Language
       -> Sitemap
       -> ServerPart Response
 route lang st url' this =
-    runReaderT handler environ
+    runEnvironment environ handler
   where
     environ = Environment
                 { language = lang
@@ -128,7 +128,7 @@ query ev =
     st <- asks state
     query' st ev
 
-type Controller = ReaderT Environment (ServerPartT IO) Response
+type Controller = Environmental (ServerPartT IO) Response
 
 respond :: Html.View -> Controller
 respond page =
@@ -142,7 +142,8 @@ respond page =
 #else
       . toResponse
 #endif
-      . runReader (Html.master page) $ env
+      . runIdentity
+      . runEnvironment env $ Html.master page
 
 home :: Controller
 home =

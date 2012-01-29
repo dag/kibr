@@ -2,7 +2,8 @@ module Text.Kibr.Html where
 
 import Preamble
 
-import Control.Monad.Reader
+import Control.Monad.Identity     (Identity)
+import Control.Monad.Reader       (asks)
 import Data.Kibr.Message
 import Data.Kibr.Word
 import Data.Lens
@@ -16,13 +17,13 @@ import qualified Data.Kibr.Environment           as Env
 import qualified Data.Text                       as T
 import qualified Text.Highlighter.Lexers.Haskell as Haskell
 
-type View = Reader Env.Environment Html
+type View = Env.Environmental Identity Html
 
-makeTranslator :: Reader Env.Environment (Message -> Html)
+makeTranslator :: Env.Environmental Identity (Message -> Html)
 makeTranslator =
   do
     lang <- asks Env.language
-    return $ toHtml . message lang
+    pure $ toHtml . message lang
 
 master :: View -> View
 master page =
