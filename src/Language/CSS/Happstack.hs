@@ -11,4 +11,8 @@ import Language.CSS
 
 instance ToMessage (CSS Rule) where
   toContentType _ = "text/css; charset=UTF-8"
+#if DEVELOPMENT
+  toMessage = toMessage . renderPrettyCSS . runCSS
+#else
   toMessage = toMessage . renderCSS . runCSS
+#endif

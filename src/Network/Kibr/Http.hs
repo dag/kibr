@@ -31,8 +31,10 @@ import qualified Web.Routes.Happstack as R
 import qualified Text.Kibr.Css        as Css
 import qualified Text.Kibr.Html       as Html
 
-#ifndef DEVELOPMENT
-import Happstack.Server.Compression
+#if DEVELOPMENT
+import Text.Blaze.Renderer.Pretty   (renderHtml)
+#else
+import Happstack.Server.Compression (compressedResponseFilter)
 #endif
 
 run :: [String] -> Acid -> IO ()
@@ -130,7 +132,15 @@ respond :: Html.View -> Controller
 respond page =
   do
     env <- ask
-    pure . toResponse . runReader (Html.master page) $ env
+    pure
+#if DEVELOPMENT
+      . setHeader "Content-Type" "text/html; charset=UTF-8"
+      . toResponse
+      . renderHtml
+#else
+      . toResponse
+#endif
+      . runReader (Html.master page) $ env
 
 home :: Controller
 home =
