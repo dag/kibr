@@ -55,7 +55,7 @@ server config st =
           [ dir "master.css" stylesheet
           , dir "highlighter.css" highlighter
           ]
-      , nullDir >> seeOther ("/English/"::Text) (toResponse (""::Text))
+      , root
       , sum [ locale (T.pack ('/' : show lang)) lang | lang <- enumerate ]
       ]
   where
@@ -63,6 +63,17 @@ server config st =
     locale code lang = do adler32ETagFilter
                           R.implSite "" code . R.setDefault Home . R.mkSitePI
                             $ route lang st
+
+root :: ServerPart Response
+root =
+  do
+    nullDir
+    method [GET, HEAD]
+    seeOther defaultLocale emptyResponse
+  where
+    defaultLocale :: Text
+    defaultLocale = "/English/"
+    emptyResponse = toResponse T.empty
 
 filePart :: ServerPart ()
 filePart =
