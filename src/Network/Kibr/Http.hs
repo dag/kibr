@@ -5,7 +5,6 @@ module Network.Kibr.Http where
 import Preamble
 import Prelude                (error, all)
 
-import Control.Monad.Identity (runIdentity)
 import Control.Monad.Reader   (MonadReader, ask, asks)
 import Control.Monad.Trans    (MonadIO)
 import Data.Acid              (QueryEvent, EventResult)
@@ -16,6 +15,7 @@ import Data.List              (last)
 import Happstack.Server
 import Happstack.Server.ETag  (adler32ETagFilter)
 import Language.CSS.Happstack ()
+import Text.Blaze             (Html)
 
 import Data.Kibr.Environment
 import Data.Kibr.Language
@@ -106,16 +106,14 @@ route :: Language
       -> Sitemap
       -> ServerPart Response
 route lang st url' this =
-    runEnvironment environ handler
+    runController controller environ
   where
-    environ = Environment
-                { language = lang
-                , state    = st
-                , url      = \s -> url' s []
-                }
-    handler = case this of
-                Home   -> home
-                Word w -> word w
+    environ    = Environment { language = lang
+                             , state    = st
+                             , url      = \s -> url' s []
+                             }
+    controller = case this of Home   -> home
+                              Word w -> word w
 
 query :: ( MethodState event ~ State
          , QueryEvent event
@@ -128,9 +126,7 @@ query ev =
     st <- asks state
     query' st ev
 
-type Controller = Environmental (ServerPartT IO) Response
-
-respond :: Html.View -> Controller
+respond :: View Html -> Controller Response
 respond page =
   do
     env <- ask
@@ -142,16 +138,15 @@ respond page =
 #else
       . toResponse
 #endif
-      . runIdentity
-      . runEnvironment env $ Html.master page
+      . runView (Html.master page) $ env
 
-home :: Controller
+home :: Controller Response
 home =
   do
     db <- query ReadState
     respond . Html.wordList . Ix.toList $ db ^. words
 
-word :: Text -> Controller
+word :: Text -> Controller Response
 word w =
   do
     w' <- query $ LookupWord w

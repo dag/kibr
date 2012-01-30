@@ -2,8 +2,10 @@ module Data.Kibr.Environment where
 
 import Preamble
 
-import Control.Monad.Reader (ReaderT, MonadReader, runReaderT)
+import Control.Monad.Reader (ReaderT, Reader, MonadReader
+                            ,runReaderT, runReader)
 import Control.Monad.Trans  (MonadIO)
+import Happstack.Server     (ServerPart, ServerPartT)
 
 import Data.Kibr.Language
 import Data.Kibr.Sitemap
@@ -16,7 +18,8 @@ data Environment
       , url      :: Sitemap -> Text
       }
 
-newtype Environmental m a = Environmental (ReaderT Environment m a)
+newtype Controller a
+  = Controller (ReaderT Environment (ServerPartT IO) a)
   deriving ( Functor
            , Applicative
            , Monad
@@ -25,5 +28,16 @@ newtype Environmental m a = Environmental (ReaderT Environment m a)
            , MonadReader Environment
            )
 
-runEnvironment :: Environment -> Environmental m a -> m a
-runEnvironment e (Environmental r) = runReaderT r e
+runController :: Controller a -> Environment -> ServerPart a
+runController (Controller r) e = runReaderT r e
+
+newtype View a
+  = View (Reader Environment a)
+  deriving ( Functor
+           , Applicative
+           , Monad
+           , MonadReader Environment
+           )
+
+runView :: View a -> Environment -> a
+runView (View r) e = runReader r e

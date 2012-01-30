@@ -2,8 +2,8 @@ module Text.Kibr.Html where
 
 import Preamble
 
-import Control.Monad.Identity     (Identity)
 import Control.Monad.Reader       (asks)
+import Data.Kibr.Environment      (View)
 import Data.Kibr.Message
 import Data.Kibr.Word
 import Data.Lens
@@ -12,20 +12,18 @@ import Text.Blaze.Html5.Extra
 import Text.Blaze.Html5.Highlight
 import Text.Groom
 
-import qualified Data.Kibr.Sitemap               as Url
 import qualified Data.Kibr.Environment           as Env
+import qualified Data.Kibr.Sitemap               as Url
 import qualified Data.Text                       as T
 import qualified Text.Highlighter.Lexers.Haskell as Haskell
 
-type View = Env.Environmental Identity Html
-
-makeTranslator :: Env.Environmental Identity (Message -> Html)
+makeTranslator :: View (Message -> Html)
 makeTranslator =
   do
     lang <- asks Env.language
     pure $ toHtml . message lang
 
-master :: View -> View
+master :: View Html -> View Html
 master page =
   do
     msg <- makeTranslator
@@ -54,7 +52,7 @@ master page =
     highlighter = "/resources/highlighter.css"
     masterCss   = "/resources/master.css"
 
-wordList :: [Word] -> View
+wordList :: [Word] -> View Html
 wordList ws =
   do
     url <- asks Env.url
