@@ -41,29 +41,7 @@ Executable kibr
     TemplateHaskell
     TypeFamilies
 
-  if flag(development)
-    CPP-Options: -DDEVELOPMENT
-    GHC-Options: -Wall -threaded
-                 -fwarn-tabs
-                 -fno-warn-unused-do-bind
-  else
-    GHC-Options: -Wall -threaded -rtsopts -with-rtsopts=-N
-                 -fwarn-tabs
-                 -fno-warn-unused-do-bind
-
-Library
-  HS-Source-Dirs: src
-
-  Extensions:
-    NoImplicitPrelude
-    CPP
-    DeriveDataTypeable
-    GeneralizedNewtypeDeriving
-    OverloadedStrings
-    TemplateHaskell
-    TypeFamilies
-
-  Exposed-Modules:
+  Other-Modules:
     Preamble
     Data.ConstructorTag
     Data.Kibr.Environment
@@ -116,7 +94,7 @@ Library
     web-routes-th        == 0.21.1.*
 
   if flag(development)
-    Exposed-Modules: Test.Kibr
+    Other-Modules: Test.Kibr
     Build-Depends:
       file-location              == 0.4.2.*,
       HUnit                      == 1.2.2.*,
@@ -125,10 +103,10 @@ Library
       test-framework-quickcheck2 == 0.2.12.*,
       test-framework-th          == 0.2.2.*
     CPP-Options: -DDEVELOPMENT
-    GHC-Options: -Wall
+    GHC-Options: -Wall -threaded
                  -fwarn-tabs
                  -fno-warn-unused-do-bind
   else
-    GHC-Options: -Wall
+    GHC-Options: -Wall -threaded -rtsopts -with-rtsopts=-N
                  -fwarn-tabs
                  -fno-warn-unused-do-bind
