@@ -38,9 +38,9 @@ watch:
 irc: build state
 	$(KIBR) irc
 
-src/tags:
-	cd src && hasktags -c .
+tags:
+	hasktags -c src
 
 .PHONY: gvim
-gvim: src/tags
-	gvim kibr.cabal "+cd src"
+gvim: tags
+	gvim $$(git ls-files)
