@@ -29,7 +29,7 @@ newtype Controller a
            )
 
 runController :: Controller a -> Environment -> ServerPart a
-runController (Controller r) e = runReaderT r e
+runController (Controller r) = runReaderT r
 
 newtype View a
   = View (Reader Environment a)
@@ -40,4 +40,4 @@ newtype View a
            )
 
 runView :: View a -> Environment -> a
-runView (View r) e = runReader r e
+runView (View r) = runReader r
