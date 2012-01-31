@@ -77,8 +77,8 @@ prop_pxToPercent_ends_in_percent_sign px = LT.last (pxToPercent px) == '%'
 case_root_redirects :: Assertion
 case_root_redirects =
   do
-    st <- openMemoryState fixtures
-    rq <- mkRequest "/"
-    Response{..} <- simpleHTTP'' (Http.master st) rq
+    st              <- openMemoryState fixtures
+    rq              <- mkRequest "/"
+    rs@Response{..} <- simpleHTTP'' (Http.master st) rq
     rsCode @?= 303
-    hValue (rsHeaders ! "location") @?= ["/English/"]
+    getHeader "Location" rs @?= Just "/English/"
