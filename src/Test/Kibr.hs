@@ -63,8 +63,8 @@ case_readDictionary =
 case_pxToPercent_computed :: Assertion
 case_pxToPercent_computed =
   do
-    pxToPercent 9  @?== "69.2%"
-    pxToPercent 28 @?== "215.4%"
+    pxToPercent 9  @?= "69.2%"
+    pxToPercent 28 @?= "215.4%"
 
 prop_pxToPercent_starts_with_digit :: Int -> Bool
 prop_pxToPercent_starts_with_digit px
