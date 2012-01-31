@@ -1,5 +1,5 @@
-KIBR = dist/build/kibr/kibr
-TASK = http
+KIBR   = dist/build/kibr/kibr
+TARGET = http
 
 all: hlint test
 
@@ -29,7 +29,7 @@ http: build state
 
 .PHONY: watch
 watch:
-	$(MAKE) $(TASK) & \
+	$(MAKE) $(TARGET) & \
 	git ls-files | inotifywait --fromfile=- -e modify; \
 	kill $$! || true
 	$(MAKE) watch
