@@ -2,9 +2,11 @@ module Test.Kibr where
 
 import Preamble
 
+import Data.Acid.Memory
 import Data.IxSet as Ix
 import Data.Map   as Map
 import Data.Set   as Set
+import Happstack.Server
 import System.Environment (withArgs)
 import Test.Framework.Providers.HUnit
 import Test.Framework.Providers.QuickCheck2
@@ -17,10 +19,12 @@ import Data.Kibr.Language
 import Data.Kibr.Revision
 import Data.Kibr.State
 import Data.Kibr.Word
+import Happstack.Server.Test
 import Language.CSS.YUI
 import Text.Kibr.Xml (readDictionary)
 
-import qualified Data.Text.Lazy as LT
+import qualified Data.Text.Lazy    as LT
+import qualified Network.Kibr.Http as Http
 
 run :: [String] -> IO ()
 run args = withArgs args $defaultMainGenerator
@@ -69,3 +73,12 @@ prop_pxToPercent_starts_with_digit px
 
 prop_pxToPercent_ends_in_percent_sign :: Int -> Bool
 prop_pxToPercent_ends_in_percent_sign px = LT.last (pxToPercent px) == '%'
+
+case_root_redirects :: Assertion
+case_root_redirects =
+  do
+    st <- openMemoryState fixtures
+    rq <- mkRequest "/"
+    Response{..} <- simpleHTTP'' (Http.master st) rq
+    rsCode @?= 303
+    hValue (rsHeaders ! "location") @?= ["/English/"]

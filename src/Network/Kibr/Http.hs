@@ -46,27 +46,39 @@ run args st =
 server :: Conf -> Acid -> IO ()
 server config st =
   do
+    setLogLevel
 #if DEVELOPMENT
-    setLogLevel Log.DEBUG
-    simpleHTTP config $ sum
+      Log.DEBUG
 #else
-    setLogLevel Log.WARNING
-    simpleHTTP config $ compressedResponseFilter >> sum
+      Log.WARNING
 #endif
+    simpleHTTP config $ master st
+  where
+    setLogLevel = Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel
+
+master :: Acid -> ServerPart Response
+master st =
+#ifndef DEVELOPMENT
+    compressedResponseFilter >>
+#endif
+    sum
       [ dir "resources" $ sum
           [ dir "master.css" stylesheet
           , dir "highlighter.css" highlighter
           ]
       , sum [ locale (T.pack ('/' : show lang)) lang | lang <- enumerate ]
       , root
-      , do method $ \m -> all (m /=) [GET, HEAD]
-           resp 405 $ toResponse T.empty
+      , methodForbidden
       ]
   where
-    setLogLevel      = Log.updateGlobalLogger Log.rootLoggerName . Log.setLevel
-    locale code lang = do adler32ETagFilter
-                          R.implSite "" code . R.setDefault Home . R.mkSitePI
-                            $ route lang st
+    methodForbidden =
+      do
+        method $ \m -> all (m /=) [GET, HEAD]
+        resp 405 $ toResponse T.empty
+    locale code lang =
+      do
+        adler32ETagFilter
+        R.implSite "" code . R.setDefault Home . R.mkSitePI $ route lang st
 
 root :: ServerPart Response
 root =
