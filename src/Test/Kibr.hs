@@ -82,6 +82,13 @@ prop_pxToPercent_starts_with_digit px
 prop_pxToPercent_ends_in_percent_sign :: Int -> Bool
 prop_pxToPercent_ends_in_percent_sign px = LT.last (pxToPercent px) == '%'
 
+prop_pxtoPercent_is_rounded :: Int -> Bool
+prop_pxtoPercent_is_rounded px =
+  case LT.split (== '.') (pxToPercent px) of
+    [_, d] -> LT.length d == 2
+    [_]    -> True
+    _      -> False
+
 case_root_redirects :: Assertion
 case_root_redirects =
   do
