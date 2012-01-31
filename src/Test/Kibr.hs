@@ -100,9 +100,9 @@ case_title_English_i18n :: Assertion
 case_title_English_i18n =
   do
     Response{..} <- get "/English/"
-    assertBool "expected title in English" $
+    assertBool "expecting title in English" $
       "Lojban Dictionary" `LT.isInfixOf` decodeUtf8 rsBody
-    assertBool "expected title not in Lojban" . not $
+    assertBool "expecting title not in Lojban" . not $
       "vlaste fu la lojban" `LT.isInfixOf` decodeUtf8 rsBody
 
 case_title_Lojban_i18n :: Assertion
