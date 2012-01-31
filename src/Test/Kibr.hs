@@ -6,6 +6,7 @@ import Data.Acid.Memory
 import Data.IxSet as Ix
 import Data.Map   as Map
 import Data.Set   as Set
+import Data.Text.Lazy.Encoding (decodeUtf8)
 import Happstack.Server
 import System.Environment (withArgs)
 import Test.Framework.Providers.HUnit
@@ -87,3 +88,21 @@ case_root_redirects =
     rs@Response{..} <- get "/"
     rsCode @?= 303
     getHeader "Location" rs @?= Just "/English/"
+
+case_title_English_i18n :: Assertion
+case_title_English_i18n =
+  do
+    Response{..} <- get "/English/"
+    assertBool "expected title in English" $
+      "Lojban Dictionary" `LT.isInfixOf` decodeUtf8 rsBody
+    assertBool "expected title not in Lojban" . not $
+      "vlaste fu la lojban" `LT.isInfixOf` decodeUtf8 rsBody
+
+case_title_Lojban_i18n :: Assertion
+case_title_Lojban_i18n =
+  do
+    Response{..} <- get "/Lojban/"
+    assertBool "expecting title in Lojban" $
+      "vlaste fu la lojban" `LT.isInfixOf` decodeUtf8 rsBody
+    assertBool "expecting title not in English" . not $
+      "Lojban Dictionary" `LT.isInfixOf` decodeUtf8 rsBody
