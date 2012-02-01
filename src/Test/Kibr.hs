@@ -65,7 +65,10 @@ get url =
     simpleHTTP'' (Http.master st) rq
 
 parseHtml :: LB.ByteString -> IOStateArrow s b XmlTree
-parseHtml = readString [withParseHTML yes] . LT.unpack . decodeUtf8
+parseHtml =
+    readString config . LT.unpack . decodeUtf8
+  where
+    config = [withParseHTML yes, withWarnings no]
 
 getTitle :: ArrowXml a => a XmlTree String
 getTitle = deep (hasName "title") >>> getChildren >>> getText
