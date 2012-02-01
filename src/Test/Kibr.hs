@@ -14,6 +14,7 @@ import Test.Framework.Providers.QuickCheck2
 import Test.Framework.TH
 import Test.HUnit hiding (State)
 import Test.HUnit.Diff
+import Text.XML.HXT.Core
 
 import Data.Kibr.Grammar
 import Data.Kibr.Language
@@ -24,8 +25,9 @@ import Happstack.Server.Test
 import Language.CSS.YUI
 import Text.Kibr.Xml (readDictionary)
 
-import qualified Data.Text.Lazy    as LT
-import qualified Network.Kibr.Http as Http
+import qualified Data.ByteString.Lazy as LB
+import qualified Data.Text.Lazy       as LT
+import qualified Network.Kibr.Http    as Http
 
 run :: [String] -> IO ()
 run args = withArgs args $defaultMainGenerator
@@ -61,6 +63,12 @@ get url =
     st <- openMemoryState fixtures
     rq <- mkRequest url
     simpleHTTP'' (Http.master st) rq
+
+parseHtml :: LB.ByteString -> IOStateArrow s b XmlTree
+parseHtml = readString [withParseHTML yes] . LT.unpack . decodeUtf8
+
+getTitle :: ArrowXml a => a XmlTree String
+getTitle = deep (hasName "title") >>> getChildren >>> getText
 
 case_readDictionary :: Assertion
 case_readDictionary =
@@ -100,16 +108,12 @@ case_title_English_i18n :: Assertion
 case_title_English_i18n =
   do
     Response{..} <- get "/English/"
-    assertBool "expecting title in English" $
-      "Lojban Dictionary" `LT.isInfixOf` decodeUtf8 rsBody
-    assertBool "expecting title not in Lojban" . not $
-      "vlaste fu la lojban" `LT.isInfixOf` decodeUtf8 rsBody
+    [title]      <- runX $ parseHtml rsBody >>> getTitle
+    (LT.strip . LT.pack) title @?= "Lojban Dictionary"
 
 case_title_Lojban_i18n :: Assertion
 case_title_Lojban_i18n =
   do
     Response{..} <- get "/Lojban/"
-    assertBool "expecting title in Lojban" $
-      "vlaste fu la lojban" `LT.isInfixOf` decodeUtf8 rsBody
-    assertBool "expecting title not in English" . not $
-      "Lojban Dictionary" `LT.isInfixOf` decodeUtf8 rsBody
+    [title]      <- runX $ parseHtml rsBody >>> getTitle
+    (LT.strip . LT.pack) title @?= "vlaste fu la lojban"
