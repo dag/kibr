@@ -62,7 +62,7 @@ master st =
     compressedResponseFilter >>
 #endif
     sum
-      [ dir "resources" $ sum
+      [ dir "assets" $ sum
           [ dir "master.css" stylesheet
           , dir "highlighter.css" highlighter
           ]
