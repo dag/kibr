@@ -84,7 +84,7 @@ Executable kibr
     highlighter          == 0.2.*,
     hslogger             == 1.1.5.*,
     hxt                  == 9.2.0.*,
-    ircbot               == 0.2.3.*,
+    ircbot               == 0.3.1.*,
     ixset                == 1.0.2.*,
     mtl                  == 2.0.1.*,
     parsec               == 3.1.2.*,
