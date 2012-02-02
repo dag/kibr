@@ -49,8 +49,8 @@ master page =
                            , "&3.4.1/build/cssfonts/cssfonts-min.css"
                            , "&3.4.1/build/cssbase/cssbase-min.css"
                            ]
-    highlighter = "/assets/highlighter.css"
-    masterCss   = "/assets/master.css"
+    highlighter = "/assets/Highlighter"
+    masterCss   = "/assets/Screen"
 
 wordList :: [Word] -> View Html
 wordList ws =

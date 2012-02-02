@@ -62,10 +62,7 @@ master st =
     compressedResponseFilter >>
 #endif
     sum
-      [ dir "assets" $ sum
-          [ dir "master.css" stylesheet
-          , dir "highlighter.css" highlighter
-          ]
+      [ R.implSite "" "/assets" . R.mkSitePI $ asset
       , sum [ locale (T.pack ('/' : show lang)) lang | lang <- enumerate ]
       , root
       , methodForbidden
@@ -90,6 +87,11 @@ root =
     defaultLocale :: Text
     defaultLocale = "/English/"
     emptyResponse = toResponse T.empty
+
+asset :: (Asset -> [(Text, Maybe Text)] -> Text)
+      -> Asset -> ServerPart Response
+asset _ Highlighter = highlighter
+asset _ Screen      = stylesheet
 
 filePart :: ServerPart ()
 filePart =

@@ -4,6 +4,13 @@ import Preamble
 
 import Web.Routes.TH
 
+data Asset
+  = Highlighter
+  | Screen
+  deriving (Eq, Ord, Read, Show, Data, Typeable)
+
+derivePathInfo ''Asset
+
 data Sitemap
   = Home
   | Word Text
