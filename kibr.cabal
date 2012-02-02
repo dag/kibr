@@ -93,7 +93,8 @@ Executable kibr
     text                 == 0.11.1.*,
     web-routes           == 0.26.3.*,
     web-routes-happstack == 0.23.0.*,
-    web-routes-th        == 0.21.1.*
+    web-routes-th        == 0.21.1.*,
+    zlib                 == 0.5.3.1
 
   if flag(development)
     Other-Modules: Test.Kibr
