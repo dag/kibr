@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 module Network.Kibr.Http where
- 
+
 import Preamble
 import Prelude                (error, all)
 
