@@ -16,20 +16,20 @@ import Happstack.Server
 import Happstack.Server.ETag  (adler32ETagFilter)
 import Language.CSS.Happstack ()
 import Text.Blaze             (Html)
+import Web.Routes             (mkSitePI, setDefault)
+import Web.Routes.Happstack   (implSite)
 
 import Data.Kibr.Environment
 import Data.Kibr.Language
 import Data.Kibr.Sitemap
 import Data.Kibr.State
 
-import qualified Data.IxSet           as Ix
-import qualified Data.Text            as T
-import qualified System.Log.Logger    as Log
-import qualified Web.Routes           as R
-import qualified Web.Routes.Happstack as R
+import qualified Data.IxSet        as Ix
+import qualified Data.Text         as T
+import qualified System.Log.Logger as Log
 
-import qualified Text.Kibr.Css        as Css
-import qualified Text.Kibr.Html       as Html
+import qualified Text.Kibr.Css     as Css
+import qualified Text.Kibr.Html    as Html
 
 #if DEVELOPMENT
 import Text.Blaze.Renderer.Pretty   (renderHtml)
@@ -62,7 +62,7 @@ master st =
     compressedResponseFilter >>
 #endif
     sum
-      [ R.implSite "" "/assets" . R.mkSitePI $ asset
+      [ implSite "" "/assets" . mkSitePI $ asset
       , sum [ locale (T.pack ('/' : show lang)) lang | lang <- enumerate ]
       , root
       , methodForbidden
@@ -75,7 +75,7 @@ master st =
     locale code lang =
       do
         adler32ETagFilter
-        R.implSite "" code . R.setDefault Home . R.mkSitePI $ route lang st
+        implSite "" code . setDefault Home . mkSitePI $ route lang st
 
 root :: ServerPart Response
 root =

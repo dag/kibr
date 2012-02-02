@@ -2,7 +2,7 @@ module Data.Kibr.Sitemap where
 
 import Preamble
 
-import Web.Routes.TH
+import Web.Routes.TH (derivePathInfo)
 
 data Asset
   = Highlighter
