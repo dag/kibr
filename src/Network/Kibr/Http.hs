@@ -58,14 +58,9 @@ server config st =
 
 master :: Acid -> ServerPart Response
 master st =
-#ifndef DEVELOPMENT
-    compressedResponseFilter >>
-#endif
-    adler32ETagFilter >>
-    sum
-      [ implSite "" "" . setDefault Root . mkSitePI $ sitemap st
-      , methodForbidden
-      ]
+    sum [ implSite "" "" . setDefault Root . mkSitePI $ sitemap st
+        , methodForbidden
+        ]
   where
     methodForbidden =
       do
@@ -77,11 +72,16 @@ sitemap :: Acid
         -> Sitemap
         -> ServerPart Response
 sitemap st url' this =
-  case this of
-    Root                 -> root $ url' (Dictionary English Home) []
-    Asset Highlighter    -> highlighter
-    Asset Screen         -> stylesheet
-    Dictionary lang page -> dictionary lang st url' page
+  do
+#ifndef DEVELOPMENT
+    compressedResponseFilter
+#endif
+    adler32ETagFilter
+    case this of
+      Root                 -> root $ url' (Dictionary English Home) []
+      Asset Highlighter    -> highlighter
+      Asset Screen         -> stylesheet
+      Dictionary lang page -> dictionary lang st url' page
 
 root :: Text -> ServerPart Response
 root home' =
