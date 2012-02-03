@@ -88,9 +88,7 @@ root home' =
   do
     nullDir
     method [GET, HEAD]
-    seeOther home' emptyResponse
-  where
-    emptyResponse = toResponse T.empty
+    seeOther home' $ toResponse T.empty
 
 filePart :: ServerPart ()
 filePart =
