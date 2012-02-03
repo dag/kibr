@@ -33,22 +33,15 @@ readState :: Query State State
 readState = ask
 
 lookupWord :: Text -> Query State (Maybe Word)
-lookupWord w = askL $ ixLens (ByWord w') . words
+lookupWord w =
+  do
+    ws <- askL words
+    pure . lookup (ByWord w') $ ws
   where
     w' = T.replace "h" "'" . T.replace "." T.empty $ w
-
-reviseWord :: Text -> Language -> Revision Definition -> Update State ()
-reviseWord w l r =
-  do
-    byWord . words %= map (lang . definitions ^%= map (r:))
-    pure ()
-  where
-    byWord = ixLens $ ByWord w
-    lang   = mapLens l
 
 makeAcidic ''State
   [ 'writeState
   , 'readState
   , 'lookupWord
-  , 'reviseWord
   ]
