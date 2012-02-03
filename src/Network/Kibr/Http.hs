@@ -63,7 +63,7 @@ master st =
 #endif
     adler32ETagFilter >>
     sum
-      [ implSite "" "" . setDefault Root . mkSitePI $ route st
+      [ implSite "" "" . setDefault Root . mkSitePI $ sitemap st
       , methodForbidden
       ]
   where
@@ -72,26 +72,16 @@ master st =
         method $ \m -> all (m /=) [GET, HEAD]
         resp 405 $ toResponse T.empty
 
-route :: Acid
-      -> (Sitemap -> [(Text, Maybe Text)] -> Text)
-      -> Sitemap
-      -> ServerPart Response
-route st url' this =
+sitemap :: Acid
+        -> (Sitemap -> [(Text, Maybe Text)] -> Text)
+        -> Sitemap
+        -> ServerPart Response
+sitemap st url' this =
   case this of
     Root                 -> root $ url' (Dictionary English Home) []
     Asset Highlighter    -> highlighter
     Asset Screen         -> stylesheet
-    Dictionary lang page ->
-      let
-        environ    = Environment { language = lang
-                                 , state    = st
-                                 , url      = \s -> url' (Dictionary lang s) []
-                                 , asset    = \s -> url' (Asset s) []
-                                 }
-        controller = case page of Home   -> home
-                                  Word w -> word w
-      in
-        runController controller environ
+    Dictionary lang page -> dictionary lang st url' page
 
 root :: Text -> ServerPart Response
 root home' =
@@ -121,6 +111,22 @@ stylesheet =
   do
     filePart
     pure . toResponse $ Css.master
+
+dictionary :: Language
+           -> Acid
+           -> (Sitemap -> [(Text, Maybe Text)] -> Text)
+           -> Dictionary
+           -> ServerPart Response
+dictionary lang st url' page =
+    runController controller environ
+  where
+    environ    = Environment { language = lang
+                             , state    = st
+                             , url      = \s -> url' (Dictionary lang s) []
+                             , asset    = \s -> url' (Asset s) []
+                             }
+    controller = case page of Home   -> home
+                              Word w -> word w
 
 query :: ( MethodState event ~ State
          , QueryEvent event
