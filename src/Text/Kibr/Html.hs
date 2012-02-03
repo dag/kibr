@@ -27,6 +27,7 @@ master :: View Html -> View Html
 master page =
   do
     msg <- makeTranslator
+    asset <- asks Env.asset
     page' <- page
     pure . docTypeHtml $ do
       head $ do
@@ -34,8 +35,8 @@ master page =
         mapM_ linkCss
           [ webfonts
           , yui
-          , highlighter
-          , masterCss
+          , asset Url.Highlighter
+          , asset Url.Screen
           ]
       body page'
   where
@@ -49,8 +50,6 @@ master page =
                            , "&3.4.1/build/cssfonts/cssfonts-min.css"
                            , "&3.4.1/build/cssbase/cssbase-min.css"
                            ]
-    highlighter = "/assets/Highlighter"
-    masterCss   = "/assets/Screen"
 
 wordList :: [Word] -> View Html
 wordList ws =

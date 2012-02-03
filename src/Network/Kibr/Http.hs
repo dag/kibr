@@ -61,10 +61,9 @@ master st =
 #ifndef DEVELOPMENT
     compressedResponseFilter >>
 #endif
+    adler32ETagFilter >>
     sum
-      [ implSite "" "/assets" . mkSitePI $ asset
-      , sum [ locale (T.pack ('/' : show lang)) lang | lang <- enumerate ]
-      , root
+      [ implSite "" "" . setDefault Root . mkSitePI $ route st
       , methodForbidden
       ]
   where
@@ -72,26 +71,36 @@ master st =
       do
         method $ \m -> all (m /=) [GET, HEAD]
         resp 405 $ toResponse T.empty
-    locale code lang =
-      do
-        adler32ETagFilter
-        implSite "" code . setDefault Home . mkSitePI $ route lang st
 
-root :: ServerPart Response
-root =
+route :: Acid
+      -> (Sitemap -> [(Text, Maybe Text)] -> Text)
+      -> Sitemap
+      -> ServerPart Response
+route st url' this =
+  case this of
+    Root                 -> root $ url' (Dictionary English Home) []
+    Asset Highlighter    -> highlighter
+    Asset Screen         -> stylesheet
+    Dictionary lang page ->
+      let
+        environ    = Environment { language = lang
+                                 , state    = st
+                                 , url      = \s -> url' (Dictionary lang s) []
+                                 , asset    = \s -> url' (Asset s) []
+                                 }
+        controller = case page of Home   -> home
+                                  Word w -> word w
+      in
+        runController controller environ
+
+root :: Text -> ServerPart Response
+root home' =
   do
     nullDir
     method [GET, HEAD]
-    seeOther defaultLocale emptyResponse
+    seeOther home' emptyResponse
   where
-    defaultLocale :: Text
-    defaultLocale = "/English/"
     emptyResponse = toResponse T.empty
-
-asset :: (Asset -> [(Text, Maybe Text)] -> Text)
-      -> Asset -> ServerPart Response
-asset _ Highlighter = highlighter
-asset _ Screen      = stylesheet
 
 filePart :: ServerPart ()
 filePart =
@@ -99,7 +108,6 @@ filePart =
     nullDir
     guardRq $ \rq -> last (rqUri rq) /= '/'
     method [GET, HEAD]
-    adler32ETagFilter
 
 highlighter :: ServerPart Response
 highlighter =
@@ -113,21 +121,6 @@ stylesheet =
   do
     filePart
     pure . toResponse $ Css.master
-
-route :: Language
-      -> Acid
-      -> (Sitemap -> [(Text, Maybe Text)] -> Text)
-      -> Sitemap
-      -> ServerPart Response
-route lang st url' this =
-    runController controller environ
-  where
-    environ    = Environment { language = lang
-                             , state    = st
-                             , url      = \s -> url' s []
-                             }
-    controller = case this of Home   -> home
-                              Word w -> word w
 
 query :: ( MethodState event ~ State
          , QueryEvent event

@@ -105,18 +105,18 @@ case_root_redirects =
   do
     rs@Response{..} <- get "/"
     rsCode @?= 303
-    getHeader "Location" rs @?= Just "/English/"
+    getHeader "Location" rs @?= Just "/Dictionary/English/Home"
 
 case_title_English_i18n :: Assertion
 case_title_English_i18n =
   do
-    Response{..} <- get "/English/"
+    Response{..} <- get "/Dictionary/English/Home"
     [title]      <- runX $ parseHtml rsBody >>> getTitle
     (LT.strip . LT.pack) title @?= "Lojban Dictionary"
 
 case_title_Lojban_i18n :: Assertion
 case_title_Lojban_i18n =
   do
-    Response{..} <- get "/Lojban/"
+    Response{..} <- get "/Dictionary/Lojban/Home"
     [title]      <- runX $ parseHtml rsBody >>> getTitle
     (LT.strip . LT.pack) title @?= "vlaste fu la lojban"
