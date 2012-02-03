@@ -2,7 +2,7 @@ module Test.Kibr.Xml where
 
 import Data.Kibr.Language             (Language(English))
 import Test.Framework                 (Test)
-import Test.Framework.Providers.HUnit
+import Test.Framework.Providers.HUnit (testCase)
 import Test.Framework.TH              (testGroupGenerator)
 import Test.HUnit                     (Assertion)
 import Test.HUnit.Diff                ((@?==))

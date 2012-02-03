@@ -4,8 +4,8 @@ import Preamble
 
 import Language.CSS.YUI                     (pxToPercent)
 import Test.Framework                       (Test)
-import Test.Framework.Providers.HUnit
-import Test.Framework.Providers.QuickCheck2
+import Test.Framework.Providers.HUnit       (testCase)
+import Test.Framework.Providers.QuickCheck2 (testProperty)
 import Test.Framework.TH                    (testGroupGenerator)
 import Test.HUnit                           (Assertion, (@?=))
 

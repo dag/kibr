@@ -2,12 +2,12 @@ module Test.Kibr.Http where
 
 import Preamble
 
-import Data.Acid.Memory
+import Data.Acid.Memory               (openMemoryState)
 import Data.Text.Lazy.Encoding        (decodeUtf8)
 import Happstack.Server
 import Happstack.Server.Test          (mkRequest)
 import Test.Framework                 (Test)
-import Test.Framework.Providers.HUnit
+import Test.Framework.Providers.HUnit (testCase)
 import Test.Framework.TH              (testGroupGenerator)
 import Test.HUnit                     (Assertion, (@?=))
 import Test.Kibr.Fixture
