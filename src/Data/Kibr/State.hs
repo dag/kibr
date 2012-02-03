@@ -18,9 +18,7 @@ import Data.Kibr.Word
 
 import qualified Data.Text as T
 
-data State
-  = State { _words :: HiggsSet Word }
-  deriving (Eq, Show, Data, Typeable)
+data State = State { _words :: HiggsSet Word WordIndex }
 
 deriveSafeCopy 0 'base ''State
 

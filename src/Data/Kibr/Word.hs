@@ -1,6 +1,7 @@
 module Data.Kibr.Word where
 
 import Preamble
+import Prelude (undefined, minBound, maxBound, fromEnum, toEnum)
 
 import Data.Kibr.Grammar
 import Data.Kibr.Language
@@ -10,6 +11,7 @@ import Data.ConstructorTag
 import Data.HiggsSet as Higgs
 import Data.Lens.Template
 import Data.SafeCopy
+import Data.TrieMap.Representation
 
 data Shape
   = Particle
@@ -32,6 +34,8 @@ data Shape
 deriveSafeCopy 0 'base ''Shape
 
 makeLens ''Shape
+
+makeConstructorTags ''Shape [''Eq, ''Ord, ''Typeable]
 
 data Definition
   = Definition
@@ -56,11 +60,31 @@ deriveSafeCopy 0 'base ''Word
 
 makeLens ''Word
 
-newtype ByWord = ByWord Text deriving (Eq, Ord, Typeable)
+data WordIndex
+  = ByWord Text
+  | ByShape ByShape
+  deriving (Eq, Ord)
 
-makeConstructorTags ''Shape [''Eq, ''Ord, ''Typeable]
+genOrdRepr ''WordIndex
+
+instance Bounded WordIndex where
+  minBound = ByWord undefined
+  maxBound = ByShape undefined
+
+instance Enum WordIndex where
+  fromEnum i =
+    case i of
+      ByWord _  -> 0
+      ByShape _ -> 1
+  toEnum 0 = ByWord undefined
+  toEnum 1 = ByShape undefined
+  toEnum _ = undefined
+
+instance Index WordIndex
 
 instance Indexable Word where
-  empty = ixSet [ ixFun $ pure . ByWord . _word
-                , ixFun $ pure . byShape . _shape
-                ]
+  type IndexOf Word = WordIndex
+  project i x =
+    case i of
+      ByWord _  -> [ByWord . _word $ x]
+      ByShape _ -> [ByShape . byShape . _shape $ x]

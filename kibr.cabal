@@ -90,6 +90,7 @@ Executable kibr
     safecopy             == 0.6.1.*,
     template-haskell     == 2.5.0.*,
     text                 == 0.11.1.*,
+    TrieMap              == 4.0.1.*,
     web-routes           == 0.26.3.*,
     web-routes-happstack == 0.23.0.*,
     web-routes-th        == 0.21.1.*,
