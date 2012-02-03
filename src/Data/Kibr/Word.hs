@@ -7,7 +7,7 @@ import Data.Kibr.Language
 import Data.Kibr.Revision
 
 import Data.ConstructorTag
-import Data.IxSet as Ix
+import Data.HiggsSet as Higgs
 import Data.Lens.Template
 import Data.SafeCopy
 

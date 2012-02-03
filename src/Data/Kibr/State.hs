@@ -6,9 +6,8 @@ import Control.Monad.Reader (ask)
 import Control.Monad.State  (put)
 
 import Data.Acid
-import Data.IxSet as Ix
+import Data.HiggsSet as Higgs
 import Data.Lens
-import Data.Lens.IxSet
 import Data.Lens.Reader
 import Data.Lens.Template
 import Data.SafeCopy
@@ -20,7 +19,7 @@ import Data.Kibr.Word
 import qualified Data.Text as T
 
 data State
-  = State { _words :: IxSet Word }
+  = State { _words :: HiggsSet Word }
   deriving (Eq, Show, Data, Typeable)
 
 deriveSafeCopy 0 'base ''State

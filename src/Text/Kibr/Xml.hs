@@ -10,7 +10,7 @@ import Data.Kibr.State hiding (words)
 import Data.Kibr.Language
 import Text.XML.HXT.Core
 
-import qualified Data.IxSet         as Ix
+import qualified Data.HiggsSet      as Higgs
 import qualified Data.Kibr.Grammar  as DB
 import qualified Data.Kibr.Revision as DB
 import qualified Data.Kibr.Word     as DB
@@ -29,7 +29,7 @@ readDictionary :: Language -> String -> IO State
 readDictionary language file =
   do
     words <- runX $ readDocument [] file >>> deep (getWord language)
-    pure . State $ Ix.fromList words
+    pure . State $ Higgs.fromList words
 
 getWord :: ArrowXml a => Language -> a XmlTree DB.Word
 getWord language = hasName "valsi" >>> proc valsi ->

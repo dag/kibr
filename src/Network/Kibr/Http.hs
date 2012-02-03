@@ -24,7 +24,7 @@ import Data.Kibr.Language
 import Data.Kibr.Sitemap
 import Data.Kibr.State
 
-import qualified Data.IxSet        as Ix
+import qualified Data.HiggsSet     as Higgs
 import qualified Data.Text         as T
 import qualified System.Log.Logger as Log
 
@@ -155,7 +155,7 @@ home :: Controller Response
 home =
   do
     db <- query ReadState
-    respond . Html.wordList . Ix.toList $ db ^. words
+    respond . Html.wordList . Higgs.toList $ db ^. words
 
 word :: Text -> Controller Response
 word w =

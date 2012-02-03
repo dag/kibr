@@ -8,9 +8,9 @@ import Data.Kibr.Revision
 import Data.Kibr.State
 import Data.Kibr.Word
 
-import qualified Data.IxSet as Ix
-import qualified Data.Map   as Map
-import qualified Data.Set   as Set
+import qualified Data.HiggsSet as Higgs
+import qualified Data.Map      as Map
+import qualified Data.Set      as Set
 
 def :: Text -> Maybe Text -> Map.Map Language [Revision Definition]
 def d n =
@@ -19,7 +19,7 @@ def d n =
     rev = [Revision (Definition d n) (Just "Imported")]
 
 fixtures :: State
-fixtures = State $ Ix.fromList
+fixtures = State $ Higgs.fromList
     [ Word "ba'e" (Particle Set.empty BAhE) $
         def "forethought emphasis indicator." Nothing
     , Word "la'oi" (ProposedParticle Set.empty) .

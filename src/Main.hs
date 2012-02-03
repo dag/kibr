@@ -9,7 +9,7 @@ import Data.Acid.Local    (createCheckpointAndClose)
 import Data.Kibr.State
 import System.Environment (getArgs)
 
-import qualified Data.IxSet        as Ix
+import qualified Data.HiggsSet     as Higgs
 import qualified Network.Kibr.Http as Http
 import qualified Network.Kibr.Irc  as Irc
 import qualified Text.Kibr.Xml     as Xml
@@ -33,4 +33,4 @@ run _               = error "usage: kibr <http|irc|import> [args]"
 #endif
 
 withState :: (Acid -> IO a) -> IO a
-withState = bracket (openLocalState $ State Ix.empty) createCheckpointAndClose
+withState = bracket (openLocalState $ State Higgs.empty) createCheckpointAndClose
