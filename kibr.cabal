@@ -80,7 +80,7 @@ Executable kibr
     file-embed           == 0.0.4.*,
     groom                == 0.1.1.*,
     happstack-server     == 6.5.6.*,
-    HiggsSet,
+    HiggsSet             == 0.1.1.*,
     highlighter          == 0.2.*,
     hslogger             == 1.1.5.*,
     hxt                  == 9.2.0.*,
