@@ -3,7 +3,6 @@ module Text.Kibr.Html where
 import Preamble
 
 import Control.Monad.Reader       (asks)
-import Data.Kibr.Environment      (View)
 import Data.Kibr.Message
 import Data.Kibr.Word
 import Data.Lens
@@ -17,13 +16,15 @@ import qualified Data.Kibr.Sitemap               as Url
 import qualified Data.Text                       as T
 import qualified Text.Highlighter.Lexers.Haskell as Haskell
 
-makeTranslator :: View (Message -> Html)
+type View = Env.Reader Html
+
+makeTranslator :: Env.Reader (Message -> Html)
 makeTranslator =
   do
     lang <- asks Env.language
     pure $ toHtml . message lang
 
-master :: View Html -> View Html
+master :: View -> View
 master page =
   do
     msg <- makeTranslator
@@ -51,7 +52,7 @@ master page =
                            , "&3.4.1/build/cssbase/cssbase-min.css"
                            ]
 
-wordList :: [Word] -> View Html
+wordList :: [Word] -> View
 wordList ws =
   do
     url <- asks Env.url

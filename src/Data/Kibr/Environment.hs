@@ -2,14 +2,14 @@ module Data.Kibr.Environment where
 
 import Preamble
 
-import Control.Monad.Reader (ReaderT, Reader, MonadReader
-                            ,runReaderT, runReader)
-import Control.Monad.Trans  (MonadIO)
-import Happstack.Server     (ServerPart, ServerPartT)
+import Control.Monad.Trans (MonadIO)
+import Happstack.Server    (ServerPart, ServerPartT)
 
 import Data.Kibr.Language
 import Data.Kibr.Sitemap
 import Data.Kibr.State
+
+import qualified Control.Monad.Reader as R
 
 data Environment
   = Environment
@@ -20,25 +20,25 @@ data Environment
       }
 
 newtype Controller a
-  = Controller (ReaderT Environment (ServerPartT IO) a)
+  = Controller (R.ReaderT Environment (ServerPartT IO) a)
   deriving ( Functor
            , Applicative
            , Monad
            , MonadPlus
            , MonadIO
-           , MonadReader Environment
+           , R.MonadReader Environment
            )
 
 runController :: Controller a -> Environment -> ServerPart a
-runController (Controller r) = runReaderT r
+runController (Controller r) = R.runReaderT r
 
-newtype View a
-  = View (Reader Environment a)
+newtype Reader a
+  = Reader (R.Reader Environment a)
   deriving ( Functor
            , Applicative
            , Monad
-           , MonadReader Environment
+           , R.MonadReader Environment
            )
 
-runView :: View a -> Environment -> a
-runView (View r) = runReader r
+runReader :: Reader a -> Environment -> a
+runReader (Reader r) = R.runReader r
