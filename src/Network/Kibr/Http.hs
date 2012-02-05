@@ -143,8 +143,15 @@ respond page =
     pure
       . setHeader "Content-Type" "text/html; charset=UTF-8"
       . toResponse
+      . T.append docType
       . render unsafe
       . runReader (Html.master page) $ env
+  where
+    docType = T.concat
+      [ "<!DOCTYPE html PUBLIC "
+      , "\"-//W3C//DTD XHTML 1.0 Strict//EN\" "
+      , "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"
+      ]
 
 home :: Controller Response
 home =

@@ -9,6 +9,7 @@ import Data.Lens
 import Text.Groom
 import Text.Highlighter.Extra
 import Text.XHtmlCombinators
+import Text.XHtmlCombinators.Attributes hiding (title)
 import Text.XHtmlCombinators.Extra
 import Text.XHtmlCombinators.Internal
 
@@ -31,7 +32,7 @@ master page =
     msg <- makeTranslator
     asset <- asks Env.asset
     page' <- page
-    pure . html $ do
+    pure . html' [xmlns "http://www.w3.org/1999/xhtml"] $ do
       head_ $ do
         title $ msg LojbanDictionary
         mapM_ linkCss
@@ -49,8 +50,8 @@ master page =
                            ]
     yui         = T.concat [ "http://yui.yahooapis.com/combo"
                            , "?3.4.1/build/cssreset/cssreset-min.css"
-                           , "&3.4.1/build/cssfonts/cssfonts-min.css"
-                           , "&3.4.1/build/cssbase/cssbase-min.css"
+                           , "&amp;3.4.1/build/cssfonts/cssfonts-min.css"
+                           , "&amp;3.4.1/build/cssbase/cssbase-min.css"
                            ]
 
 wordList :: [Word] -> View BlockContent
