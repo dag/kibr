@@ -54,7 +54,7 @@ nl = T.singleton '\n'
 renderAttrs :: Escaper e -> Attrs -> Text
 renderAttrs esc [] = T.empty
 renderAttrs esc attrs =
-    T.intercalate space $ fmap (renderAttr . escapeAttr esc) attrs
+    T.intercalate space $ space : fmap (renderAttr . escapeAttr esc) attrs
 
 renderAttr :: Attr -> Text
 renderAttr (Attr key val) = T.concat [key, "=\"", val, "\""]
