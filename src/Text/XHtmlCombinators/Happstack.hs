@@ -17,7 +17,13 @@ import qualified Data.Text     as T
 
 instance ToMessage (XHtml Root) where
   toContentType _ = "application/xhtml+xml; charset=UTF-8"
-  toMessage = toMessage . T.append (T.pack docType) . render safe
+  toMessage =
+      toMessage
+        . T.append xmlDecl
+        . T.append (T.pack docType)
+        . render safe
+    where
+      xmlDecl = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 
 safe :: Escaper Text
 safe =
