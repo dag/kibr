@@ -9,23 +9,25 @@ import Preamble
 import Control.Monad.Identity
 import Data.Foldable
 import Happstack.Server
+import Text.XHtml.Strict              (docType, stringToHtmlString)
 import Text.XHtmlCombinators.Internal
 
-import qualified Data.Sequence      as Seq
-import qualified Data.Text          as T
-import qualified Data.Text.Encoding as T
-import qualified Data.Text.IO       as T
+import qualified Data.Sequence as Seq
+import qualified Data.Text     as T
 
 instance ToMessage (XHtml Root) where
   toContentType _ = "application/xhtml+xml; charset=UTF-8"
-  toMessage =
-      toMessage . T.append docType . render unsafe
-    where
-      docType = T.concat
-        [ "<!DOCTYPE html PUBLIC "
-        , "\"-//W3C//DTD XHTML 1.0 Strict//EN\" "
-        , "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"
-        ]
+  toMessage = toMessage . T.append (T.pack docType) . render safe
+
+safe :: Escaper Text
+safe =
+    unsafe { escapeAttr = \(Attr name value) -> Attr name (escapeHtml value)
+           , escapeText = escapeHtml
+           , childEscaper = const safe
+           }
+  where
+    escapeHtml = T.pack . stringToHtmlString . T.unpack
+
 
 -- Below code mostly copied from Text.XHtmlCombinators.Render
 -- (c) Alasdair Armstrong 2010

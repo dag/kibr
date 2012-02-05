@@ -50,8 +50,8 @@ master page =
                            ]
     yui         = T.concat [ "http://yui.yahooapis.com/combo"
                            , "?3.4.1/build/cssreset/cssreset-min.css"
-                           , "&amp;3.4.1/build/cssfonts/cssfonts-min.css"
-                           , "&amp;3.4.1/build/cssbase/cssbase-min.css"
+                           , "&3.4.1/build/cssfonts/cssfonts-min.css"
+                           , "&3.4.1/build/cssbase/cssbase-min.css"
                            ]
 
 wordList :: [Word] -> View BlockContent
