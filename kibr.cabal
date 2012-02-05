@@ -66,6 +66,7 @@ Executable kibr
     Text.Kibr.Html
     Text.Kibr.Xml
     Text.XHtmlCombinators.Extra
+    Text.XHtmlCombinators.Happstack
 
   Build-Depends:
     acid-state           == 0.6.3.*,

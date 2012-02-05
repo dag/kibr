@@ -3,22 +3,22 @@
 module Network.Kibr.Http where
 
 import Preamble
-import Prelude                      (error, all)
+import Prelude                         (error, all)
 
-import Control.Monad.Reader         (MonadReader, ask, asks)
-import Control.Monad.Trans          (MonadIO)
-import Data.Acid                    (QueryEvent, EventResult)
-import Data.Acid.Advanced           (query', MethodState)
-import Data.FileEmbed               (embedFile)
-import Data.Lens                    ((^.))
-import Data.List                    (last)
+import Control.Monad.Reader            (MonadReader, ask, asks)
+import Control.Monad.Trans             (MonadIO)
+import Data.Acid                       (QueryEvent, EventResult)
+import Data.Acid.Advanced              (query', MethodState)
+import Data.FileEmbed                  (embedFile)
+import Data.Lens                       ((^.))
+import Data.List                       (last)
 import Happstack.Server
-import Happstack.Server.ETag        (adler32ETagFilter)
-import Language.CSS.Happstack       ()
-import Text.XHtmlCombinators        (BlockContent)
-import Text.XHtmlCombinators.Render (render, unsafe)
-import Web.Routes                   (mkSitePI, setDefault)
-import Web.Routes.Happstack         (implSite)
+import Happstack.Server.ETag           (adler32ETagFilter)
+import Language.CSS.Happstack          ()
+import Text.XHtmlCombinators           (BlockContent)
+import Text.XHtmlCombinators.Happstack ()
+import Web.Routes                      (mkSitePI, setDefault)
+import Web.Routes.Happstack            (implSite)
 
 import Data.Kibr.Environment
 import Data.Kibr.Language
@@ -140,18 +140,7 @@ respond :: Html.View BlockContent -> Controller Response
 respond page =
   do
     env <- ask
-    pure
-      . setHeader "Content-Type" "text/html; charset=UTF-8"
-      . toResponse
-      . T.append docType
-      . render unsafe
-      . runReader (Html.master page) $ env
-  where
-    docType = T.concat
-      [ "<!DOCTYPE html PUBLIC "
-      , "\"-//W3C//DTD XHTML 1.0 Strict//EN\" "
-      , "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"
-      ]
+    pure . toResponse . runReader (Html.master page) $ env
 
 home :: Controller Response
 home =
