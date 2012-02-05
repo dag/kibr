@@ -2,36 +2,37 @@ module Text.Kibr.Html where
 
 import Preamble
 
-import Control.Monad.Reader       (asks)
+import Control.Monad.Reader (asks)
 import Data.Kibr.Message
 import Data.Kibr.Word
 import Data.Lens
-import Text.Blaze.Html5
-import Text.Blaze.Html5.Extra
-import Text.Blaze.Html5.Highlight
 import Text.Groom
+import Text.Highlighter.Extra
+import Text.XHtmlCombinators
+import Text.XHtmlCombinators.Extra
+import Text.XHtmlCombinators.Internal
 
 import qualified Data.Kibr.Environment           as Env
 import qualified Data.Kibr.Sitemap               as Url
 import qualified Data.Text                       as T
 import qualified Text.Highlighter.Lexers.Haskell as Haskell
 
-type View = Env.Reader Html
+type View a = Env.Reader (XHtml a)
 
-makeTranslator :: Env.Reader (Message -> Html)
+makeTranslator :: Env.Reader (Message -> Text)
 makeTranslator =
   do
-    lang <- asks Env.language
-    pure $ toHtml . message lang
+    language <- asks Env.language
+    pure $ message language
 
-master :: View -> View
+master :: View BlockContent -> View Root
 master page =
   do
     msg <- makeTranslator
     asset <- asks Env.asset
     page' <- page
-    pure . docTypeHtml $ do
-      head $ do
+    pure . html $ do
+      head_ $ do
         title $ msg LojbanDictionary
         mapM_ linkCss
           [ webfonts
@@ -52,11 +53,11 @@ master page =
                            , "&3.4.1/build/cssbase/cssbase-min.css"
                            ]
 
-wordList :: [Word] -> View
+wordList :: [Word] -> View BlockContent
 wordList ws =
   do
     url <- asks Env.url
     pure . dl . forM_ ws $ \w -> do
       let w' = word ^$ w
-      dt . linkTo (url $ Url.Word w') . toHtml $ w'
-      dd . highlight Haskell.lexer False . T.pack . groom $ w
+      dt . linkTo (url . Url.Word $ w') . text $ w'
+      dd . text . highlight Haskell.lexer False . T.pack . groom $ w

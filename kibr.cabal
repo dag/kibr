@@ -61,11 +61,11 @@ Executable kibr
     Language.CSS.YUI
     Network.Kibr.Http
     Network.Kibr.Irc
-    Text.Blaze.Html5.Extra
-    Text.Blaze.Html5.Highlight
+    Text.Highlighter.Extra
     Text.Kibr.Css
     Text.Kibr.Html
     Text.Kibr.Xml
+    Text.XHtmlCombinators.Extra
 
   Build-Depends:
     acid-state           == 0.6.3.*,
