@@ -1,6 +1,6 @@
 KIBR   = dist/build/kibr/kibr
 TARGET = http
-PORT   = 8000
+PORT   = 8000
 
 all: hlint test
 
