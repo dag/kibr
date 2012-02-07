@@ -25,7 +25,7 @@ receive c ps =
     st <- openMemoryState fixtures
     parts <- Irc.parts st
     env <- mkBotEnv c ps
-    forM_ parts $ \p -> runBotPartT (p `mplus` pure ()) env
+    forM_ parts $ \p -> runBotPartT (p ++ pure ()) env
     pure $ outChan env
 
 case_word_lookup :: Assertion
