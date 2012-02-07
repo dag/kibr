@@ -18,12 +18,8 @@ import qualified Data.Set as Set
 run :: [String] -> Acid -> IO ()
 run _ state =
   do
-    (_, channelsPart) <- initChannelsPart . Set.fromList $ ["#sampla"]
-    threads <- simpleBot conf [ pingPart
-                              , nickUserPart
-                              , channelsPart
-                              , word state
-                              ]
+    ps <- parts state
+    threads <- simpleBot conf ps
     getLine
     mapM_ killThread threads
   where
@@ -33,6 +29,16 @@ run _ state =
                                          , realname = "kibr bot"
                                          }
                        }
+
+parts :: Acid -> IO [BotPartT IO ()]
+parts state =
+  do
+    (_, channelsPart) <- initChannelsPart . Set.fromList $ ["#sampla"]
+    pure [ pingPart
+         , nickUserPart
+         , channelsPart
+         , word state
+         ]
 
 word :: BotMonad m => Acid -> m ()
 word state = parsecPart $

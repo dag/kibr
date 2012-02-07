@@ -59,6 +59,7 @@ Executable kibr
     Language.CSS.Extra
     Language.CSS.Happstack
     Language.CSS.YUI
+    Network.IRC.Bot.Test
     Network.Kibr.Http
     Network.Kibr.Irc
     Text.Blaze.Html5.Extra
@@ -84,6 +85,7 @@ Executable kibr
     highlighter          == 0.2.*,
     hslogger             == 1.1.5.*,
     hxt                  == 9.2.0.*,
+    irc                  == 0.5.0.*,
     ircbot               == 0.3.1.*,
     ixset                == 1.0.2.*,
     mtl                  == 2.0.1.*,
@@ -102,6 +104,7 @@ Executable kibr
       Test.Kibr.Css
       Test.Kibr.Fixture
       Test.Kibr.Http
+      Test.Kibr.Irc
       Test.Kibr.Xml
     Build-Depends:
       file-location              == 0.4.2.*,
