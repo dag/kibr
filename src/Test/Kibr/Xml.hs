@@ -1,6 +1,5 @@
 module Test.Kibr.Xml where
 
-import Data.Kibr.Language             (Language(English))
 import Test.Framework                 (Test)
 import Test.Framework.Providers.HUnit (testCase)
 import Test.Framework.TH              (testGroupGenerator)
@@ -15,5 +14,5 @@ tests = $testGroupGenerator
 case_readDictionary :: Assertion
 case_readDictionary =
   do
-    dictionary <- readDictionary English "data/fixtures.xml"
+    dictionary <- readDictionary "data/fixtures.xml"
     dictionary @?== fixtures
