@@ -22,7 +22,7 @@ run _ state =
     threads <- simpleBot conf [ pingPart
                               , nickUserPart
                               , channelsPart
-                              , wordPart state
+                              , word state
                               ]
     getLine
     mapM_ killThread threads
@@ -34,13 +34,13 @@ run _ state =
                                          }
                        }
 
-wordPart :: BotMonad m => Acid -> m ()
-wordPart state = parsecPart $
+word :: BotMonad m => Acid -> m ()
+word state = parsecPart $
   do
     char '!'
-    word <- many1 . oneOf $ "abcdefghijklmnoprstuvxyz'."
-    w <- query' state . LookupWord . pack $ word
+    w <- many1 . oneOf $ "abcdefghijklmnoprstuvxyz'."
+    w' <- query' state . LookupWord . pack $ w
     target <- maybeZero =<< replyTo
-    sendCommand $ PrivMsg Nothing [target] (show w)
+    sendCommand $ PrivMsg Nothing [target] (show w')
   <|>
     pure ()
