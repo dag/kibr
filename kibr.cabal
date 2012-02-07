@@ -32,6 +32,10 @@ Executable kibr
   Main-Is        : Main.hs
   HS-Source-Dirs : src
 
+  GHC-Options: -Wall -threaded -rtsopts -with-rtsopts=-N
+               -fwarn-tabs
+               -fno-warn-unused-do-bind
+
   Extensions:
     NoImplicitPrelude
     CPP
@@ -115,10 +119,3 @@ Executable kibr
       test-framework-quickcheck2 == 0.2.12.*,
       test-framework-th          == 0.2.2.*
     CPP-Options: -DDEVELOPMENT
-    GHC-Options: -Wall -threaded
-                 -fwarn-tabs
-                 -fno-warn-unused-do-bind
-  else
-    GHC-Options: -Wall -threaded -rtsopts -with-rtsopts=-N
-                 -fwarn-tabs
-                 -fno-warn-unused-do-bind
