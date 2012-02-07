@@ -81,7 +81,7 @@ getGrammar selma'o word =
     Nothing -> error $ "particle without grammatical class: " ++ show word
 
 getElemText :: ArrowXml a => String -> a XmlTree String
-getElemText name = getChildren  >>> hasName name >>> getChildren  >>> getText
+getElemText name = getChildren >>> hasName name >>> getChildren >>> getText
 
 getMaybe :: ArrowIf a => a b c -> a b (Maybe c)
 getMaybe a = (a >>> arr Just) `orElse` constA Nothing
