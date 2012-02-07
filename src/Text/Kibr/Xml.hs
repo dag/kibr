@@ -42,7 +42,7 @@ getLanguage =
              lang <- getAttrValue "to" -< direction
              returnA -< read lang
 
-getWord:: ArrowXml a => Language -> a XmlTree DB.Word
+getWord :: ArrowXml a => Language -> a XmlTree DB.Word
 getWord language = deep $ hasName "valsi" >>> proc valsi ->
   do
     word       <- getAttrValue "word"              -< valsi
