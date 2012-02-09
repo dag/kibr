@@ -100,7 +100,7 @@ Executable kibr
     web-routes           == 0.26.3.*,
     web-routes-happstack == 0.23.0.*,
     web-routes-th        == 0.21.1.*,
-    zlib                 == 0.5.3.1
+    zlib                 == 0.5.3.* && >= 0.5.3.3
 
   if flag(development)
     Other-Modules:
