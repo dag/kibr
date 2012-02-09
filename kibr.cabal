@@ -32,6 +32,10 @@ Executable kibr
   Main-Is        : Main.hs
   HS-Source-Dirs : src
 
+  GHC-Options: -Wall -threaded -rtsopts -with-rtsopts=-N
+               -fwarn-tabs
+               -fno-warn-unused-do-bind
+
   Extensions:
     NoImplicitPrelude
     CPP
@@ -59,6 +63,7 @@ Executable kibr
     Language.CSS.Extra
     Language.CSS.Happstack
     Language.CSS.YUI
+    Network.IRC.Bot.Test
     Network.Kibr.Http
     Network.Kibr.Irc
     Text.Highlighter.Extra
@@ -85,6 +90,7 @@ Executable kibr
     highlighter          == 0.2.*,
     hslogger             == 1.1.5.*,
     hxt                  == 9.2.0.*,
+    irc                  == 0.5.0.*,
     ircbot               == 0.3.1.*,
     ixset                == 1.0.2.*,
     mtl                  == 2.0.1.*,
@@ -97,7 +103,7 @@ Executable kibr
     web-routes-th        == 0.21.1.*,
     xhtml                == 3000.2.0.*,
     xhtml-combinators    == 0.3.*,
-    zlib                 == 0.5.3.1
+    zlib                 == 0.5.3.* && >= 0.5.3.3
 
   if flag(development)
     Other-Modules:
@@ -105,6 +111,7 @@ Executable kibr
       Test.Kibr.Css
       Test.Kibr.Fixture
       Test.Kibr.Http
+      Test.Kibr.Irc
       Test.Kibr.Xml
     Build-Depends:
       file-location              == 0.4.2.*,
@@ -115,10 +122,3 @@ Executable kibr
       test-framework-quickcheck2 == 0.2.12.*,
       test-framework-th          == 0.2.2.*
     CPP-Options: -DDEVELOPMENT
-    GHC-Options: -Wall -threaded
-                 -fwarn-tabs
-                 -fno-warn-unused-do-bind
-  else
-    GHC-Options: -Wall -threaded -rtsopts -with-rtsopts=-N
-                 -fwarn-tabs
-                 -fno-warn-unused-do-bind

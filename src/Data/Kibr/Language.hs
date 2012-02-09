@@ -8,7 +8,7 @@ import Web.Routes.TH (derivePathInfo)
 data Language
   = Lojban
   | English
-  deriving (Eq, Show, Ord, Enum, Bounded, Data, Typeable)
+  deriving (Eq, Show, Read, Ord, Enum, Bounded, Data, Typeable)
 
 derivePathInfo ''Language
 

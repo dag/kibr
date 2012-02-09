@@ -6,8 +6,8 @@ import Preamble
 import Prelude (error)
 
 import Data.Acid
-import Data.Kibr.State hiding (words)
 import Data.Kibr.Language
+import Data.Kibr.State hiding (words)
 import Text.XML.HXT.Core
 
 import qualified Data.IxSet         as Ix
@@ -21,18 +21,29 @@ import qualified Data.Text          as T
 run :: [String] -> Acid -> IO ()
 run (file:_) state =
   do
-    db    <- readDictionary English file
+    db    <- readDictionary file
     update state $ WriteState db
 run _ _ = error "usage: kibr import <file>"
 
-readDictionary :: Language -> String -> IO State
-readDictionary language file =
+readDictionary :: String -> IO State
+readDictionary file =
   do
-    words <- runX $ readDocument [] file >>> deep (getWord language)
+    [lang] <- runX $ doc >>> getLanguage
+    words <- runX $ doc >>> getWord lang
     pure . State $ Ix.fromList words
+  where
+    doc = readDocument [] file
+
+getLanguage :: ArrowXml a => a XmlTree Language
+getLanguage =
+  deep $ hasName "direction" >>>
+         hasAttrValue "from" (== "lojban") >>>
+           proc direction -> do
+             lang <- getAttrValue "to" -< direction
+             returnA -< read lang
 
 getWord :: ArrowXml a => Language -> a XmlTree DB.Word
-getWord language = hasName "valsi" >>> proc valsi ->
+getWord language = deep $ hasName "valsi" >>> proc valsi ->
   do
     word       <- getAttrValue "word"              -< valsi
     type_      <- getAttrValue "type"              -< valsi
@@ -70,7 +81,7 @@ getGrammar selma'o word =
     Nothing -> error $ "particle without grammatical class: " ++ show word
 
 getElemText :: ArrowXml a => String -> a XmlTree String
-getElemText name = getChildren  >>> hasName name >>> getChildren  >>> getText
+getElemText name = getChildren >>> hasName name >>> getChildren >>> getText
 
 getMaybe :: ArrowIf a => a b c -> a b (Maybe c)
 getMaybe a = (a >>> arr Just) `orElse` constA Nothing

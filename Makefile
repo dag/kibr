@@ -1,5 +1,6 @@
 KIBR   = dist/build/kibr/kibr
 TARGET = http
+PORT   = 8000
 
 all: hlint test
 
@@ -24,8 +25,8 @@ state:
 
 .PHONY: http
 http: build state
-	@echo "Launching server on http://localhost:8000/"
-	$(KIBR) http
+	@echo "Launching server on http://localhost:$(PORT)/"
+	$(KIBR) http --http-port $(PORT)
 
 .PHONY: watch
 watch:

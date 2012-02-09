@@ -18,12 +18,8 @@ import qualified Data.Set as Set
 run :: [String] -> Acid -> IO ()
 run _ state =
   do
-    (_, channelsPart) <- initChannelsPart . Set.fromList $ ["#sampla"]
-    threads <- simpleBot conf [ pingPart
-                              , nickUserPart
-                              , channelsPart
-                              , wordPart state
-                              ]
+    ps <- parts state
+    threads <- simpleBot conf ps
     getLine
     mapM_ killThread threads
   where
@@ -34,13 +30,23 @@ run _ state =
                                          }
                        }
 
-wordPart :: BotMonad m => Acid -> m ()
-wordPart state = parsecPart $
+parts :: Acid -> IO [BotPartT IO ()]
+parts state =
+  do
+    (_, channelsPart) <- initChannelsPart . Set.fromList $ ["#sampla"]
+    pure [ pingPart
+         , nickUserPart
+         , channelsPart
+         , word state
+         ]
+
+word :: BotMonad m => Acid -> m ()
+word state = parsecPart $
   do
     char '!'
-    word <- many1 . oneOf $ "abcdefghijklmnoprstuvxyz'."
-    w <- query' state . LookupWord . pack $ word
+    w <- many1 . oneOf $ "abcdefghijklmnoprstuvxyz'."
+    w' <- query' state . LookupWord . pack $ w
     target <- maybeZero =<< replyTo
-    sendCommand $ PrivMsg Nothing [target] (show w)
+    sendCommand $ PrivMsg Nothing [target] (show w')
   <|>
     pure ()
