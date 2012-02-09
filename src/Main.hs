@@ -5,7 +5,7 @@ import Prelude (error)
 
 import Control.Exception  (bracket)
 import Data.Acid          (openLocalState)
-import Data.Acid.Local    (createCheckpointAndClose)
+import Data.Acid.Local    (createArchive, createCheckpointAndClose)
 import Data.Kibr.State
 import System.Environment (getArgs)
 
@@ -33,4 +33,7 @@ run _               = error "usage: kibr <http|irc|import> [args]"
 #endif
 
 withState :: (Acid -> IO a) -> IO a
-withState = bracket (openLocalState $ State Higgs.empty) createCheckpointAndClose
+withState =
+    bracket (openLocalState $ State Higgs.empty) $ \st -> do
+      createArchive st
+      createCheckpointAndClose st

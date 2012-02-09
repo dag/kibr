@@ -15,7 +15,6 @@ import Data.List              (last)
 import Happstack.Server
 import Happstack.Server.ETag  (adler32ETagFilter)
 import Language.CSS.Happstack ()
-import Text.Blaze             (Html)
 import Web.Routes             (mkSitePI, setDefault)
 import Web.Routes.Happstack   (implSite)
 
@@ -137,7 +136,7 @@ query ev =
     st <- asks state
     query' st ev
 
-respond :: View Html -> Controller Response
+respond :: Html.View -> Controller Response
 respond page =
   do
     env <- ask
@@ -149,7 +148,7 @@ respond page =
 #else
       . toResponse
 #endif
-      . runView (Html.master page) $ env
+      . runReader (Html.master page) $ env
 
 home :: Controller Response
 home =
