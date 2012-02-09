@@ -3,20 +3,20 @@
 module Network.Kibr.Http where
 
 import Preamble
-import Prelude                (error, all)
+import Prelude                  (error, all)
 
-import Control.Monad.Reader   (MonadReader, ask, asks)
-import Control.Monad.Trans    (MonadIO)
-import Data.Acid              (QueryEvent, EventResult)
-import Data.Acid.Advanced     (query', MethodState)
-import Data.FileEmbed         (embedFile)
-import Data.Lens              ((^.))
-import Data.List              (last)
+import Control.Monad.Reader     (MonadReader, ask, asks)
+import Control.Monad.Trans      (MonadIO)
+import Data.Acid                (QueryEvent, EventResult)
+import Data.Acid.Advanced       (query', MethodState)
+import Data.FileEmbed.Happstack (embedFileAsResponse)
+import Data.Lens                ((^.))
+import Data.List                (last)
 import Happstack.Server
-import Happstack.Server.ETag  (adler32ETagFilter)
-import Language.CSS.Happstack ()
-import Web.Routes             (mkSitePI, setDefault)
-import Web.Routes.Happstack   (implSite)
+import Happstack.Server.ETag    (adler32ETagFilter)
+import Language.CSS.Happstack   ()
+import Web.Routes               (mkSitePI, setDefault)
+import Web.Routes.Happstack     (implSite)
 
 import Data.Kibr.Environment
 import Data.Kibr.Language
@@ -100,8 +100,7 @@ highlighter :: ServerPart Response
 highlighter =
   do
     filePart
-    setHeaderM "Content-Type" "text/css; charset=UTF-8"
-    pure . toResponse $ $(embedFile "data/highlighter.css")
+    pure $(embedFileAsResponse "data/highlighter.css")
 
 stylesheet :: ServerPart Response
 stylesheet =
