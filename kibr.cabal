@@ -47,8 +47,8 @@ Executable kibr
     TypeFamilies
 
   Other-Modules:
-    Preamble
     Data.ConstructorTag
+    Data.FileEmbed.Happstack
     Data.Kibr.Environment
     Data.Kibr.Grammar
     Data.Kibr.Language
@@ -67,6 +67,7 @@ Executable kibr
     Network.Kibr.Http
     Network.Kibr.Irc
     Text.Highlighter.Extra
+    Preamble
     Text.Kibr.Css
     Text.Kibr.Html
     Text.Kibr.Xml
@@ -86,7 +87,7 @@ Executable kibr
     digest               == 0.0.1.*,
     file-embed           == 0.0.4.*,
     groom                == 0.1.1.*,
-    happstack-server     == 6.5.6.*,
+    happstack-server     == 6.5.7.*,
     highlighter          == 0.2.*,
     hslogger             == 1.1.5.*,
     hxt                  == 9.2.0.*,

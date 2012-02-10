@@ -2,7 +2,11 @@ KIBR   = dist/build/kibr/kibr
 TARGET = http
 PORT   = 8000
 
-all: hlint test
+all: check-cabal hlint test
+
+.PHONY: check-cabal
+check-cabal:
+	cabal check
 
 .PHONY: hlint
 hlint:
@@ -10,7 +14,8 @@ hlint:
 
 cabal-dev:
 	cabal update
-	cabal-dev install -fdevelopment --disable-optimization
+	cabal-dev install   -fdevelopment --disable-optimization --only-dependencies
+	cabal-dev configure -fdevelopment --disable-optimization
 
 .PHONY: build
 build: cabal-dev

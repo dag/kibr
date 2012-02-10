@@ -38,7 +38,7 @@ added a dependency to Cabal or edited the fixtures.*
 $ make
 ```
 
-1. Run HLint on the source code
+1. Run `cabal check` and HLint on the source code
 2. If needed, set up a cabal-dev environment and install the dependencies
    into it
 3. Build the application
