@@ -2,7 +2,11 @@ KIBR   = dist/build/kibr/kibr
 TARGET = http
 PORT   = 8000
 
-all: hlint test
+all: check-cabal hlint test
+
+.PHONY: check-cabal
+check-cabal:
+	cabal check
 
 .PHONY: hlint
 hlint:
