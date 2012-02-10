@@ -14,7 +14,8 @@ hlint:
 
 cabal-dev:
 	cabal update
-	cabal-dev install -fdevelopment --disable-optimization
+	cabal-dev install   -fdevelopment --disable-optimization --only-dependencies
+	cabal-dev configure -fdevelopment --disable-optimization
 
 .PHONY: build
 build: cabal-dev
