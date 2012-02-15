@@ -38,3 +38,10 @@ case_word_lookup =
     map (take 30) msg_params @?= [ "#channel"
                                  , "Just (Word {_word = \"ba'unai\","
                                  ]
+
+case_join_command :: Assertion
+case_join_command =
+  do
+    chan <- receive "PRIVMSG" ["#channel", "@join #other-channel"]
+    msg  <- readChan chan
+    msg @?= Message Nothing "JOIN" ["#other-channel"]
