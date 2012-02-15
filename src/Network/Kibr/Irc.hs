@@ -59,6 +59,7 @@ word :: BotMonad m => Acid -> m ()
 word state = parsecPart $
   do
     char '!'
+    spaces
     w <- many1 . oneOf $ "abcdefghijklmnoprstuvxyz'."
     w' <- query' state . LookupWord . pack $ w
     target <- maybeZero =<< replyTo
