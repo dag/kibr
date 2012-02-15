@@ -47,6 +47,7 @@ Executable kibr
     TypeFamilies
 
   Other-Modules:
+    Preamble
     Data.ConstructorTag
     Data.FileEmbed.Happstack
     Data.Kibr.Environment
@@ -66,7 +67,6 @@ Executable kibr
     Network.IRC.Bot.Test
     Network.Kibr.Http
     Network.Kibr.Irc
-    Preamble
     Text.Blaze.Html5.Extra
     Text.Blaze.Html5.Highlight
     Text.Kibr.Css
