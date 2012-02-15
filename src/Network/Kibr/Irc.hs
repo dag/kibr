@@ -1,13 +1,14 @@
 module Network.Kibr.Irc where
 
-import Preamble
+import Preamble hiding (join)
 
 import Control.Concurrent            (killThread)
+import Control.Concurrent.STM        (TVar)
 import Data.Acid.Advanced            (query')
 import Data.Kibr.State
 import Data.Text                     (pack)
 import Network.IRC.Bot
-import Network.IRC.Bot.Part.Channels (initChannelsPart)
+import Network.IRC.Bot.Part.Channels (initChannelsPart, joinChannel)
 import Network.IRC.Bot.Part.NickUser (nickUserPart)
 import Network.IRC.Bot.Part.Ping     (pingPart)
 import System.IO                     (getLine)
@@ -28,22 +29,37 @@ run _ state =
                        , user = nullUser { username = "kibr"
                                          , realname = "kibr bot"
                                          }
+                       , commandPrefix = "@"
                        }
 
 parts :: Acid -> IO [BotPartT IO ()]
 parts state =
   do
-    (_, channelsPart) <- initChannelsPart . Set.fromList $ ["#sampla"]
+    (channels, channelsPart) <- initChannelsPart . Set.fromList $ ["#sampla"]
     pure [ pingPart
          , nickUserPart
          , channelsPart
+         , join channels
          , word state
          ]
+
+join :: BotMonad m => TVar (Set String) -> m ()
+join channels = parsecPart $
+  do
+    botPrefix
+    string "join"
+    space
+    spaces
+    channel <- many1 anyChar
+    joinChannel channel channels
+  <|>
+    pure ()
 
 word :: BotMonad m => Acid -> m ()
 word state = parsecPart $
   do
     char '!'
+    spaces
     w <- many1 . oneOf $ "abcdefghijklmnoprstuvxyz'."
     w' <- query' state . LookupWord . pack $ w
     target <- maybeZero =<< replyTo

@@ -26,7 +26,6 @@ import Data.Kibr.Sitemap
 import Data.Kibr.State
 
 import qualified Data.IxSet        as Ix
-import qualified Data.Text         as T
 import qualified System.Log.Logger as Log
 
 import qualified Text.Kibr.Css     as Css
@@ -64,7 +63,7 @@ master st =
     methodForbidden =
       do
         method $ \m -> all (m /=) [GET, HEAD]
-        resp 405 $ toResponse T.empty
+        resp 405 $ toResponse ()
 
 sitemap :: Acid
         -> (Sitemap -> [(Text, Maybe Text)] -> Text)
@@ -87,7 +86,7 @@ root home' =
   do
     nullDir
     method [GET, HEAD]
-    seeOther home' $ toResponse T.empty
+    seeOther home' $ toResponse ()
 
 filePart :: ServerPart ()
 filePart =

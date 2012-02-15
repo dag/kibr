@@ -15,7 +15,7 @@ mkBotEnv c ps =
                 , outChan   = chan
                 , logFn     = nullLogger
                 , botName   = "bot"
-                , cmdPrefix = "#"
+                , cmdPrefix = "@"
                 }
   where
     prefix = NickName "user" (Just "user") (Just "localhost")

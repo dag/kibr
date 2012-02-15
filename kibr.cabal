@@ -47,6 +47,7 @@ Executable kibr
     TypeFamilies
 
   Other-Modules:
+    Preamble
     Data.ConstructorTag
     Data.FileEmbed.Happstack
     Data.Kibr.Environment
@@ -67,7 +68,6 @@ Executable kibr
     Network.Kibr.Http
     Network.Kibr.Irc
     Text.Highlighter.Extra
-    Preamble
     Text.Kibr.Css
     Text.Kibr.Html
     Text.Kibr.Xml
@@ -97,6 +97,7 @@ Executable kibr
     mtl                  == 2.0.1.*,
     parsec               == 3.1.2.*,
     safecopy             == 0.6.1.*,
+    stm                  == 2.2.0.*,
     template-haskell     == 2.5.0.*,
     text                 == 0.11.1.*,
     web-routes           == 0.26.3.*,
