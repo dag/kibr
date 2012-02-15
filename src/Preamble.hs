@@ -31,7 +31,7 @@ import Data.Set            as X ( Set )
 import Data.Text           as X ( Text )
 import Data.Tuple          as X
 import Data.Typeable       as X ( Typeable )
-import System.IO           as X ( IO )
+import System.IO           as X ( IO, FilePath )
 import Text.Read           as X ( Read, read )
 import Text.Show           as X ( Show, show )
 
