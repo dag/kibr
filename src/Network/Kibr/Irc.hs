@@ -41,13 +41,15 @@ parts state =
          , channelsPart
          , join channels
          , word state
+         , affix state
          ]
 
 join :: BotMonad m => TVar (Set String) -> m ()
 join channels = parsecPart $
   do
-    botPrefix
-    string "join"
+    try $ do
+      botPrefix
+      string "join"
     space
     spaces
     channel <- many1 anyChar
@@ -65,5 +67,21 @@ word state = parsecPart $
     w' <- query' state . LookupWord . pack $ w
     target <- maybeZero =<< replyTo
     sendCommand $ PrivMsg Nothing [target] (show w')
+  <|>
+    pure ()
+
+affix :: BotMonad m => Acid -> m ()
+affix state = parsecPart $
+  do
+    try $ do
+      botPrefix
+      string "affix"
+    space
+    spaces
+    a <- many1 . oneOf $ "abcdefghijklmnoprstuvxyz'."
+    eof
+    w <- query' state . LookupAffix . pack $ a
+    target <- maybeZero =<< replyTo
+    sendCommand $ PrivMsg Nothing [target] (show w)
   <|>
     pure ()

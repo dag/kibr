@@ -45,3 +45,12 @@ case_word_lookup =
     map (take 30) msg_params @?= [ "#channel"
                                  , "Just (Word {_word = \"ba'unai\","
                                  ]
+
+case_affix_lookup :: Assertion
+case_affix_lookup =
+  do
+    chan <- receive "PRIVMSG" ["#channel", "@affix dohi"]
+    Message{..} <- readChan chan
+    map (take 28) msg_params @?= [ "#channel"
+                                 , "Just (Word {_word = \"donri\","
+                                 ]

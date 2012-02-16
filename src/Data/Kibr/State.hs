@@ -40,6 +40,11 @@ lookupWord w = askL $ ixLens (ByWord w') . words
   where
     w' = T.replace "h" "'" . T.replace "." T.empty $ w
 
+lookupAffix :: Text -> Query State (Maybe Word)
+lookupAffix a = askL $ ixLens (ByAffix a') . words
+  where
+    a' = T.replace "h" "'" a
+
 reviseWord :: Text -> Language -> Revision Definition -> Update State ()
 reviseWord w l r =
   do
@@ -53,5 +58,6 @@ makeAcidic ''State
   [ 'writeState
   , 'readState
   , 'lookupWord
+  , 'lookupAffix
   , 'reviseWord
   ]
