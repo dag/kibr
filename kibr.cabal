@@ -86,7 +86,7 @@ Executable kibr
     digest               == 0.0.1.*,
     file-embed           == 0.0.4.*,
     groom                == 0.1.1.*,
-    happstack-server     == 6.5.7.*,
+    happstack-server     == 6.6.3.*,
     highlighter          == 0.2.*,
     hslogger             == 1.1.5.*,
     hxt                  == 9.2.0.*,
