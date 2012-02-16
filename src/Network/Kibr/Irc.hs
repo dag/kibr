@@ -61,6 +61,7 @@ word state = parsecPart $
     char '!'
     spaces
     w <- many1 . oneOf $ "abcdefghijklmnoprstuvxyz'."
+    eof
     w' <- query' state . LookupWord . pack $ w
     target <- maybeZero =<< replyTo
     sendCommand $ PrivMsg Nothing [target] (show w')
