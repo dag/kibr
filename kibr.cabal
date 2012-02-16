@@ -60,11 +60,9 @@ Executable kibr
     Data.Kibr.Word
     Data.Lens.Reader
     Happstack.Server.ETag
-    Happstack.Server.Test
     Language.CSS.Extra
     Language.CSS.Happstack
     Language.CSS.YUI
-    Network.IRC.Bot.Test
     Network.Kibr.Http
     Network.Kibr.Irc
     Text.Blaze.Html5.Extra
@@ -106,6 +104,8 @@ Executable kibr
 
   if flag(development)
     Other-Modules:
+      Happstack.Server.Test
+      Network.IRC.Bot.Test
       Test.Kibr
       Test.Kibr.Css
       Test.Kibr.Fixture
