@@ -16,7 +16,7 @@ import qualified Data.Kibr.Sitemap               as Url
 import qualified Data.Text                       as T
 import qualified Text.Highlighter.Lexers.Haskell as Haskell
 
-type View = Env.Reader Html
+type View = Env.Reader Html
 
 makeTranslator :: Env.Reader (Message -> Html)
 makeTranslator =
