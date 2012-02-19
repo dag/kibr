@@ -11,13 +11,15 @@ import Data.IxSet as Ix
 import Data.Lens.Template
 import Data.SafeCopy
 
+import qualified Data.Set as Set
+
 data Shape
   = Particle
       { _affixes      :: Set Text
       , _grammar      :: Grammar
       }
   | ProposedParticle
-      { _affixies     :: Set Text
+      { _affixes      :: Set Text
       }
   | Root
       { _affixes      :: Set Text
@@ -58,9 +60,18 @@ makeLens ''Word
 
 newtype ByWord = ByWord Text deriving (Eq, Ord, Typeable)
 
+newtype ByAffix = ByAffix Text deriving (Eq, Ord, Typeable)
+
 makeConstructorTags ''Shape [''Eq, ''Ord, ''Typeable]
 
 instance Indexable Word where
-  empty = ixSet [ ixFun $ pure . ByWord . _word
-                , ixFun $ pure . byShape . _shape
-                ]
+  empty =
+      ixSet [ ixFun $ pure . ByWord . _word
+            , ixFun $ map ByAffix . getAffixes . _shape
+            , ixFun $ pure . byShape . _shape
+            ]
+    where
+      getAffixes Particle{..}         = Set.toList _affixes
+      getAffixes ProposedParticle{..} = Set.toList _affixes
+      getAffixes Root{..}             = Set.toList _affixes
+      getAffixes _                    = []

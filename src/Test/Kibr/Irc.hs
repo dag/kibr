@@ -28,6 +28,13 @@ receive c ps =
     forM_ parts $ \p -> runBotPartT (p ++ pure ()) env
     pure $ outChan env
 
+case_join_command :: Assertion
+case_join_command =
+  do
+    chan <- receive "PRIVMSG" ["#channel", "@join #other-channel"]
+    msg  <- readChan chan
+    msg @?= Message Nothing "JOIN" ["#other-channel"]
+
 case_word_lookup :: Assertion
 case_word_lookup =
   do
@@ -39,9 +46,11 @@ case_word_lookup =
                                  , "Just (Word {_word = \"ba'unai\","
                                  ]
 
-case_join_command :: Assertion
-case_join_command =
+case_affix_lookup :: Assertion
+case_affix_lookup =
   do
-    chan <- receive "PRIVMSG" ["#channel", "@join #other-channel"]
-    msg  <- readChan chan
-    msg @?= Message Nothing "JOIN" ["#other-channel"]
+    chan <- receive "PRIVMSG" ["#channel", "@affix dohi"]
+    Message{..} <- readChan chan
+    map (take 28) msg_params @?= [ "#channel"
+                                 , "Just (Word {_word = \"donri\","
+                                 ]

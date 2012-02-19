@@ -60,11 +60,9 @@ Executable kibr
     Data.Kibr.Word
     Data.Lens.Reader
     Happstack.Server.ETag
-    Happstack.Server.Test
     Language.CSS.Extra
     Language.CSS.Happstack
     Language.CSS.YUI
-    Network.IRC.Bot.Test
     Network.Kibr.Http
     Network.Kibr.Irc
     Text.Highlighter.Extra
@@ -87,7 +85,7 @@ Executable kibr
     digest               == 0.0.1.*,
     file-embed           == 0.0.4.*,
     groom                == 0.1.1.*,
-    happstack-server     == 6.5.7.*,
+    happstack-server     == 6.6.3.*,
     highlighter          == 0.2.*,
     hslogger             == 1.1.5.*,
     hxt                  == 9.2.0.*,
@@ -109,6 +107,8 @@ Executable kibr
 
   if flag(development)
     Other-Modules:
+      Happstack.Server.Test
+      Network.IRC.Bot.Test
       Test.Kibr
       Test.Kibr.Css
       Test.Kibr.Fixture
