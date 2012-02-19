@@ -50,6 +50,7 @@ Executable kibr
     Preamble
     Data.ConstructorTag
     Data.FileEmbed.Happstack
+    Data.Kibr.Configuration
     Data.Kibr.Environment
     Data.Kibr.Grammar
     Data.Kibr.Language

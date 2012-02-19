@@ -16,36 +16,28 @@ import Text.Parsec
 
 import qualified Data.Set as Set
 
-run :: [String] -> Acid -> IO ()
-run _ state =
+run :: BotConf -> Acid -> IO ()
+run conf state =
   do
-    ps <- parts state
+    ps <- parts conf state
     threads <- simpleBot conf ps
     getLine
     mapM_ killThread threads
-  where
-    conf = nullBotConf { host = "irc.freenode.net"
-                       , nick = "kibr"
-                       , user = nullUser { username = "kibr"
-                                         , realname = "kibr bot"
-                                         }
-                       , commandPrefix = "@"
-                       }
 
-parts :: Acid -> IO [BotPartT IO ()]
-parts state =
+parts :: BotConf -> Acid -> IO [BotPartT IO ()]
+parts BotConf{..} state =
   do
-    (channels, channelsPart) <- initChannelsPart . Set.fromList $ ["#sampla"]
+    (chans, channelsPart) <- initChannelsPart channels
     pure [ pingPart
          , nickUserPart
          , channelsPart
-         , join channels
+         , join chans
          , word state
          , affix state
          ]
 
 join :: BotMonad m => TVar (Set String) -> m ()
-join channels = parsecPart $
+join chans = parsecPart $
   do
     try $ do
       botPrefix
@@ -53,7 +45,7 @@ join channels = parsecPart $
     space
     spaces
     channel <- many1 anyChar
-    joinChannel channel channels
+    joinChannel channel chans
   <|>
     pure ()
 

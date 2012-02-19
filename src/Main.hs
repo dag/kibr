@@ -9,10 +9,11 @@ import Data.Acid.Local    (createArchive, createCheckpointAndClose)
 import Data.Kibr.State
 import System.Environment (getArgs)
 
-import qualified Data.IxSet        as Ix
-import qualified Network.Kibr.Http as Http
-import qualified Network.Kibr.Irc  as Irc
-import qualified Text.Kibr.Xml     as Xml
+import qualified Data.IxSet              as Ix
+import qualified Data.Kibr.Configuration as Config
+import qualified Network.Kibr.Http       as Http
+import qualified Network.Kibr.Irc        as Irc
+import qualified Text.Kibr.Xml           as Xml
 
 #if DEVELOPMENT
 import qualified Test.Kibr         as Test
@@ -22,8 +23,8 @@ main :: IO ()
 main = run =<< getArgs
 
 run :: [String] -> IO ()
-run ("http":args)   = withState $ Http.run args
-run ("irc":args)    = withState $ Irc.run args
+run ("http":_)      = withState . Http.run $ Config.http Config.master
+run ("irc":_)       = withState . Irc.run $ Config.irc Config.master
 run ("import":args) = withState $ Xml.run args
 #if DEVELOPMENT
 run ("test":args)   = Test.run args

@@ -23,7 +23,7 @@ receive :: Command -> [Parameter] -> IO (Chan Message)
 receive c ps =
   do
     st <- openMemoryState fixtures
-    parts <- Irc.parts st
+    parts <- Irc.parts nullBotConf st
     env <- mkBotEnv c ps
     forM_ parts $ \p -> runBotPartT (p ++ pure ()) env
     pure $ outChan env

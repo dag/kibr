@@ -3,7 +3,7 @@
 module Network.Kibr.Http where
 
 import Preamble
-import Prelude                  (error, all)
+import Prelude                  (all)
 
 import Control.Monad.Reader     (MonadReader, ask, asks)
 import Control.Monad.Trans      (MonadIO)
@@ -35,14 +35,8 @@ import Text.Blaze.Renderer.Pretty   (renderHtml)
 import Happstack.Server.Compression (compressedResponseFilter)
 #endif
 
-run :: [String] -> Acid -> IO ()
-run args st =
-  case parseConfig args of
-    Left errors  -> error . join $ errors
-    Right config -> server config st
-
-server :: Conf -> Acid -> IO ()
-server config st =
+run :: Conf -> Acid -> IO ()
+run config st =
   do
     setLogLevel
 #if DEVELOPMENT
