@@ -23,16 +23,16 @@ instance ToMessage (XHtml Root) where
         . T.append (T.pack docType)
         . render safe
     where
-      xmlDecl = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+      xmlDecl = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 
-safe :: Escaper Text
+safe :: Escaper Text
 safe =
-    unsafe { escapeAttr = \(Attr name value) -> Attr name (escapeHtml value)
-           , escapeText = escapeHtml
-           , childEscaper = const safe
+    unsafe { escapeAttr = \(Attr name value) -> Attr name (escapeHtml value)
+           , escapeText = escapeHtml
+           , childEscaper = const safe
            }
   where
-    escapeHtml = T.pack . stringToHtmlString . T.unpack
+    escapeHtml = T.pack . stringToHtmlString . T.unpack
 
 
 -- Below code mostly copied from Text.XHtmlCombinators.Render
@@ -62,7 +62,7 @@ nl = T.singleton '\n'
 renderAttrs :: Escaper e -> Attrs -> Text
 renderAttrs esc [] = T.empty
 renderAttrs esc attrs =
-    T.intercalate space $ space : fmap (renderAttr . escapeAttr esc) attrs
+    T.intercalate space $ space : fmap (renderAttr . escapeAttr esc) attrs
 
 renderAttr :: Attr -> Text
 renderAttr (Attr key val) = T.concat [key, "=\"", val, "\""]
