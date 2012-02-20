@@ -3,7 +3,7 @@
 module Network.Kibr.Http where
 
 import Preamble
-import Prelude                  (error, all)
+import Prelude                  (error, notElem)
 
 import Control.Monad.Reader     (MonadReader, ask, asks)
 import Control.Monad.Trans      (MonadIO)
@@ -62,7 +62,7 @@ master st =
   where
     methodForbidden =
       do
-        method $ \m -> all (m /=) [GET, HEAD]
+        method (`notElem` [GET, HEAD])
         resp 405 $ toResponse ()
 
 sitemap :: Acid
