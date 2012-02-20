@@ -12,7 +12,7 @@ I have verified that these packages are enough to build the project on
 Fedora 16:
 
 ```console
-$ sudo yum install ghc cabal-dev hlint happy pcre-devel
+$ sudo yum install ghc cabal-dev happy pcre-devel
 ```
 
 #### Debian/Ubuntu
@@ -21,7 +21,7 @@ I have verified that these steps are enough to build the project on Ubuntu
 Server 11.10:
 
 ```console
-$ sudo apt-get install make ghc cabal-install hlint happy libpcre3-dev
+$ sudo apt-get install make ghc cabal-install happy libpcre3-dev
 $ cabal update
 $ export PATH="$HOME/.cabal/bin:$PATH"  # should go in ~/.bashrc too
 $ cabal install cabal-dev
