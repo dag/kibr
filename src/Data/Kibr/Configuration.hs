@@ -10,7 +10,9 @@ import qualified Data.Set         as Set
 import qualified Happstack.Server as Http
 import qualified Network.IRC.Bot  as Irc
 
-data Http = Http { _port :: Int }
+data Http
+  = Http { _port :: Int }
+  deriving Show
 
 makeLens ''Http
 
@@ -23,6 +25,7 @@ data Irc
       , _prefix   :: String
       , _channels :: Set String
       }
+  deriving Show
 
 makeLens ''Irc
 
@@ -31,6 +34,7 @@ data Configuration
       { _http :: Http
       , _irc  :: Irc
       }
+  deriving Show
 
 makeLens ''Configuration
 

@@ -1,7 +1,7 @@
 module Main where
 
 import Preamble
-import Prelude (foldl)
+import Prelude (putStrLn, foldl)
 
 import Control.Exception     (bracket)
 import Data.Acid             (openLocalState)
@@ -12,6 +12,7 @@ import System.Console.GetOpt
 import System.Environment    (getArgs)
 import System.Exit           (exitFailure)
 import System.IO             (hPutStrLn, hPutStr, stderr)
+import Text.Groom            (groom)
 
 import qualified Data.IxSet              as Ix
 import qualified Network.Kibr.Http       as Http
@@ -34,11 +35,12 @@ run args =
     (fs,as,[]) -> do
       let config = foldl (flip id) master fs
       case as of
-        ("http":_)       -> withState . Http.run $ toHappstackConf config
-        ("irc":_)        -> withState . Irc.run $ toBotConf config
-        ("import":args') -> withState . Xml.run $ args'
-        []               -> usage
-        args'            -> do
+        "http":_        -> withState . Http.run $ toHappstackConf config
+        "irc":_         -> withState . Irc.run $ toBotConf config
+        "import":args'  -> withState . Xml.run $ args'
+        "show-config":_ -> putStrLn $ groom config
+        []              -> usage
+        args'           -> do
           hPutStrLn stderr $ "invalid arguments: " ++ show args'
           usage
     (_,_,es) -> do
@@ -49,9 +51,9 @@ run args =
       hPutStr stderr $ usageInfo header options
       exitFailure
 #if DEVELOPMENT
-    header = "usage: kibr [opts] <http|irc|import|test> [args]"
+    header = "usage: kibr [opts] <http|irc|import|show-config|test> [args]"
 #else
-    header = "usage: kibr [opts] <http|irc|import> [args]"
+    header = "usage: kibr [opts] <http|irc|import|show-config> [args]"
 #endif
 
 withState :: (Acid -> IO a) -> IO a
