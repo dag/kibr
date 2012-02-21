@@ -6,6 +6,7 @@ import Prelude (foldl)
 import Control.Exception     (bracket)
 import Data.Acid             (openLocalState)
 import Data.Acid.Local       (createArchive, createCheckpointAndClose)
+import Data.Kibr.Configuration
 import Data.Kibr.State
 import System.Console.GetOpt
 import System.Environment    (getArgs)
@@ -13,7 +14,6 @@ import System.Exit           (exitFailure)
 import System.IO             (hPutStrLn, hPutStr, stderr)
 
 import qualified Data.IxSet              as Ix
-import qualified Data.Kibr.Configuration as Config
 import qualified Network.Kibr.Http       as Http
 import qualified Network.Kibr.Irc        as Irc
 import qualified Text.Kibr.Xml           as Xml
@@ -30,12 +30,12 @@ run :: [String] -> IO ()
 run ("test":args) = Test.run args
 #endif
 run args =
-  case getOpt RequireOrder Config.options args of
+  case getOpt RequireOrder options args of
     (fs,as,[]) -> do
-      let config = foldl (flip id) Config.master fs
+      let config = foldl (flip id) master fs
       case as of
-        ("http":_)       -> withState . Http.run $ Config.http config
-        ("irc":_)        -> withState . Irc.run $ Config.irc config
+        ("http":_)       -> withState . Http.run $ toHappstackConf config
+        ("irc":_)        -> withState . Irc.run $ toBotConf config
         ("import":args') -> withState . Xml.run $ args'
         []               -> usage
         args'            -> do
@@ -46,7 +46,7 @@ run args =
       usage
   where
     usage = do
-      hPutStr stderr $ usageInfo header Config.options
+      hPutStr stderr $ usageInfo header options
       exitFailure
 #if DEVELOPMENT
     header = "usage: kibr [opts] <http|irc|import|test> [args]"
