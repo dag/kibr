@@ -1,27 +1,37 @@
 module Data.Kibr.Configuration where
 
-import Happstack.Server (Conf, nullConf)
-import Network.IRC.Bot  (BotConf(..), User(..), nullBotConf, nullUser)
+import Preamble
 
-import qualified Data.Set as Set
+import System.Console.GetOpt
+
+import qualified Data.Set         as Set
+import qualified Happstack.Server as Http
+import qualified Network.IRC.Bot  as Irc
 
 data Configuration
   = Configuration
-      { http :: Conf
-      , irc  :: BotConf
+      { http :: Http.Conf
+      , irc  :: Irc.BotConf
       }
 
 master :: Configuration
 master =
   Configuration
-    { http = nullConf
-    , irc  = nullBotConf
-               { host = "irc.freenode.net"
-               , nick = "kibr"
-               , user = nullUser { username = "kibr"
-                                 , realname = "kibr bot"
-                                 }
-               , commandPrefix = "@"
-               , channels      = Set.fromList ["#sampla"]
+    { http = Http.nullConf
+    , irc  = Irc.nullBotConf
+               { Irc.host = "irc.freenode.net"
+               , Irc.nick = "kibr"
+               , Irc.user = Irc.nullUser { Irc.username = "kibr"
+                                         , Irc.realname = "kibr bot"
+                                         }
+               , Irc.commandPrefix = "@"
+               , Irc.channels      = Set.fromList ["#sampla"]
                }
     }
+
+options :: [OptDescr (Configuration -> Configuration)]
+options =
+  [ Option [] ["http-port"]
+      (ReqArg (\a c -> c { http = (http c) { Http.port = read a } }) "NUM")
+      "Port to listen for HTTP requests on."
+  ]
