@@ -19,7 +19,7 @@ import qualified Network.Kibr.Irc        as Irc
 import qualified Text.Kibr.Xml           as Xml
 
 #if DEVELOPMENT
-import qualified Test.Kibr         as Test
+import qualified Test.Kibr               as Test
 #endif
 
 main :: IO ()
