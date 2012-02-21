@@ -33,7 +33,7 @@ state:
 .PHONY: http
 http: build state
 	@echo "Launching server on http://localhost:$(PORT)/"
-	$(KIBR) http --http-port $(PORT)
+	$(KIBR) --http-port $(PORT) http
 
 .PHONY: watch
 watch:
