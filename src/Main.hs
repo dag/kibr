@@ -14,13 +14,12 @@ import System.Exit           (exitFailure)
 import System.IO             (hPutStrLn, hPutStr, stderr)
 import Text.Groom            (groom)
 
-import qualified Data.IxSet              as Ix
-import qualified Network.Kibr.Http       as Http
-import qualified Network.Kibr.Irc        as Irc
-import qualified Text.Kibr.Xml           as Xml
+import qualified Network.Kibr.Http as Http
+import qualified Network.Kibr.Irc  as Irc
+import qualified Text.Kibr.Xml     as Xml
 
 #if DEVELOPMENT
-import qualified Test.Kibr               as Test
+import qualified Test.Kibr         as Test
 #endif
 
 main :: IO ()
@@ -33,7 +32,7 @@ run ("test":args) = Test.run args
 run args =
   case getOpt RequireOrder options args of
     (fs,as,[]) -> do
-      let config = foldl (flip id) master fs
+      let config = foldl (flip id) def fs
       case as of
         "http":_        -> withState . Http.run $ toHappstackConf config
         "irc":_         -> withState . Irc.run $ toBotConf config
@@ -58,6 +57,6 @@ run args =
 
 withState :: (Acid -> IO a) -> IO a
 withState =
-    bracket (openLocalState $ State Ix.empty) $ \st -> do
+    bracket (openLocalState def) $ \st -> do
       createArchive st
       createCheckpointAndClose st

@@ -23,6 +23,9 @@ data State
   = State { _words :: IxSet Word }
   deriving (Eq, Show, Data, Typeable)
 
+instance Default State where
+  def = State empty
+
 deriveSafeCopy 0 'base ''State
 
 makeLens ''State

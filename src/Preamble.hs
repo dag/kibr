@@ -19,6 +19,7 @@ import Control.Monad       as X hiding ( fmap, return, fail, liftM, liftM2
 import Data.Bool           as X
 import Data.Char           as X
 import Data.Data           as X ( Data )
+import Data.Default        as X
 import Data.Either         as X
 import Data.Eq             as X
 import Data.Function       as X hiding ( (.), id )

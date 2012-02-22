@@ -38,18 +38,18 @@ data Configuration
 
 makeLens ''Configuration
 
-master :: Configuration
-master =
-  Configuration
-    { _http = Http { _port     = 8000 }
-    , _irc  = Irc  { _server   = "irc.freenode.net"
-                   , _nickname = "kibr"
-                   , _username = "kibr"
-                   , _realname = "kibr bot"
-                   , _prefix   = "@"
-                   , _channels = Set.fromList ["#sampla"]
-                   }
-    }
+instance Default Configuration where
+  def =
+    Configuration
+      { _http = Http { _port     = 8000 }
+      , _irc  = Irc  { _server   = "irc.freenode.net"
+                     , _nickname = "kibr"
+                     , _username = "kibr"
+                     , _realname = "kibr bot"
+                     , _prefix   = "@"
+                     , _channels = Set.fromList ["#sampla"]
+                     }
+      }
 
 options :: [OptDescr (Configuration -> Configuration)]
 options =

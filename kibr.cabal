@@ -79,6 +79,7 @@ Executable kibr
     bytestring           == 0.9.2.*,
     containers           == 0.4.2.*,
     css                  == 0.1.*,
+    data-default         == 0.3.0.*,
     data-lens-fd         == 2.0.*,
     data-lens-ixset      == 0.1.4.*,
     data-lens-template   == 2.1.3.*,
