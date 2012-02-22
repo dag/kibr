@@ -14,8 +14,6 @@ import Network.IRC.Bot.Part.Ping     (pingPart)
 import System.IO                     (getLine)
 import Text.Parsec
 
-import qualified Data.Set as Set
-
 run :: BotConf -> Acid -> IO ()
 run conf state =
   do
