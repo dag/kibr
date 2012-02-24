@@ -7,8 +7,8 @@ before_install:
   - "cabal install cabal-dev"
 
 script:
-  - "make"
   - "cabal install"
+  - "make"
 
 notifications:
   irc:
