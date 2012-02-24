@@ -8,6 +8,7 @@ before_install:
 
 script:
   - "make"
+  - "cabal clean && cabal-dev install"
 
 notifications:
   irc:
