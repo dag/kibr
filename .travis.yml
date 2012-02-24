@@ -1,0 +1,10 @@
+before_install:
+  - sudo apt-get install ghc cabal-install happy libpcre3-dev
+  - cabal update
+
+script:
+  - cabal install
+
+notifications:
+  irc:
+    - "irc.freenode.net#sampla"
