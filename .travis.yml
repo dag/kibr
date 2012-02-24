@@ -1,3 +1,5 @@
+language: erlang
+
 before_install:
   - "sudo add-apt-repository ppa:brcha/haskell"
   - "sudo apt-get update"
