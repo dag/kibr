@@ -7,7 +7,6 @@ before_install:
   - "cabal install cabal-dev"
 
 script:
-  - "cabal install"
   - "make"
 
 notifications:
