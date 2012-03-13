@@ -1,8 +1,6 @@
 language: haskell
 
 before_install:
-  - "export PATH=\"$HOME/.cabal/bin:$PATH\""
-  - "cabal update"
   - "cabal install cabal-dev"
 
 script:

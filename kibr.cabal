@@ -76,7 +76,7 @@ Executable kibr
     acid-state           == 0.6.3.*,
     base                 == 4.3.1.*,
     blaze-html           == 0.4.3.*,
-    bytestring           == 0.9.2.*,
+    bytestring           == 0.9.1.* || == 0.9.2.*,
     containers           == 0.4.2.*,
     css                  == 0.1.*,
     data-default         == 0.3.0.*,
