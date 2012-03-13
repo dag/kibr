@@ -46,24 +46,19 @@ master page =
     pure . docTypeHtml $ do
       head $ do
         title $ msg LojbanDictionary
-        mapM_ linkCss
-          [ webfonts
-          , yui
-          , asset Highlighter
-          , asset Screen
-          ]
+        mapM_ linkCss [webfonts, yui, asset Highlighter, asset Screen]
       body content
   where
-    webfonts    = T.concat [ "http://fonts.googleapis.com/css?family"
-                           , "=Ubuntu+Mono:400,400italic,700,700italic"
-                           , "|Ubuntu:400,400italic,700,700italic"
-                           , "|Stoke"
-                           ]
-    yui         = T.concat [ "http://yui.yahooapis.com/combo"
-                           , "?3.4.1/build/cssreset/cssreset-min.css"
-                           , "&3.4.1/build/cssfonts/cssfonts-min.css"
-                           , "&3.4.1/build/cssbase/cssbase-min.css"
-                           ]
+    webfonts = T.concat [ "http://fonts.googleapis.com/css?family"
+                        , "=Ubuntu+Mono:400,400italic,700,700italic"
+                        , "|Ubuntu:400,400italic,700,700italic"
+                        , "|Stoke"
+                        ]
+    yui      = T.concat [ "http://yui.yahooapis.com/combo"
+                        , "?3.4.1/build/cssreset/cssreset-min.css"
+                        , "&3.4.1/build/cssfonts/cssfonts-min.css"
+                        , "&3.4.1/build/cssbase/cssbase-min.css"
+                        ]
 
 wordList :: [Word] -> View
 wordList ws =
