@@ -25,7 +25,7 @@ build: cabal-dev
 
 .PHONY: test
 test: build
-	$(KIBR) test -a 1000
+	$(KIBR) test -a 500
 
 state:
 	$(KIBR) import data/fixtures.xml
