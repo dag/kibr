@@ -106,13 +106,12 @@ dictionary :: Language
            -> (Sitemap -> [(Text, Maybe Text)] -> Text)
            -> Dictionary
            -> ServerPart Response
-dictionary lang st url' page =
+dictionary lang st url page =
     runController controller environ
   where
     environ    = Environment { language = lang
                              , state    = st
-                             , url      = \s -> url' (Dictionary lang s) []
-                             , asset    = \s -> url' (Asset s) []
+                             , router   = url
                              }
     controller = case page of Home   -> home
                               Word w -> word w

@@ -4,7 +4,8 @@ import Preamble
 
 import Control.Monad.Reader       (asks)
 import Data.Kibr.Message
-import Data.Kibr.Word
+import Data.Kibr.Sitemap
+import Data.Kibr.Word             (Word, word)
 import Data.Lens
 import Text.Blaze.Html5
 import Text.Blaze.Html5.Extra
@@ -12,7 +13,6 @@ import Text.Blaze.Html5.Highlight
 import Text.Groom
 
 import qualified Data.Kibr.Environment           as Env
-import qualified Data.Kibr.Sitemap               as Url
 import qualified Data.Text                       as T
 import qualified Text.Highlighter.Lexers.Haskell as Haskell
 
@@ -24,22 +24,35 @@ makeTranslator =
     lang <- asks Env.language
     pure $ toHtml . message lang
 
+assetRouter :: Env.Reader (Asset -> Text)
+assetRouter =
+  do
+    router <- asks Env.router
+    pure $ \x -> router (Asset x) []
+
+dictionaryRouter :: Env.Reader (Dictionary -> Text)
+dictionaryRouter =
+  do
+    lang   <- asks Env.language
+    router <- asks Env.router
+    pure $ \x -> router (Dictionary lang x) []
+
 master :: View -> View
 master page =
   do
-    msg <- makeTranslator
-    asset <- asks Env.asset
-    page' <- page
+    msg     <- makeTranslator
+    asset   <- assetRouter
+    content <- page
     pure . docTypeHtml $ do
       head $ do
         title $ msg LojbanDictionary
         mapM_ linkCss
           [ webfonts
           , yui
-          , asset Url.Highlighter
-          , asset Url.Screen
+          , asset Highlighter
+          , asset Screen
           ]
-      body page'
+      body content
   where
     webfonts    = T.concat [ "http://fonts.googleapis.com/css?family"
                            , "=Ubuntu+Mono:400,400italic,700,700italic"
@@ -55,8 +68,8 @@ master page =
 wordList :: [Word] -> View
 wordList ws =
   do
-    url <- asks Env.url
+    url <- dictionaryRouter
     pure . dl . forM_ ws $ \w -> do
       let w' = word ^$ w
-      dt . linkTo (url $ Url.Word w') . toHtml $ w'
+      dt . linkTo (url $ Word w') . toHtml $ w'
       dd . highlight Haskell.lexer False . T.pack . groom $ w

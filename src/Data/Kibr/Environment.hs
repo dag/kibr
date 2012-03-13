@@ -15,8 +15,7 @@ data Environment
   = Environment
       { language :: Language
       , state    :: Acid
-      , url      :: Dictionary -> Text
-      , asset    :: Asset -> Text
+      , router   :: Sitemap -> [(Text, Maybe Text)] -> Text
       }
 
 newtype Controller a
