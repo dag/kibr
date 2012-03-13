@@ -3,10 +3,12 @@ language: haskell
 before_install:
   - "sudo apt-get install libpcre3-dev"
 
+install:
+  - "cabal install cabal-dev"
+
 script:
-  - "cabal clean"
-  - "cabal install -fdevelopment"
-  - "kibr test -a 10000"
+  - "make"
+  - "cabal clean && cabal-dev install"
 
 notifications:
   irc:
