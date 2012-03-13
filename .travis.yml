@@ -1,9 +1,6 @@
-language: erlang
+language: haskell
 
 before_install:
-  - "sudo add-apt-repository ppa:brcha/haskell"
-  - "sudo apt-get update"
-  - "sudo apt-get install ghc cabal-install happy libpcre3-dev"
   - "export PATH=\"$HOME/.cabal/bin:$PATH\""
   - "cabal update"
   - "cabal install cabal-dev"
