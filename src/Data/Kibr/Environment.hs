@@ -3,7 +3,7 @@ module Data.Kibr.Environment where
 import Preamble
 
 import Control.Monad.Trans (MonadIO)
-import Happstack.Server    (ServerPart, ServerPartT)
+import Happstack.Server    (ServerPart, ServerPartT, Response)
 import Web.Routes          (MonadRoute(..))
 
 import Data.Kibr.Language
@@ -19,8 +19,8 @@ data Environment
       , router   :: Sitemap -> [(Text, Maybe Text)] -> Text
       }
 
-newtype Controller a
-  = Controller (R.ReaderT Environment (ServerPartT IO) a)
+newtype ControllerM a
+  = ControllerM (R.ReaderT Environment (ServerPartT IO) a)
   deriving ( Functor
            , Applicative
            , Monad
@@ -29,8 +29,10 @@ newtype Controller a
            , R.MonadReader Environment
            )
 
-runController :: Controller a -> Environment -> ServerPart a
-runController (Controller r) = R.runReaderT r
+type Controller = ControllerM Response
+
+runControllerM :: ControllerM a -> Environment -> ServerPart a
+runControllerM (ControllerM r) = R.runReaderT r
 
 newtype Reader a
   = Reader (R.Reader Environment a)
@@ -43,8 +45,8 @@ newtype Reader a
 runReader :: Reader a -> Environment -> a
 runReader (Reader r) = R.runReader r
 
-instance MonadRoute Controller where
-  type URL Controller = Sitemap
+instance MonadRoute ControllerM where
+  type URL ControllerM = Sitemap
   askRouteFn = R.asks router
 
 instance MonadRoute Reader where

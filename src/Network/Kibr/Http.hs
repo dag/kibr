@@ -107,7 +107,7 @@ dictionary :: Language
            -> Dictionary
            -> ServerPart Response
 dictionary lang st url page =
-    runController controller environ
+    runControllerM controller environ
   where
     environ    = Environment { language = lang
                              , state    = st
@@ -127,7 +127,7 @@ query ev =
     st <- asks state
     query' st ev
 
-respond :: Html.View -> Controller Response
+respond :: Html.View -> Controller
 respond page =
   do
     env <- ask
@@ -141,13 +141,13 @@ respond page =
 #endif
       . runReader (Html.master page) $ env
 
-home :: Controller Response
+home :: Controller
 home =
   do
     db <- query ReadState
     respond . Html.wordList . Ix.toList $ db ^. words
 
-word :: Text -> Controller Response
+word :: Text -> Controller
 word w =
   do
     w' <- query $ LookupWord w
