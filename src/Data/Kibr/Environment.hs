@@ -4,6 +4,7 @@ import Preamble
 
 import Control.Monad.Trans (MonadIO)
 import Happstack.Server    (ServerPart, ServerPartT)
+import Web.Routes          (MonadRoute(..))
 
 import Data.Kibr.Language
 import Data.Kibr.Sitemap
@@ -41,3 +42,11 @@ newtype Reader a
 
 runReader :: Reader a -> Environment -> a
 runReader (Reader r) = R.runReader r
+
+instance MonadRoute Controller where
+  type URL Controller = Sitemap
+  askRouteFn = R.asks router
+
+instance MonadRoute Reader where
+  type URL Reader = Sitemap
+  askRouteFn = R.asks router
