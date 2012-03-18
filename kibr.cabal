@@ -86,10 +86,10 @@ Executable kibr
     digest               == 0.0.1.*,
     file-embed           == 0.0.4.*,
     groom                == 0.1.1.*,
-    happstack-server     == 6.6.3.*,
+    happstack-server     == 6.6.4.*,
     highlighter          == 0.2.*,
     hslogger             == 1.1.5.*,
-    hxt                  == 9.2.0.*,
+    hxt                  == 9.2.2.*,
     irc                  == 0.5.0.*,
     ircbot               == 0.3.1.*,
     ixset                == 1.0.2.*,
@@ -99,8 +99,8 @@ Executable kibr
     stm                  == 2.2.0.*,
     template-haskell     == 2.5.0.*,
     text                 == 0.11.1.*,
-    web-routes           == 0.26.3.*,
-    web-routes-happstack == 0.23.0.*,
+    web-routes           == 0.27.1.*,
+    web-routes-happstack == 0.23.1.*,
     web-routes-th        == 0.21.1.*,
     zlib                 == 0.5.3.* && >= 0.5.3.3
 
@@ -118,8 +118,8 @@ Executable kibr
       file-location              == 0.4.2.*,
       HUnit                      == 1.2.2.*,
       HUnit-Diff                 == 0.1.*,
-      test-framework             == 0.5.*,
+      test-framework             == 0.6.*,
       test-framework-hunit       == 0.2.7.*,
-      test-framework-quickcheck2 == 0.2.12.*,
+      test-framework-quickcheck2 == 0.2.12.1.*,
       test-framework-th          == 0.2.2.*
     CPP-Options: -DDEVELOPMENT
