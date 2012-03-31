@@ -15,18 +15,18 @@ mkRequest uri =
   do
     ib <- newEmptyMVar
     b  <- newMVar $ Body LB.empty
-    pure Request { rqMethod      = GET
-                 , rqSecure      = False
-                 , rqPaths       = pathEls $ path u
-                 , rqUri         = path u
-                 , rqQuery       = query u
-                 , rqInputsQuery = queryInput u
-                 , rqInputsBody  = ib
-                 , rqCookies     = []
-                 , rqVersion     = HttpVersion 1 1
-                 , rqHeaders     = Map.empty
-                 , rqBody        = b
-                 , rqPeer        = ("", 0)
-                 }
+    return Request { rqMethod      = GET
+                   , rqSecure      = False
+                   , rqPaths       = pathEls $ path u
+                   , rqUri         = path u
+                   , rqQuery       = query u
+                   , rqInputsQuery = queryInput u
+                   , rqInputsBody  = ib
+                   , rqCookies     = []
+                   , rqVersion     = HttpVersion 1 1
+                   , rqHeaders     = Map.empty
+                   , rqBody        = b
+                   , rqPeer        = ("", 0)
+                   }
   where
     u = toSURI uri

@@ -24,7 +24,7 @@ data State
   deriving (Eq, Show, Data, Typeable)
 
 instance Default State where
-  def = State empty
+  def = State Ix.empty
 
 deriveSafeCopy 0 'base ''State
 
@@ -51,8 +51,8 @@ lookupAffix a = askL $ ixLens (ByAffix a') . words
 reviseWord :: Text -> Language -> Revision Definition -> Update State ()
 reviseWord w l r =
   do
-    byWord . words %= map (lang . definitions ^%= map (r:))
-    pure ()
+    byWord . words %= fmap (lang . definitions ^%= fmap (r:))
+    return ()
   where
     byWord = ixLens $ ByWord w
     lang   = mapLens l

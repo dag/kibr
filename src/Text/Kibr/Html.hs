@@ -22,20 +22,20 @@ makeTranslator :: Env.Reader (Message -> Html)
 makeTranslator =
   do
     lang <- asks Env.language
-    pure $ toHtml . message lang
+    return $ toHtml . message lang
 
 assetRouter :: Env.Reader (Asset -> Text)
 assetRouter =
   do
     router <- asks Env.router
-    pure $ \x -> router (Asset x) []
+    return $ \x -> router (Asset x) []
 
 dictionaryRouter :: Env.Reader (Dictionary -> Text)
 dictionaryRouter =
   do
     lang   <- asks Env.language
     router <- asks Env.router
-    pure $ \x -> router (Dictionary lang x) []
+    return $ \x -> router (Dictionary lang x) []
 
 master :: View -> View
 master page =
@@ -43,7 +43,7 @@ master page =
     msg     <- makeTranslator
     asset   <- assetRouter
     content <- page
-    pure . docTypeHtml $ do
+    return . docTypeHtml $ do
       head $ do
         title $ msg LojbanDictionary
         mapM_ linkCss [webfonts, yui, asset Highlighter, asset Screen]
@@ -64,7 +64,7 @@ wordList :: [Word] -> View
 wordList ws =
   do
     url <- dictionaryRouter
-    pure . dl . forM_ ws $ \w -> do
+    return . dl . forM_ ws $ \w -> do
       let w' = word ^$ w
       dt . linkTo (url $ Word w') . toHtml $ w'
       dd . highlight Haskell.lexer False . T.pack . groom $ w

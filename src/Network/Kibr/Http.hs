@@ -50,9 +50,9 @@ run config st =
 
 master :: Acid -> ServerPart Response
 master st =
-    sum [ implSite "" "" . setDefault Root . mkSitePI $ sitemap st
-        , methodForbidden
-        ]
+    msum [ implSite "" "" . setDefault Root . mkSitePI $ sitemap st
+         , methodForbidden
+         ]
   where
     methodForbidden =
       do
@@ -93,13 +93,13 @@ highlighter :: ServerPart Response
 highlighter =
   do
     filePart
-    pure $(embedFileAsResponse "data/highlighter.css")
+    return $(embedFileAsResponse "data/highlighter.css")
 
 stylesheet :: ServerPart Response
 stylesheet =
   do
     filePart
-    pure . toResponse $ Css.master
+    return . toResponse $ Css.master
 
 dictionary :: Language
            -> Acid
@@ -131,7 +131,7 @@ respond :: Html.View -> Controller
 respond page =
   do
     env <- ask
-    pure
+    return
 #if DEVELOPMENT
       . setHeader "Content-Type" "text/html; charset=UTF-8"
       . toResponse
@@ -151,4 +151,4 @@ word :: Text -> Controller
 word w =
   do
     w' <- query $ LookupWord w
-    maybe mzero (respond . Html.wordList . pure) w'
+    maybe mzero (respond . Html.wordList . return) w'

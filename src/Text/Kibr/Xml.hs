@@ -30,7 +30,7 @@ readDictionary file =
   do
     [lang] <- runX $ doc >>> getLanguage
     words <- runX $ doc >>> getWord lang
-    pure . State $ Ix.fromList words
+    return . State $ Ix.fromList words
   where
     doc = readDocument [] file
 

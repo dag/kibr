@@ -1,6 +1,6 @@
 module Network.Kibr.Irc where
 
-import Preamble hiding (join)
+import Preamble hiding (join, (<|>))
 
 import Control.Concurrent            (killThread)
 import Control.Concurrent.STM        (TVar)
@@ -26,7 +26,7 @@ parts :: BotConf -> Acid -> IO [BotPartT IO ()]
 parts BotConf{..} state =
   do
     (chans, channelsPart) <- initChannelsPart channels
-    pure [ pingPart
+    return [ pingPart
          , nickUserPart
          , channelsPart
          , join chans
@@ -45,7 +45,7 @@ join chans = parsecPart $
     channel <- many1 anyChar
     joinChannel channel chans
   <|>
-    pure ()
+    return ()
 
 word :: BotMonad m => Acid -> m ()
 word state = parsecPart $
@@ -58,7 +58,7 @@ word state = parsecPart $
     target <- maybeZero =<< replyTo
     sendCommand $ PrivMsg Nothing [target] (show w')
   <|>
-    pure ()
+    return ()
 
 affix :: BotMonad m => Acid -> m ()
 affix state = parsecPart $
@@ -74,4 +74,4 @@ affix state = parsecPart $
     target <- maybeZero =<< replyTo
     sendCommand $ PrivMsg Nothing [target] (show w)
   <|>
-    pure ()
+    return ()

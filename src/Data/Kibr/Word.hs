@@ -66,9 +66,9 @@ makeConstructorTags ''Shape [''Eq, ''Ord, ''Typeable]
 
 instance Indexable Word where
   empty =
-      ixSet [ ixFun $ pure . ByWord . _word
+      ixSet [ ixFun $ (:[]) . ByWord . _word
             , ixFun $ map ByAffix . getAffixes . _shape
-            , ixFun $ pure . byShape . _shape
+            , ixFun $ (:[]) . byShape . _shape
             ]
     where
       getAffixes Particle{..}         = Set.toList _affixes

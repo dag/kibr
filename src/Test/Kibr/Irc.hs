@@ -25,8 +25,8 @@ receive c ps =
     st <- openMemoryState fixtures
     parts <- Irc.parts nullBotConf st
     env <- mkBotEnv c ps
-    forM_ parts $ \p -> runBotPartT (p ++ pure ()) env
-    pure $ outChan env
+    forM_ parts $ \p -> runBotPartT (msum [p, return ()]) env
+    return $ outChan env
 
 case_join_command :: Assertion
 case_join_command =

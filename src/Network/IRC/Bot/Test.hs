@@ -11,12 +11,12 @@ mkBotEnv :: Command -> [Parameter] -> IO BotEnv
 mkBotEnv c ps =
   do
     chan <- newChan
-    pure BotEnv { message   = msg
-                , outChan   = chan
-                , logFn     = nullLogger
-                , botName   = "bot"
-                , cmdPrefix = "@"
-                }
+    return BotEnv { message   = msg
+                  , outChan   = chan
+                  , logFn     = nullLogger
+                  , botName   = "bot"
+                  , cmdPrefix = "@"
+                  }
   where
     prefix = NickName "user" (Just "user") (Just "localhost")
     msg    = Message { msg_prefix  = Just prefix
