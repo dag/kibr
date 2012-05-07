@@ -4,9 +4,10 @@ before_install:
   - "sudo apt-get install libpcre3-dev"
 
 install:
-  - "cabal install cabal-dev"
+  - "cabal install cabal-dev hlint"
 
 script:
+  - "hlint src"
   - "make"
   - "cabal clean && cabal-dev install"
 

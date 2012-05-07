@@ -3,21 +3,15 @@ KIBR   = dist/build/kibr/kibr
 TARGET = http
 PORT   = 8000
 
-all: check-cabal hlint test
+all: check-cabal test
 
 .PHONY: check-cabal
 check-cabal:
 	cabal check
 
 cabal-dev:
-	cabal update
-	cabal-dev install hlint
-	cabal-dev install   -fdevelopment --disable-optimization --only-dependencies
+	cabal-dev install   -fdevelopment --disable-optimization --only-dependencies --force-reinstalls
 	cabal-dev configure -fdevelopment --disable-optimization
-
-.PHONY: hlint
-hlint: cabal-dev
-	$(HLINT) --color src
 
 .PHONY: build
 build: cabal-dev
@@ -45,10 +39,3 @@ watch:
 .PHONY: irc
 irc: build state
 	$(KIBR) irc
-
-tags:
-	hasktags -c src
-
-.PHONY: gvim
-gvim: tags
-	gvim $$(git ls-files)
