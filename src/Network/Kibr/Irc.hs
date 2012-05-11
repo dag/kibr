@@ -18,7 +18,7 @@ run :: BotConf -> Acid -> IO ()
 run conf state =
   do
     ps <- parts conf state
-    threads <- simpleBot conf ps
+    (threads,_) <- simpleBot conf ps
     getLine
     mapM_ killThread threads
 
