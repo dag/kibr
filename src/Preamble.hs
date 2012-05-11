@@ -2,6 +2,7 @@ module Preamble
   ( enumerate
   , Prelude.Bounded
   , Prelude.Enum
+  , Prelude.String
   , module X
   ) where
 

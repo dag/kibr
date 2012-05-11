@@ -10,7 +10,7 @@ check-cabal:
 	cabal check
 
 cabal-dev:
-	cabal-dev install   -fdevelopment --disable-optimization --only-dependencies --force-reinstalls
+	cabal-dev install   -fdevelopment --disable-optimization --only-dependencies --ghc-option=-XFlexibleInstances
 	cabal-dev configure -fdevelopment --disable-optimization
 
 .PHONY: build

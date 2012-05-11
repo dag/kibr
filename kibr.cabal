@@ -74,7 +74,7 @@ Executable kibr
 
   Build-Depends:
     acid-state           == 0.6.3.*,
-    base                 == 4.3.1.*,
+    base                 >= 4.3 && < 4.6,
     blaze-html           == 0.4.3.*,
     bytestring           == 0.9.1.* || == 0.9.2.*,
     containers           == 0.4.2.*,
@@ -97,7 +97,7 @@ Executable kibr
     parsec               == 3.1.2.*,
     safecopy             == 0.6.1.*,
     stm                  == 2.2.0.*,
-    template-haskell     == 2.5.0.*,
+    template-haskell     >= 2.5 && < 2.8,
     text                 == 0.11.1.*,
     web-routes           == 0.27.1.*,
     web-routes-happstack == 0.23.3.*,
