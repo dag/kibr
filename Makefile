@@ -39,3 +39,9 @@ watch:
 .PHONY: irc
 irc: build state
 	$(KIBR) irc
+
+.PHONY: deploy
+deploy:
+	cabal sdist
+	scp -C dist/kibr-0.0.0.tar.gz dag@vrici.lojban.org:~/kibr/kibr-0.0.0.tar.gz
+	ssh -C dag@vrici.lojban.org 'cd kibr; cabal-dev install kibr-0.0.0.tar.gz --constraint="template-haskell == 2.5.0.0" --force-reinstalls'
