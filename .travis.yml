@@ -9,7 +9,7 @@ install:
 
 script:
   - "hlint src"
-  - "make"
+  - "make CABAL_FLAGS='-fdevelopment --disable-optimization'"
   - "cabal clean && cabal-dev install"
 
 notifications:
