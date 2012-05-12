@@ -1,7 +1,9 @@
-HLINT  = cabal-dev/bin/hlint
-KIBR   = dist/build/kibr/kibr
-TARGET = http
-PORT   = 8000
+HLINT       = cabal-dev/bin/hlint
+RTS_OPTS    = -N
+KIBR        = dist/build/kibr/kibr +RTS $(RTS_OPTS) -RTS
+TARGET      = http
+PORT        = 8000
+CABAL_FLAGS = -fdevelopment --enable-library-profiling --enable-executable-profiling --disable-optimization
 
 all: check-cabal test
 
@@ -10,8 +12,8 @@ check-cabal:
 	cabal check
 
 cabal-dev:
-	cabal-dev install   -fdevelopment --disable-optimization --only-dependencies --ghc-option=-XFlexibleInstances
-	cabal-dev configure -fdevelopment --disable-optimization
+	cabal-dev install $(CABAL_FLAGS) --only-dependencies --ghc-option=-XFlexibleInstances
+	cabal-dev configure $(CABAL_FLAGS)
 
 .PHONY: build
 build: cabal-dev
