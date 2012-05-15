@@ -50,9 +50,7 @@ lookupAffix a = askL $ ixLens (ByAffix a') . words
 
 reviseWord :: Text -> Language -> Revision Definition -> Update State ()
 reviseWord w l r =
-  do
-    byWord . words %= fmap (lang . definitions ^%= fmap (r:))
-    return ()
+    void $ byWord . words %= fmap (lang . definitions ^%= fmap (r:))
   where
     byWord = ixLens $ ByWord w
     lang   = mapLens l
