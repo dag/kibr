@@ -1,0 +1,72 @@
+name          : kibr
+version       : 2.0.0
+license       : BSD3
+cabal-version : >= 1.10
+build-type    : Simple
+
+test-suite test-kibr
+  type             : exitcode-stdio-1.0
+  main-is          : test-kibr.hs
+  hs-source-dirs   : test bin
+  default-language : Haskell2010
+  ghc-options      : -Wall -threaded -rtsopts -with-rtsopts=-N
+  other-modules    : Kibr.Fixture
+                     Kibr.Test
+  build-depends    : acid-state,
+                     base == 4.*,
+                     containers,
+                     data-default,
+                     HUnit,
+                     hxt,
+                     kibr,
+                     QuickCheck,
+                     test-framework,
+                     test-framework-hunit,
+                     test-framework-quickcheck2,
+                     test-framework-th,
+                     text
+
+executable kibr
+  main-is          : kibr.hs
+  hs-source-dirs   : bin
+  default-language : Haskell2010
+  ghc-options      : -Wall
+  build-depends    : base == 4.*,
+                     kibr
+
+library
+  hs-source-dirs   : src
+  default-language : Haskell2010
+  ghc-options      : -Wall
+  exposed-modules  : Kibr.Data
+                     Kibr.DICT
+                     Kibr.IRC
+                     Kibr.Run
+                     Kibr.State
+                     Kibr.Web
+                     Kibr.XML
+                     Text.XML.HXT.HSX
+  build-depends    : acid-state,
+                     base                      == 4.*,
+                     bytestring,
+                     containers,
+                     data-default,
+                     data-lens,
+                     data-lens-fd,
+                     data-lens-template,
+                     dyre,
+                     filepath,
+                     happstack-server          == 7.*,
+                     hsx,
+                     hxt                       == 9.*,
+                     hxt-curl,
+                     hxt-expat,
+                     interpolatedstring-perl6,
+                     irc,
+                     ircbot                    >= 0.5,
+                     ixset,
+                     mtl                       == 2.*,
+                     network,
+                     safecopy,
+                     text,
+                     xdg-basedir
