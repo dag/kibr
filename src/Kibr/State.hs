@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable, TemplateHaskell, TypeFamilies #-}
+{-# LANGUAGE DeriveDataTypeable, Rank2Types, TemplateHaskell, TypeFamilies #-}
 
 -- | Event definitions for /acid-state/.
 module Kibr.State
@@ -24,33 +24,32 @@ module Kibr.State
     )
   where
 
-import Prelude hiding (id, (.))
-
 import qualified Data.Foldable as F
 import qualified Data.IxSet    as IxSet
 import qualified Data.Map      as Map
 
-import Control.Category     (id, (.))
 import Control.Monad        (void, when)
 import Control.Monad.Reader (MonadReader, asks)
 import Data.Acid            (Update, Query, makeAcidic)
 import Data.Default         (Default(def))
 import Data.IxSet           (IxSet, (@=))
-import Data.Lens            (Lens, (%=), (^%=), (^.), getL, mapLens, access)
-import Data.Lens.Template   (makeLens)
 import Data.SafeCopy        (deriveSafeCopy, base)
 import Kibr.Data
+import Lens.Family2         (Getter, (^%=), (^.))
+import Lens.Family2.State   ((%=), access)
+import Lens.Family2.Stock   (mapL)
+import Lens.Family2.TH      (mkLenses)
 
 data AppState = AppState
     { _wordData :: IxSet WordData
     }
 
-makeLens ''AppState
+mkLenses ''AppState
 
 instance Default AppState where def = AppState IxSet.empty
 
-summon :: MonadReader a m => Lens a b -> m b
-summon = asks . getL
+summon :: MonadReader a m => Getter a b -> m b
+summon l = asks (^.l)
 
 -- | Look up the most current 'WordType' stored for a 'Word'.
 lookupWordType :: Word -> Query AppState (Maybe WordType)
@@ -66,8 +65,10 @@ lookupWordDefinition :: Word -> Language
 lookupWordDefinition word language = do
     ix <- summon wordData
     return $ do wd <- IxSet.getOne (ix @= word)
-                Revision def _:_ <- wd^.(mapLens language . wordDefinition)
+                Revision def _:_ <- wd^.wordDefinition.langL
                 return def
+  where
+    langL = mapL language
 
 modifyWordData :: Word -> (WordData -> WordData) -> Update AppState ()
 modifyWordData word modify = do
@@ -105,7 +106,9 @@ listWordDefinitions :: Word -> Language
 listWordDefinitions word language = do
     ix <- summon wordData
     return $ F.concat $ do wd <- IxSet.getOne (ix @= word)
-                           wd^.(mapLens language . wordDefinition)
+                           wd^.wordDefinition.langL
+  where
+    langL = mapL language
 
 deriveSafeCopy 0 'base ''AppState
 makeAcidic ''AppState [ 'lookupWordType

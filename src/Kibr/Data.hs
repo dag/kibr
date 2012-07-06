@@ -39,8 +39,6 @@ import qualified Data.Text       as Text
 import Data.ByteString               (ByteString)
 import Data.Default                  (Default(def))
 import Data.IxSet                    (IxSet, Indexable, ixSet, ixFun)
-import Data.Lens                     (Lens)
-import Data.Lens.Template            (makeLens)
 import Data.Map                      (Map)
 import Data.SafeCopy                 (SafeCopy, deriveSafeCopy, base)
 import Data.Set                      (Set)
@@ -48,6 +46,7 @@ import Data.String                   (IsString(fromString))
 import Data.Text                     (Text)
 import Data.Typeable                 (Typeable)
 import Data.Word                     (Word8)
+import Lens.Family2.TH               (mkLenses)
 import Text.InterpolatedString.Perl6 (qq)
 
 
@@ -165,7 +164,7 @@ data WordData = WordData
     , _wordDefinition :: WordTranslations
     } deriving (Eq, Ord, Typeable)
 
-makeLens ''WordData
+mkLenses ''WordData
 
 instance Show WordData where
     show (WordData w wt wd) = [qq|WordData $w $wt ($wd)|]
