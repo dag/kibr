@@ -20,11 +20,15 @@ module Kibr.Run
     )
   where
 
+import Prelude hiding ((.))
+
 import Config.Dyre                    (Params(..), wrapMain, defaultParams)
+import Control.Category               ((.))
 import Happstack.Server               (Conf, nullConf)
 import Kibr.Data                      (fromList)
 import Network                        (PortID(..))
 import Network.IRC.Bot                (BotConf(..), User(..), nullBotConf, nullUser)
+import Options.Applicative
 import System.Environment             (getEnv)
 import System.Environment.XDG.BaseDir (getUserDataDir)
 import System.Exit                    (exitFailure)
@@ -74,9 +78,38 @@ run = wrapMain $ defaultParams
     , realMain    = main
     }
 
+data Options = Options
+    { remote :: Bool
+    , cmd :: Command
+    }
+
+data Command = Import FilePath | Serve [Service]
+
+data Service = DICT | IRC | State | Web deriving (Bounded, Enum)
+
+service :: String -> Maybe Service
+service "dict"  = Just DICT
+service "irc"   = Just IRC
+service "state" = Just State
+service "web"   = Just Web
+service _       = Nothing
+
+options :: Parser Options
+options = Options
+    <$> switch (long "remote" . help "Connect to remote state service")
+    <*> subparser
+          ( command "import" (info (helper <*> import') (progDesc "Import words from an XML export"))
+          . command "serve"  (info (helper <*> serve)   (progDesc "Launch Internet services"))
+          )
+  where
+    import' = Import <$> argument str (metavar "FILE")
+    serve   = Serve  <$> arguments service (metavar "SERVICE" . value [minBound..])
+
 -- | The actual entry-point for the @kibr@ executable.
 main :: Either CompilationError Config -> IO ()
-main (Right config@Config{..}) = return ()
-main (Left msg) = do
-    hPutStr stderr msg
-    exitFailure
+main (Left msg) = hPutStr stderr msg >> exitFailure
+main (Right config@Config{..}) = do
+    opts <- execParser parser
+    return ()
+  where
+    parser = info (helper <*> options) fullDesc

@@ -67,6 +67,7 @@ library
                      lens-family-th,
                      mtl                       == 2.*,
                      network,
+                     optparse-applicative      >= 0.1,
                      safecopy,
                      text,
                      xdg-basedir
