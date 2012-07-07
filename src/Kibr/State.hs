@@ -29,14 +29,16 @@ import qualified Data.IxSet    as IxSet
 import qualified Data.Map      as Map
 
 import Control.Monad        (void, when)
-import Control.Monad.Reader (MonadReader, asks)
+import Control.Monad.Reader (asks)
+import Control.Monad.State  (gets)
 import Data.Acid            (Update, Query, makeAcidic)
 import Data.Default         (Default(def))
-import Data.IxSet           (IxSet, (@=))
+import Data.IxSet           (IxSet, Indexable)
+import Data.Typeable        (Typeable)
 import Data.SafeCopy        (deriveSafeCopy, base)
 import Kibr.Data
-import Lens.Family2         (Getter, (^%=), (^.))
-import Lens.Family2.State   ((%=), access)
+import Lens.Family2         (GetterFamily, getting, (^%=), (^.))
+import Lens.Family2.State   ((%=))
 import Lens.Family2.Stock   (mapL)
 import Lens.Family2.TH      (mkLenses)
 
@@ -48,35 +50,36 @@ mkLenses ''AppState
 
 instance Default AppState where def = AppState IxSet.empty
 
-summon :: MonadReader a m => Getter a b -> m b
-summon l = asks (^.l)
+getOneL :: (Ord a, Typeable k, Typeable a, Indexable a)
+        => k -> GetterFamily (IxSet a) a' (Maybe a) b'
+getOneL k = getting (IxSet.getOne . IxSet.getEQ k)
 
 -- | Look up the most current 'WordType' stored for a 'Word'.
 lookupWordType :: Word -> Query AppState (Maybe WordType)
 lookupWordType word = do
-    ix <- summon wordData
-    return $ do WordData _ (Revision wt _:_) _ <- IxSet.getOne (ix @= word)
+    wd <- asks (^.wordData.wordL)
+    return $ do WordData _ (Revision wt _:_) _ <- wd
                 return wt
+  where
+    wordL = getOneL word
 
 -- | Look up the most current 'WordDefinition' stored for a 'Word' in
 -- a 'Language'.
 lookupWordDefinition :: Word -> Language
                      -> Query AppState (Maybe WordDefinition)
 lookupWordDefinition word language = do
-    ix <- summon wordData
-    return $ do wd <- IxSet.getOne (ix @= word)
-                Revision def _:_ <- wd^.wordDefinition.langL
+    wd <- asks (^.wordData.wordL)
+    return $ do Revision def _:_ <- wd >>= (^.wordDefinition.langL)
                 return def
   where
+    wordL = getOneL word
     langL = mapL language
 
 modifyWordData :: Word -> (WordData -> WordData) -> Update AppState ()
-modifyWordData word modify = do
-    ix <- access wordData
-    case IxSet.getOne (ix @= word) of
-      Nothing -> create >> update new
-      Just wd -> update wd
+modifyWordData word modify =
+    gets (^.wordData.wordL) >>= maybe (create >> update new) update
   where
+    wordL = getOneL word
     create = wordData %= IxSet.insert new
     new = WordData word def def
     update wd = void $ wordData %= IxSet.updateIx word (modify wd)
@@ -96,18 +99,19 @@ saveWordDefinition word language revision =
 -- | List all 'WordType' revisions for a 'Word'.
 listWordTypes :: Word -> Query AppState (History WordType)
 listWordTypes word = do
-    ix <- summon wordData
-    return $ F.concat $ do wd <- IxSet.getOne (ix @= word)
-                           return $ wd^.wordType
+    wd <- asks (^.wordData.wordL)
+    return $ F.concat $ fmap (^.wordType) wd
+  where
+    wordL = getOneL word
 
 -- | List all 'WordDefinition' revisions for a 'Word' in a 'Language'.
 listWordDefinitions :: Word -> Language
                     -> Query AppState (History WordDefinition)
 listWordDefinitions word language = do
-    ix <- summon wordData
-    return $ F.concat $ do wd <- IxSet.getOne (ix @= word)
-                           wd^.wordDefinition.langL
+    wd <- asks (^.wordData.wordL)
+    return $ F.concat $ wd >>= (^.wordDefinition.langL)
   where
+    wordL = getOneL word
     langL = mapL language
 
 deriveSafeCopy 0 'base ''AppState
