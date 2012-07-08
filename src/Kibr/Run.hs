@@ -1,4 +1,4 @@
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards, QuasiQuotes #-}
 
 -- | Support for configuration via dynamic recompilation using
 -- "Config.Dyre".
@@ -21,12 +21,21 @@ module Kibr.Run
   where
 
 import Prelude hiding ((.))
+import Kibr.Data hiding (User)
 
 import Config.Dyre                    (Params(..), wrapMain, defaultParams)
 import Control.Category               ((.))
+import Control.Exception              (bracket)
+import Control.Monad                  (forM_, void, when)
+import Control.Monad.Reader           (ReaderT, runReaderT, asks)
+import Control.Monad.Trans            (liftIO)
+import Data.Acid                      (AcidState, openLocalStateFrom, closeAcidState, update)
+import Data.Acid.Remote               (acidServer, openRemoteState)
+import Data.Default                   (def)
 import Happstack.Server               (Conf, nullConf)
-import Kibr.Data                      (fromList)
-import Network                        (PortID(..))
+import Kibr.State
+import Kibr.XML                       (readDictionary)
+import Network                        (HostName, PortID(..))
 import Network.IRC.Bot                (BotConf(..), User(..), nullBotConf, nullUser)
 import Options.Applicative
 import System.Environment             (getEnv)
@@ -34,13 +43,17 @@ import System.Environment.XDG.BaseDir (getUserDataDir)
 import System.Exit                    (exitFailure)
 import System.FilePath                ((</>))
 import System.IO                      (hPutStr, stderr)
+import Text.InterpolatedString.Perl6  (qq)
+import Text.XML.HXT.Core              ((/>), runX, readDocument)
+import Text.XML.HXT.Expat             (withExpat)
+import Text.XML.HXT.HTTP              (withHTTP)
 
 -- | Application config.
 data Config = Config
-    { stateDirectory :: IO FilePath  -- ^ Path to /acid-state/ log directory.
-    , acidServerPort :: IO PortID    -- ^ Run an /acid-state/ server on this port.
-    , webServer      :: Conf         -- ^ Configuration for the web server.
-    , ircBots        :: [BotConf]    -- ^ IRC bots to run.
+    { stateDirectory :: IO FilePath           -- ^ Path to /acid-state/ log directory.
+    , stateServer    :: IO (HostName,PortID)  -- ^ Location of remote /acid-state/ server.
+    , webServer      :: Conf                  -- ^ Configuration for the web server.
+    , ircBots        :: [BotConf]             -- ^ IRC bots to run.
     }
 
 -- | Data types representing something configurable.
@@ -55,8 +68,8 @@ instance Configurable User    where cfg = nullUser
 instance Configurable Config where
     cfg = Config
       { stateDirectory = getUserDataDir $ "kibr" </> "state"
-      , acidServerPort = do dir <- getEnv "XDG_RUNTIME_DIR"
-                            return $ UnixSocket (dir </> "kibr" </> "acid-state.socket")
+      , stateServer    = do dir <- getEnv "XDG_RUNTIME_DIR"
+                            return ("127.0.0.1",UnixSocket (dir </> "kibr-state.socket"))
       , webServer      = cfg
       , ircBots        = [cfg {nick = "kibr", host = "chat.freenode.net",
                                commandPrefix = "@", channels = fromList ["#sampla"],
@@ -66,17 +79,15 @@ instance Configurable Config where
 -- | The @kibr@ executable.
 kibr :: Config -> IO ()
 kibr cfg = run $ Right cfg
+  where
+    run = wrapMain $ defaultParams
+        { projectName = "kibr"
+        , showError   = const Left
+        , realMain    = main
+        }
 
 -- | An error message from GHC if /dyre/ fails to compile a user configuration.
 type CompilationError = String
-
--- | Wrapper around 'main' handling compilation of user configuration.
-run :: Either CompilationError Config -> IO ()
-run = wrapMain $ defaultParams
-    { projectName = "kibr"
-    , showError   = const Left
-    , realMain    = main
-    }
 
 data Options = Options
     { remote :: Bool
@@ -85,31 +96,52 @@ data Options = Options
 
 data Command = Import FilePath | Serve [Service]
 
-data Service = DICT | IRC | State | Web deriving (Bounded, Enum)
-
-service :: String -> Maybe Service
-service "dict"  = Just DICT
-service "irc"   = Just IRC
-service "state" = Just State
-service "web"   = Just Web
-service _       = Nothing
+data Service = DICT | IRC | State | Web deriving (Eq, Bounded, Enum)
 
 options :: Parser Options
 options = Options
     <$> switch (long "remote" . help "Connect to remote state service")
     <*> subparser
-          ( command "import" (info (helper <*> import') (progDesc "Import words from an XML export"))
-          . command "serve"  (info (helper <*> serve)   (progDesc "Launch Internet services"))
+          ( mkcmd "import" import' "Import words from an XML export"
+          . mkcmd "serve"  serve   "Launch Internet services"
           )
   where
-    import' = Import <$> argument str (metavar "FILE")
-    serve   = Serve  <$> arguments service (metavar "SERVICE" . value [minBound..])
+    mkcmd name parser desc = command name $ info (helper <*> parser) $ progDesc desc
+    service s = lookup s [("dict",DICT), ("irc",IRC), ("state",State), ("web",Web)]
+    import'   = Import <$> argument str (metavar "FILE")
+    serve     = Serve  <$> arguments service (metavar "SERVICE..." . value [minBound..])
+
+data Runtime = Runtime
+    { config :: Config
+    , state  :: AcidState AppState
+    }
 
 -- | The actual entry-point for the @kibr@ executable.
 main :: Either CompilationError Config -> IO ()
 main (Left msg) = hPutStr stderr msg >> exitFailure
 main (Right config@Config{..}) = do
-    opts <- execParser parser
-    return ()
+    opts@Options{..} <- execParser parser
+    bracket (openAcidState remote) closeAcidState $ \state ->
+      runReaderT (run cmd) $ Runtime {config = config, state = state}
   where
     parser = info (helper <*> options) fullDesc
+    openAcidState True  = do (host,port) <- stateServer
+                             openRemoteState host port
+    openAcidState False = do dir <- stateDirectory
+                             openLocalStateFrom dir def
+
+run :: Command -> ReaderT Runtime IO ()
+run (Serve services) = do
+    state <- asks state
+    Config{..} <- asks config
+    when (State `elem` services) $ liftIO $
+      do (_,port) <- stateServer
+         acidServer state port
+run (Import doc) = do
+    state <- asks state
+    dict <- liftIO $ runX $ readDocument [withHTTP [], withExpat True] doc /> readDictionary
+    liftIO $ forM_ dict $ \(language,words) ->
+      forM_ words $ \(word,wordType,wordDefinition) ->
+        do void $ update state $ SaveWordType word (Revision wordType SystemUser)
+           void $ update state $ SaveWordDefinition word language (Revision wordDefinition SystemUser)
+           putStrLn [qq|Imported word $word for language $language|]

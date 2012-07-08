@@ -87,7 +87,7 @@ data User = SystemUser deriving (Eq, Show, Ord)
 -- * Languages
 -- ***************************************************************************
 
-data Language = Lojban | English Region deriving (Show, Eq, Ord)
+data Language = Lojban | English Region | Latin deriving (Show, Eq, Ord)
 
 data Region = UnitedStates | GreatBritain | Global deriving (Show, Eq, Ord)
 
@@ -104,6 +104,7 @@ languages = fromList
     , (English Global       , "en"   )
     , (English UnitedStates , "en-US")
     , (English GreatBritain , "en-GB")
+    , (Latin                , "la"   )
     ]
 
 

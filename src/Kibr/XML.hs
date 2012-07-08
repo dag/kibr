@@ -71,6 +71,7 @@ getLanguage = proc dir -> do
     case to of
       "lojban"  -> constA   Lojban
       "English" -> constA $ English UnitedStates
+      "Latina"  -> constA   Latin
       _         -> zeroArrow
       -<< ()
 
