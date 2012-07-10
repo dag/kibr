@@ -23,21 +23,25 @@ module Kibr.Run
 import Prelude hiding ((.))
 import Kibr.Data hiding (User)
 
+import qualified Data.HashMap.Lazy as HashMap
+
 import Config.Dyre                    (Params(..), wrapMain, defaultParams)
 import Control.Category               ((.))
 import Control.Exception              (bracket)
 import Control.Monad                  (forM_, void, when)
 import Control.Monad.Reader           (ReaderT, runReaderT, asks)
 import Control.Monad.Trans            (liftIO)
-import Data.Acid                      (AcidState, openLocalStateFrom, closeAcidState, update)
+import Data.Acid                      (AcidState, openLocalStateFrom, closeAcidState, createCheckpoint, update, query)
 import Data.Acid.Remote               (acidServer, openRemoteState)
 import Data.Default                   (def)
+import Data.String                    (fromString)
 import Happstack.Server               (Conf, nullConf)
 import Kibr.State
 import Kibr.XML                       (readDictionary)
 import Network                        (HostName, PortID(..))
 import Network.IRC.Bot                (BotConf(..), User(..), nullBotConf, nullUser)
 import Options.Applicative
+import Options.Applicative.Types      (Parser(NilP))
 import System.Environment             (getEnv)
 import System.Environment.XDG.BaseDir (getUserDataDir)
 import System.Exit                    (exitFailure)
@@ -94,7 +98,10 @@ data Options = Options
     , cmd :: Command
     }
 
-data Command = Import FilePath | Serve [Service]
+data Command = Import FilePath
+             | Checkpoint
+             | Serve [Service]
+             | Lookup [Word] Language
 
 data Service = DICT | IRC | State | Web deriving (Eq, Bounded, Enum)
 
@@ -103,13 +110,20 @@ options = Options
     <$> switch (long "remote" . help "Connect to remote state service")
     <*> subparser
           ( mkcmd "import" import' "Import words from an XML export"
+          . mkcmd "checkpoint" checkpoint "Create a state checkpoint"
           . mkcmd "serve"  serve   "Launch Internet services"
+          . mkcmd "lookup" lookup' "Look up words"
           )
   where
     mkcmd name parser desc = command name $ info (helper <*> parser) $ progDesc desc
-    service s = lookup s [("dict",DICT), ("irc",IRC), ("state",State), ("web",Web)]
-    import'   = Import <$> argument str (metavar "FILE")
-    serve     = Serve  <$> arguments service (metavar "SERVICE..." . value [minBound..])
+    service s  = lookup s [("dict",DICT), ("irc",IRC), ("state",State), ("web",Web)]
+    word       = Just . fromString
+    language   = (`HashMap.lookup` languageTags) . fromString
+    import'    = Import <$> argument str (metavar "FILE")
+    checkpoint = NilP Checkpoint
+    serve      = Serve  <$> arguments service (metavar "SERVICE..." . value [minBound..])
+    lookup'    = Lookup <$> arguments word (metavar "WORD...")
+                        <*> nullOption (reader language . long "language" . metavar "TAG" . value (English UnitedStates))
 
 data Runtime = Runtime
     { config :: Config
@@ -130,13 +144,16 @@ main (Right config@Config{..}) = do
     openAcidState False = do dir <- stateDirectory
                              openLocalStateFrom dir def
 
+
 run :: Command -> ReaderT Runtime IO ()
+
 run (Serve services) = do
     state <- asks state
     Config{..} <- asks config
     when (State `elem` services) $ liftIO $
       do (_,port) <- stateServer
          acidServer state port
+
 run (Import doc) = do
     state <- asks state
     dict <- liftIO $ runX $ readDocument [withHTTP [], withExpat True] doc /> readDictionary
@@ -145,3 +162,13 @@ run (Import doc) = do
         do void $ update state $ SaveWordType word (Revision wordType SystemUser)
            void $ update state $ SaveWordDefinition word language (Revision wordDefinition SystemUser)
            putStrLn [qq|Imported word $word for language $language|]
+
+run Checkpoint = liftIO . createCheckpoint =<< asks state
+
+run (Lookup words language) = do
+    state <- asks state
+    liftIO $ forM_ words $ \word ->
+      do typ <- query state $ LookupWordType word
+         def <- query state $ LookupWordDefinition word language
+         print typ
+         print def

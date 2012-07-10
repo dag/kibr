@@ -9,6 +9,7 @@ module Kibr.Data
     , Region(..)
     , LanguageTag(..)
     , languages
+    , languageTags
       -- * Revision Histories
     , History
     , Revision(..)
@@ -30,14 +31,17 @@ module Kibr.Data
     )
   where
 
-import qualified Data.ByteString as Bytes
-import qualified Data.IxSet      as IxSet
-import qualified Data.Map        as Map
-import qualified Data.Set        as Set
-import qualified Data.Text       as Text
+import qualified Data.ByteString   as Bytes
+import qualified Data.HashMap.Lazy as HashMap
+import qualified Data.IxSet        as IxSet
+import qualified Data.Map          as Map
+import qualified Data.Set          as Set
+import qualified Data.Text         as Text
 
 import Data.ByteString               (ByteString)
 import Data.Default                  (Default(def))
+import Data.Hashable                 (Hashable)
+import Data.HashMap.Lazy             (HashMap)
 import Data.IxSet                    (IxSet, Indexable, ixSet, ixFun)
 import Data.Map                      (Map)
 import Data.SafeCopy                 (SafeCopy, deriveSafeCopy, base)
@@ -71,6 +75,9 @@ instance (Ord a) => IsList (Set a) a where
 instance (Ord k) => IsList (Map k a) (k, a) where
     fromList = Map.fromList
 
+instance (Eq k, Hashable k) => IsList (HashMap k a) (k, a) where
+    fromList = HashMap.fromList
+
 instance (Indexable a, Ord a, Typeable a) => IsList (IxSet a) a where
     fromList = IxSet.fromList
 
@@ -92,7 +99,7 @@ data Language = Lojban | English Region | Latin deriving (Show, Eq, Ord)
 data Region = UnitedStates | GreatBritain | Global deriving (Show, Eq, Ord)
 
 -- | IETF language tag.
-newtype LanguageTag = LanguageTag Text deriving (Eq, IsString, SafeCopy)
+newtype LanguageTag = LanguageTag Text deriving (Eq, Hashable, IsString, SafeCopy)
 
 instance Show LanguageTag where
     show (LanguageTag t) = show t
@@ -106,6 +113,10 @@ languages = fromList
     , (English GreatBritain , "en-GB")
     , (Latin                , "la"   )
     ]
+
+-- | The inverse of 'languages'.
+languageTags :: HashMap LanguageTag Language
+languageTags = fromList [(v,k) | (k,v) <- Map.toList languages]
 
 
 -- * Revision Histories

@@ -54,6 +54,7 @@ library
                      dyre,
                      filepath,
                      happstack-server          == 7.*,
+                     hashable,
                      hsx,
                      hxt                       == 9.*,
                      hxt-expat,
@@ -70,4 +71,5 @@ library
                      optparse-applicative      >= 0.1,
                      safecopy,
                      text,
+                     unordered-containers,
                      xdg-basedir
