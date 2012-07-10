@@ -2,6 +2,8 @@
 
 module Kibr.Test (tests) where
 
+import Kibr.State hiding (query, update)
+
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 
@@ -12,7 +14,6 @@ import Data.Default      (def)
 import Data.Text         (Text)
 import Kibr.Data
 import Kibr.Fixture
-import Kibr.State
 import Kibr.XML
 import Test.HUnit        (Assertion, (@?=))
 import Text.XML.HXT.Core

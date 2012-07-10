@@ -1,9 +1,13 @@
-{-# LANGUAGE DeriveDataTypeable, Rank2Types, TemplateHaskell, TypeFamilies #-}
+{-# LANGUAGE DeriveDataTypeable, FlexibleContexts, MultiParamTypeClasses, Rank2Types, TemplateHaskell, TypeFamilies #-}
 
 -- | Event definitions for /acid-state/.
 module Kibr.State
     ( -- * Application State Container
       AppState(AppState)
+      -- * Environments with state
+    , HasAcidState(..)
+    , query
+    , update
       -- * Event Definitions
       -- | These are exported for documentation purposes, but it's really
       -- the Event Methods ("Kibr.State#methods") that you use with /acid-state/.
@@ -31,11 +35,13 @@ import qualified Data.Map      as Map
 import Control.Monad        (void, when)
 import Control.Monad.Reader (asks)
 import Control.Monad.State  (gets)
-import Data.Acid            (Update, Query, makeAcidic)
+import Control.Monad.Trans  (MonadIO)
+import Data.Acid            (AcidState, Update, Query, QueryEvent, UpdateEvent, EventResult, makeAcidic)
+import Data.Acid.Advanced   (MethodState, query', update')
 import Data.Default         (Default(def))
 import Data.IxSet           (IxSet, Indexable)
-import Data.Typeable        (Typeable)
 import Data.SafeCopy        (deriveSafeCopy, base)
+import Data.Typeable        (Typeable)
 import Kibr.Data
 import Lens.Family2         (GetterFamily, getting, (^%=), (^.))
 import Lens.Family2.State   ((%=))
@@ -49,6 +55,21 @@ data AppState = AppState
 mkLenses ''AppState
 
 instance Default AppState where def = AppState IxSet.empty
+
+class HasAcidState m st where
+    getAcidState :: m (AcidState st)
+
+query :: (QueryEvent e , MonadIO m , HasAcidState m (MethodState e))
+      => e -> m (EventResult e)
+query ev = do
+    st <- getAcidState
+    query' st ev
+
+update :: (UpdateEvent e , MonadIO m , HasAcidState m (MethodState e))
+       => e -> m (EventResult e)
+update ev = do
+    st <- getAcidState
+    update' st ev
 
 getOneL :: (Ord a, Typeable k, Typeable a, Indexable a)
         => k -> GetterFamily (IxSet a) a' (Maybe a) b'

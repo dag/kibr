@@ -1,4 +1,4 @@
-{-# LANGUAGE RecordWildCards, QuasiQuotes #-}
+{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, RecordWildCards, QuasiQuotes #-}
 
 -- | Support for configuration via dynamic recompilation using
 -- "Config.Dyre".
@@ -31,7 +31,7 @@ import Control.Exception              (bracket)
 import Control.Monad                  (forM_, void, when)
 import Control.Monad.Reader           (ReaderT, runReaderT, asks)
 import Control.Monad.Trans            (liftIO)
-import Data.Acid                      (AcidState, openLocalStateFrom, closeAcidState, createCheckpoint, update, query)
+import Data.Acid                      (AcidState, openLocalStateFrom, closeAcidState, createCheckpoint)
 import Data.Acid.Remote               (acidServer, openRemoteState)
 import Data.Default                   (def)
 import Data.String                    (fromString)
@@ -144,6 +144,8 @@ main (Right config@Config{..}) = do
     openAcidState False = do dir <- stateDirectory
                              openLocalStateFrom dir def
 
+instance Monad m => HasAcidState (ReaderT Runtime m) AppState where
+    getAcidState = asks state
 
 run :: Command -> ReaderT Runtime IO ()
 
@@ -155,20 +157,17 @@ run (Serve services) = do
          acidServer state port
 
 run (Import doc) = do
-    state <- asks state
     dict <- liftIO $ runX $ readDocument [withHTTP [], withExpat True] doc /> readDictionary
-    liftIO $ forM_ dict $ \(language,words) ->
+    forM_ dict $ \(language,words) ->
       forM_ words $ \(word,wordType,wordDefinition) ->
-        do void $ update state $ SaveWordType word (Revision wordType SystemUser)
-           void $ update state $ SaveWordDefinition word language (Revision wordDefinition SystemUser)
-           putStrLn [qq|Imported word $word for language $language|]
+        do void $ update $ SaveWordType word (Revision wordType SystemUser)
+           void $ update $ SaveWordDefinition word language (Revision wordDefinition SystemUser)
+           liftIO $ putStrLn [qq|Imported word $word for language $language|]
 
 run Checkpoint = liftIO . createCheckpoint =<< asks state
 
-run (Lookup words language) = do
-    state <- asks state
-    liftIO $ forM_ words $ \word ->
-      do typ <- query state $ LookupWordType word
-         def <- query state $ LookupWordDefinition word language
-         print typ
-         print def
+run (Lookup words language) =
+    forM_ words $ \word ->
+      do typ <- query $ LookupWordType word
+         def <- query $ LookupWordDefinition word language
+         liftIO $ print typ >> print def
