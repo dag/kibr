@@ -49,7 +49,7 @@ import System.Exit                    (exitFailure)
 import System.FilePath                ((</>))
 import System.IO                      (hPutStr, stderr)
 import Text.InterpolatedString.Perl6  (qq)
-import Text.XML.HXT.Core              ((/>), runX, readDocument)
+import Text.XML.HXT.Core              ((/>), runX, readDocument, withTrace)
 import Text.XML.HXT.Expat             (withExpat)
 import Text.XML.HXT.HTTP              (withHTTP)
 
@@ -158,12 +158,14 @@ run (Serve services) = do
          acidServer state port
 
 run (Import doc) = do
-    dict <- liftIO $ runX $ readDocument [withHTTP [], withExpat True] doc /> readDictionary
+    dict <- liftIO $ runX $ readDocument sys doc /> readDictionary
     forM_ dict $ \(language,words) ->
       forM_ words $ \(word,wordType,wordDefinition) ->
         do void $ update $ SaveWordType word (Revision wordType SystemUser)
            void $ update $ SaveWordDefinition word language (Revision wordDefinition SystemUser)
            liftIO $ putStrLn [qq|Imported word $word for language $language|]
+  where
+    sys = [withHTTP [], withExpat True, withTrace 1]
 
 run Checkpoint = liftIO . createCheckpoint =<< asks state
 
