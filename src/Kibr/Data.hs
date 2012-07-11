@@ -36,10 +36,8 @@ import qualified Data.HashMap.Lazy as HashMap
 import qualified Data.IxSet        as IxSet
 import qualified Data.Map          as Map
 import qualified Data.Set          as Set
-import qualified Data.Text         as Text
 
 import Data.ByteString               (ByteString)
-import Data.Default                  (Default(def))
 import Data.Hashable                 (Hashable)
 import Data.HashMap.Lazy             (HashMap)
 import Data.IxSet                    (IxSet, Indexable, ixSet, ixFun)

@@ -135,9 +135,9 @@ data Runtime = Runtime
 main :: Either CompilationError Config -> IO ()
 main (Left msg) = hPutStr stderr msg >> exitFailure
 main (Right config@Config{..}) = do
-    opts@Options{..} <- execParser parser
+    Options{..} <- execParser parser
     bracket (openAcidState remote) closeAcidState $ \state ->
-      runReaderT (run cmd) $ Runtime {config = config, state = state}
+      runReaderT (run cmd) Runtime {config = config, state = state}
   where
     parser = info (helper <*> options) fullDesc
     openAcidState True  = do (host,port) <- stateServer

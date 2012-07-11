@@ -32,7 +32,7 @@ import qualified Data.Foldable as F
 import qualified Data.IxSet    as IxSet
 import qualified Data.Map      as Map
 
-import Control.Monad        (void, when)
+import Control.Monad        (void)
 import Control.Monad.Reader (asks)
 import Control.Monad.State  (gets)
 import Control.Monad.Trans  (MonadIO)
