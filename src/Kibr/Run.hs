@@ -121,7 +121,7 @@ options = Options
     language   = (`HashMap.lookup` languageTags) . fromString
     import'    = Import <$> argument str (metavar "FILE")
     checkpoint = NilP Checkpoint
-    serve      = Serve  <$> arguments service (metavar "SERVICE..." . value [minBound..])
+    serve      = Serve  <$> arguments service (metavar "dict|irc|state|web..." . value [minBound..])
     lookup'    = Lookup <$> arguments word (metavar "WORD...")
                         <*> nullOption (reader language . long "language" . metavar "TAG" . value (English UnitedStates))
 
