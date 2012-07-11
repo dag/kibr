@@ -173,4 +173,4 @@ run (Lookup language words) =
     forM_ words $ \word ->
       do Just typ <- query $ LookupWordType word
          Just def <- query $ LookupWordDefinition word language
-         liftIO $ print (ppWord word typ def) >> putStrLn ""
+         liftIO $ putStrLn "" >> print (ppWord word typ def)
