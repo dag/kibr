@@ -18,14 +18,14 @@ import Text.PrettyPrint.ANSI.Leijen
 
 -- | Print a document on the standard output.
 prettyPrint :: Doc -> IO ()
-prettyPrint = displayIO stdout . renderPretty 0.4 80
+prettyPrint = displayIO stdout . renderPretty 1.0 80
 
 -- | Format a textual representation of values for printing on the console.
 class PrettyPrint a where
     pp :: a -> Doc
 
 instance PrettyPrint Text.Text where
-    pp = text . Text.unpack
+    pp = fillSep . map text . words . Text.unpack
 
 instance PrettyPrint Affix where
     pp (Affix a) = pp a
