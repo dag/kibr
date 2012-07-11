@@ -70,10 +70,10 @@ instance IsList [a] a where
 instance (Ord a) => IsList (Set a) a where
     fromList = Set.fromList
 
-instance (Ord k) => IsList (Map k a) (k, a) where
+instance (Ord k) => IsList (Map k a) (k,a) where
     fromList = Map.fromList
 
-instance (Eq k, Hashable k) => IsList (HashMap k a) (k, a) where
+instance (Eq k, Hashable k) => IsList (HashMap k a) (k,a) where
     fromList = HashMap.fromList
 
 instance (Indexable a, Ord a, Typeable a) => IsList (IxSet a) a where
@@ -180,7 +180,7 @@ instance Show WordData where
     show (WordData w wt wd) = [qq|WordData $w $wt ($wd)|]
 
 instance Indexable WordData where
-    empty = ixSet [ ixFun $ \WordData{..} -> [word] ]
+    empty = ixSet [ixFun $ \WordData{..} -> [word]]
 
 
 -- * SafeCopy derivations

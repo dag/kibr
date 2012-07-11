@@ -59,13 +59,13 @@ instance Default AppState where def = AppState IxSet.empty
 class HasAcidState m st where
     getAcidState :: m (AcidState st)
 
-query :: (QueryEvent e , MonadIO m , HasAcidState m (MethodState e))
+query :: (QueryEvent e, MonadIO m, HasAcidState m (MethodState e))
       => e -> m (EventResult e)
 query ev = do
     st <- getAcidState
     query' st ev
 
-update :: (UpdateEvent e , MonadIO m , HasAcidState m (MethodState e))
+update :: (UpdateEvent e, MonadIO m, HasAcidState m (MethodState e))
        => e -> m (EventResult e)
 update ev = do
     st <- getAcidState

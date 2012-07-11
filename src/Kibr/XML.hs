@@ -57,12 +57,12 @@ getWordDefinition = proc valsi -> do
     returnA -< WordDefinition (fromString def) $ fmap fromString notes
 
 -- | Parses everything from a @\<valsi/>@ element.
-getWord :: ArrowXml (~>) => XmlTree ~> (Word, WordType, WordDefinition)
+getWord :: ArrowXml (~>) => XmlTree ~> (Word,WordType,WordDefinition)
 getWord = proc valsi -> do
     word <- getAttrValue "word" -< valsi
     typ  <- getWordType         -< valsi
     def  <- getWordDefinition   -< valsi
-    returnA -< (fromString word, typ, def)
+    returnA -< (fromString word,typ,def)
 
 -- | Parses the target language of a @\<direction/>@ element.
 getLanguage :: ArrowXml (~>) => XmlTree ~> Language
@@ -78,10 +78,10 @@ getLanguage = proc dir -> do
 -- | Reads a complete @\<dictionary/>@ document, parsing both the target
 -- 'Language' and every word from it.
 readDictionary :: ArrowXml (~>)
-               => XmlTree ~> (Language, [(Word, WordType, WordDefinition)])
+               => XmlTree ~> (Language,[(Word,WordType,WordDefinition)])
 readDictionary = proc dict -> do
     dir      <-         getChild "direction"              -< dict
     target   <-         hasAttrValue "from" (== "lojban") -< dir
     language <-         getLanguage                       -< target
     words    <- listA $ getWord <<< getChild "valsi"      -< target
-    returnA -< (language, words)
+    returnA -< (language,words)
