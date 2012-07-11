@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, RecordWildCards, QuasiQuotes #-}
+{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, RecordWildCards #-}
 
 -- | Support for configuration via dynamic recompilation using
 -- "Config.Dyre".
@@ -46,8 +46,8 @@ import System.Environment             (getEnv)
 import System.Environment.XDG.BaseDir (getUserDataDir)
 import System.Exit                    (exitFailure)
 import System.FilePath                ((</>))
-import System.IO                      (hPutStr, stderr)
-import Text.InterpolatedString.Perl6  (qq)
+import System.IO                      (BufferMode(NoBuffering), hSetBuffering, hPutStr, stdout, stderr)
+import System.ProgressBar             (progressBar, msg, exact)
 import Text.XML.HXT.Core              ((/>), runX, readDocument, withTrace)
 import Text.XML.HXT.Expat             (withExpat)
 import Text.XML.HXT.HTTP              (withHTTP)
@@ -158,12 +158,13 @@ run (Serve services) = do
 
 run (Import doc) = do
     dict <- liftIO $ runX $ readDocument sys doc /> readDictionary
+    liftIO $ hSetBuffering stdout NoBuffering
     forM_ dict $ \(language,words) ->
-      do liftIO $ putStrLn [qq|Importing {length words} words in language $language:|]
-         forM_ words $ \(word,wordType,wordDefinition) ->
+      do let total = fromIntegral $ length words
+         forM_ (zip words [1..]) $ \((word,wordType,wordDefinition),index) ->
            do void $ update $ SaveWordType word (Revision wordType SystemUser)
               void $ update $ SaveWordDefinition word language (Revision wordDefinition SystemUser)
-              liftIO $ putChar '\r' >> putStr [qq|$word...{replicate 80 ' '}|]
+              liftIO $ progressBar (msg $ show language) exact 80 index total
          liftIO $ putStrLn ""
   where
     sys = [withHTTP [], withExpat True, withTrace 1]
