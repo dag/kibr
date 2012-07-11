@@ -42,7 +42,6 @@ import Kibr.XML                       (readDictionary)
 import Network                        (HostName, PortID(..))
 import Network.IRC.Bot                (BotConf(..), User(..), nullBotConf, nullUser)
 import Options.Applicative
-import Options.Applicative.Types      (Parser(NilP))
 import System.Environment             (getEnv)
 import System.Environment.XDG.BaseDir (getUserDataDir)
 import System.Exit                    (exitFailure)
@@ -121,7 +120,7 @@ options = Options
     word       = Just . fromString
     language   = (`HashMap.lookup` languageTags) . fromString
     import'    = Import <$> argument str (metavar "FILE")
-    checkpoint = NilP Checkpoint
+    checkpoint = pure Checkpoint
     serve      = Serve  <$> arguments service (metavar "dict|irc|state|web..." . value [minBound..])
     lookup'    = Lookup <$> nullOption (reader language . long "language" . metavar "TAG" . value (English UnitedStates))
                         <*> arguments word (metavar "WORD...")
