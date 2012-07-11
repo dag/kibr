@@ -4,14 +4,12 @@ module Kibr.Test (tests) where
 
 import Kibr.State hiding (query, update)
 
-import qualified Data.Map as Map
 import qualified Data.Set as Set
 
 import Control.Monad     (void, forM_)
 import Data.Acid         (update, query)
 import Data.Acid.Memory  (openMemoryState)
 import Data.Default      (def)
-import Data.Text         (Text)
 import Kibr.Data
 import Kibr.Fixture
 import Kibr.XML
