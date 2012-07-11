@@ -43,10 +43,12 @@ library
                      Kibr.IRC
                      Kibr.Run
                      Kibr.State
+                     Kibr.Text
                      Kibr.Web
                      Kibr.XML
                      Text.XML.HXT.HSX
   build-depends    : acid-state,
+                     ansi-wl-pprint,
                      base                      == 4.*,
                      bytestring,
                      containers,

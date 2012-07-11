@@ -37,6 +37,7 @@ import Data.Default                   (def)
 import Data.String                    (fromString)
 import Happstack.Server               (Conf, nullConf)
 import Kibr.State
+import Kibr.Text
 import Kibr.XML                       (readDictionary)
 import Network                        (HostName, PortID(..))
 import Network.IRC.Bot                (BotConf(..), User(..), nullBotConf, nullUser)
@@ -101,7 +102,7 @@ data Options = Options
 data Command = Import FilePath
              | Checkpoint
              | Serve [Service]
-             | Lookup [Word] Language
+             | Lookup Language [Word]
 
 data Service = DICT | IRC | State | Web deriving (Eq, Bounded, Enum)
 
@@ -122,8 +123,8 @@ options = Options
     import'    = Import <$> argument str (metavar "FILE")
     checkpoint = NilP Checkpoint
     serve      = Serve  <$> arguments service (metavar "dict|irc|state|web..." . value [minBound..])
-    lookup'    = Lookup <$> arguments word (metavar "WORD...")
-                        <*> nullOption (reader language . long "language" . metavar "TAG" . value (English UnitedStates))
+    lookup'    = Lookup <$> nullOption (reader language . long "language" . metavar "TAG" . value (English UnitedStates))
+                        <*> arguments word (metavar "WORD...")
 
 data Runtime = Runtime
     { config :: Config
@@ -166,8 +167,8 @@ run (Import doc) = do
 
 run Checkpoint = liftIO . createCheckpoint =<< asks state
 
-run (Lookup words language) =
+run (Lookup language words) =
     forM_ words $ \word ->
-      do typ <- query $ LookupWordType word
-         def <- query $ LookupWordDefinition word language
-         liftIO $ print typ >> print def
+      do Just typ <- query $ LookupWordType word
+         Just def <- query $ LookupWordDefinition word language
+         liftIO $ print (ppWord word typ def) >> putStrLn ""
