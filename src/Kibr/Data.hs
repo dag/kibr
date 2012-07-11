@@ -49,7 +49,7 @@ import Data.Text                     (Text)
 import Data.Typeable                 (Typeable)
 import Data.Word                     (Word8)
 import Lens.Family2.TH               (mkLenses)
-import Text.InterpolatedString.Perl6 (qq)
+import Text.InterpolatedString.Perl6 (ShowQ, qq)
 
 
 -- * Utilities
@@ -164,7 +164,7 @@ data WordDefinition = WordDefinition Text (Maybe Text)
 instance IsString WordDefinition where
     fromString s = WordDefinition (fromString s) Nothing
 
-newtype Word = Word Text deriving (Eq, Ord, Typeable, IsString, SafeCopy)
+newtype Word = Word Text deriving (Eq, Ord, Typeable, IsString, SafeCopy, ShowQ)
 
 instance Show Word where show (Word w) = show w
 
