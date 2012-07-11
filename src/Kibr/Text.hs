@@ -4,6 +4,7 @@
 module Kibr.Text
     ( -- * Console pretty-printing
       PrettyPrint(..)
+    , prettyPrint
     , ppWord
     )
   where
@@ -12,7 +13,12 @@ import qualified Data.Set  as Set
 import qualified Data.Text as Text
 
 import Kibr.Data
+import System.IO (stdout)
 import Text.PrettyPrint.ANSI.Leijen
+
+-- | Print a document on the standard output.
+prettyPrint :: Doc -> IO ()
+prettyPrint = displayIO stdout . renderPretty 0.4 80
 
 -- | Format a textual representation of values for printing on the console.
 class PrettyPrint a where

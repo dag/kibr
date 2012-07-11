@@ -170,8 +170,9 @@ run (Import doc) = do
 
 run Checkpoint = liftIO . createCheckpoint =<< asks state
 
-run (Lookup language words) =
+run (Lookup language words) = do
     forM_ words $ \word ->
       do Just typ <- query $ LookupWordType word
          Just def <- query $ LookupWordDefinition word language
-         liftIO $ putStrLn "" >> print (ppWord word typ def)
+         liftIO $ putStrLn "" >> prettyPrint (ppWord word typ def)
+    liftIO $ putStrLn ""
