@@ -159,11 +159,11 @@ run (Serve services) = do
 run (Import doc) = do
     dict <- liftIO $ runX $ readDocument sys doc /> readDictionary
     forM_ dict $ \(language,words) ->
-      do liftIO $ putStr [qq|{length words} words to import for language $language: |]
+      do liftIO $ putStrLn [qq|{length words} words to import for language $language: |]
          forM_ words $ \(word,wordType,wordDefinition) ->
            do void $ update $ SaveWordType word (Revision wordType SystemUser)
               void $ update $ SaveWordDefinition word language (Revision wordDefinition SystemUser)
-              liftIO $ putStr [qq|$word... |]
+              liftIO $ putChar '\r' >> putStr [qq|$word...{replicate 80 ' '}|]
          liftIO $ putStrLn ""
   where
     sys = [withHTTP [], withExpat True, withTrace 1]
