@@ -13,7 +13,8 @@ module Kibr.XML
 import Prelude hiding ((.))
 import Control.Category ((.))
 
-import Data.String (fromString)
+import Data.Packable (fromList)
+import Data.String   (fromString)
 import Kibr.Data
 import Text.XML.HXT.Core
 

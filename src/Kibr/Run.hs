@@ -34,6 +34,7 @@ import Control.Monad.Trans            (liftIO)
 import Data.Acid                      (AcidState, openLocalStateFrom, closeAcidState, createCheckpoint)
 import Data.Acid.Remote               (acidServer, openRemoteState)
 import Data.Default                   (def)
+import Data.Packable                  (fromList)
 import Data.String                    (fromString)
 import Happstack.Server               (Conf, nullConf)
 import Kibr.State

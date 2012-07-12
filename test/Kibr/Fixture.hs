@@ -17,6 +17,7 @@ module Kibr.Fixture
     )
   where
 
+import Data.Packable
 import Kibr.Data
 import Text.XML.HXT.Core
 import Text.XML.HXT.HSX

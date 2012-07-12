@@ -10,6 +10,7 @@ import Control.Monad     (void, forM_)
 import Data.Acid         (update, query)
 import Data.Acid.Memory  (openMemoryState)
 import Data.Default      (def)
+import Data.Packable     (fromList)
 import Kibr.Data
 import Kibr.Fixture
 import Kibr.XML

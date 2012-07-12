@@ -12,6 +12,7 @@ module Kibr.Text
 import qualified Data.Set  as Set 
 import qualified Data.Text as Text
 
+import Data.Packable
 import Kibr.Data
 import System.IO (stdout)
 import Text.PrettyPrint.ANSI.Leijen
@@ -25,7 +26,7 @@ class PrettyPrint a where
     pp :: a -> Doc
 
 instance PrettyPrint Text.Text where
-    pp = fillSep . map text . words . Text.unpack
+    pp = fillSep . map text . words . unpack
 
 instance PrettyPrint Affix where
     pp (Affix a) = pp a
@@ -40,7 +41,7 @@ instance PrettyPrint ParticleClass where
 instance PrettyPrint AffixForms where
     pp affixForms
       | Set.null affixForms = empty
-      | otherwise           = " -" <> hcat (punctuate "-" (map pp $ Set.toList affixForms)) <> "-"
+      | otherwise           = " -" <> hcat (punctuate "-" (map pp $ toList affixForms)) <> "-"
 
 instance PrettyPrint WordType where
     pp (ParticleWord affixForms ExperimentalParticle) = underline "particle" <+> "(experimental)" <> pp affixForms

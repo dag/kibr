@@ -26,61 +26,24 @@ module Kibr.Data
     , word
     , wordType
     , wordDefinition
-      -- * Utilities
-    , IsList(fromList)
     )
   where
 
-import qualified Data.ByteString   as Bytes
-import qualified Data.HashMap.Lazy as HashMap
-import qualified Data.IxSet        as IxSet
-import qualified Data.Map          as Map
-import qualified Data.Set          as Set
+import qualified Data.IxSet as IxSet
+import qualified Data.Map   as Map
 
-import Data.ByteString               (ByteString)
 import Data.Hashable                 (Hashable)
 import Data.HashMap.Lazy             (HashMap)
-import Data.IxSet                    (IxSet, Indexable, ixSet, ixFun)
+import Data.IxSet                    (Indexable, ixSet, ixFun)
 import Data.Map                      (Map)
+import Data.Packable                 (fromList)
 import Data.SafeCopy                 (SafeCopy, deriveSafeCopy, base)
 import Data.Set                      (Set)
 import Data.String                   (IsString(fromString))
 import Data.Text                     (Text)
 import Data.Typeable                 (Typeable)
-import Data.Word                     (Word8)
 import Lens.Family2.TH               (mkLenses)
 import Text.InterpolatedString.Perl6 (ShowQ, qq)
-
-
--- * Utilities
--- ***************************************************************************
-
--- | Types that lists can be converted into, similar to 'IsString', only
--- there's currently no @OverloadedLists@ extension in GHC and 'fromList'
--- must be called explicitly even for list literals.  The usefulness of
--- this class is primarily to reduce the need for qualified imports of
--- modules exporting @fromList@ functions such as those in /containers/ and
--- /ixset/.
-class IsList t a | t -> a where
-    fromList :: [a] -> t
-
-instance IsList [a] a where
-    fromList = id
-
-instance (Ord a) => IsList (Set a) a where
-    fromList = Set.fromList
-
-instance (Ord k) => IsList (Map k a) (k,a) where
-    fromList = Map.fromList
-
-instance (Eq k, Hashable k) => IsList (HashMap k a) (k,a) where
-    fromList = HashMap.fromList
-
-instance (Indexable a, Ord a, Typeable a) => IsList (IxSet a) a where
-    fromList = IxSet.fromList
-
-instance IsList ByteString Word8 where
-    fromList = Bytes.pack
 
 
 -- * Users
