@@ -44,6 +44,30 @@ instance Packable [a] a where
     pack   = id
     unpack = id
 
+instance Packable Data.ByteString.ByteString Word8 where
+    pack   = Data.ByteString.pack
+    unpack = Data.ByteString.unpack
+
+instance Packable Data.ByteString.Lazy.ByteString Word8 where
+    pack   = Data.ByteString.Lazy.pack
+    unpack = Data.ByteString.Lazy.unpack
+
+instance Packable Data.Text.Text Char where
+    pack   = Data.Text.pack
+    unpack = Data.Text.unpack
+
+instance Packable Data.Text.Lazy.Text Char where
+    pack   = Data.Text.Lazy.pack
+    unpack = Data.Text.Lazy.unpack
+
+instance Packable (Data.Sequence.Seq a) a where
+    pack   = Data.Sequence.fromList
+    unpack = Data.Foldable.toList
+
+
+-- The following instances don't have the isomorphism properties
+-- @pack . unpack = id@ and @unpack . pack = id@.
+
 instance Packable (Maybe a) a where
     pack   = Data.Maybe.listToMaybe
     unpack = Data.Maybe.maybeToList
@@ -64,10 +88,6 @@ instance Packable (Data.IntMap.IntMap a) (Data.IntMap.Key,a) where
     pack   = Data.IntMap.fromList
     unpack = Data.IntMap.toList
 
-instance Packable (Data.Sequence.Seq a) a where
-    pack   = Data.Sequence.fromList
-    unpack = Data.Foldable.toList
-
 instance (Eq k, Hashable k) => Packable (Data.HashMap.Lazy.HashMap k a) (k,a) where
     pack   = Data.HashMap.Lazy.fromList
     unpack = Data.HashMap.Lazy.toList
@@ -79,19 +99,3 @@ instance (Eq a, Hashable a) => Packable (Data.HashSet.HashSet a) a where
 instance (Data.IxSet.Indexable a, Ord a, Typeable a) => Packable (Data.IxSet.IxSet a) a where
     pack   = Data.IxSet.fromList
     unpack = Data.IxSet.toList
-
-instance Packable Data.ByteString.ByteString Word8 where
-    pack   = Data.ByteString.pack
-    unpack = Data.ByteString.unpack
-
-instance Packable Data.ByteString.Lazy.ByteString Word8 where
-    pack   = Data.ByteString.Lazy.pack
-    unpack = Data.ByteString.Lazy.unpack
-
-instance Packable Data.Text.Text Char where
-    pack   = Data.Text.pack
-    unpack = Data.Text.unpack
-
-instance Packable Data.Text.Lazy.Text Char where
-    pack   = Data.Text.Lazy.pack
-    unpack = Data.Text.Lazy.unpack

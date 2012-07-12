@@ -4,13 +4,19 @@ module Kibr.Test (tests) where
 
 import Kibr.State hiding (query, update)
 
-import qualified Data.Set as Set
+import qualified Data.Set             as Set
+import qualified Data.ByteString      as BS
+import qualified Data.ByteString.Lazy as LBS
+import qualified Data.Sequence        as Seq
+import qualified Data.Text            as T
+import qualified Data.Text.Lazy       as LT
 
 import Control.Monad     (void, forM_)
 import Data.Acid         (update, query)
 import Data.Acid.Memory  (openMemoryState)
 import Data.Default      (def)
-import Data.Packable     (fromList)
+import Data.Packable     (pack, unpack, fromList)
+import Data.Word         (Word8)
 import Kibr.Data
 import Kibr.Fixture
 import Kibr.XML
@@ -21,9 +27,40 @@ import Test.Framework                       (Test)
 import Test.Framework.Providers.HUnit       (testCase)
 import Test.Framework.Providers.QuickCheck2 (testProperty)
 import Test.Framework.TH                    (testGroupGenerator)
+import Test.QuickCheck.Instances            ()
 
 tests :: Test
 tests = $testGroupGenerator
+
+prop_BS_pack :: [Word8] -> Bool
+prop_BS_pack ws = unpack (pack ws :: BS.ByteString) == ws
+
+prop_BS_unpack :: BS.ByteString -> Bool
+prop_BS_unpack bs = pack (unpack bs) == bs
+
+prop_LBS_pack :: [Word8] -> Bool
+prop_LBS_pack ws = unpack (pack ws :: LBS.ByteString) == ws
+
+prop_LBS_unpack :: LBS.ByteString -> Bool
+prop_LBS_unpack bs = pack (unpack bs) == bs
+
+prop_Seq_pack :: [Int] -> Bool
+prop_Seq_pack lst = unpack (pack lst :: Seq.Seq Int) == lst
+
+prop_Seq_unpack :: Seq.Seq Int -> Bool
+prop_Seq_unpack seq = pack (unpack seq) == seq
+
+prop_T_pack :: String -> Bool
+prop_T_pack str = unpack (pack str :: T.Text) == str
+
+prop_T_unpack :: T.Text -> Bool
+prop_T_unpack txt = pack (unpack txt) == txt
+
+prop_LT_pack :: String -> Bool
+prop_LT_pack str = unpack (pack str :: LT.Text) == str
+
+prop_LT_unpack :: LT.Text -> Bool
+prop_LT_unpack txt = pack (unpack txt) == txt
 
 case_getWordType :: Assertion
 case_getWordType =
