@@ -6,16 +6,16 @@
 -- For example, to configure @kibr@ to run the web application on port
 -- 3000, write the following to the file @~\/.config\/kibr\/kibr.hs@:
 --
+-- >import Data.Configurable
 -- >import Happstack.Server
 -- >import Kibr.Run
--- >main = kibr cfg {webServer = cfg {port = 3000}}
+-- >main = kibr conf {webServer = conf {port = 3000}}
 --
 -- If you delete your configuration, you may need to wipe @~\/.cache\/kibr@
 -- as well.
 
 module Kibr.Run
     ( Config(..)
-    , Configurable(..)
     , kibr
     )
   where
@@ -33,15 +33,16 @@ import Control.Monad.Reader           (ReaderT, runReaderT, asks)
 import Control.Monad.Trans            (liftIO)
 import Data.Acid                      (AcidState, openLocalStateFrom, closeAcidState, createCheckpoint)
 import Data.Acid.Remote               (acidServer, openRemoteState)
+import Data.Configurable              (Configurable(conf))
 import Data.Default                   (def)
 import Data.Packable                  (fromList)
 import Data.String                    (fromString)
-import Happstack.Server               (Conf, nullConf)
+import Happstack.Server               (Conf)
 import Kibr.State
 import Kibr.Text
 import Kibr.XML                       (readDictionary)
 import Network                        (HostName, PortID(..))
-import Network.IRC.Bot                (BotConf(..), User(..), nullBotConf, nullUser)
+import Network.IRC.Bot                (BotConf(..), User(..))
 import Options.Applicative
 import System.Environment             (getEnv)
 import System.Environment.XDG.BaseDir (getUserDataDir)
@@ -61,24 +62,15 @@ data Config = Config
     , ircBots        :: [BotConf]             -- ^ IRC bots to run.
     }
 
--- | Data types representing something configurable.
-class Configurable c where
-    -- | Default/base configuration.
-    cfg :: c
-
-instance Configurable Conf    where cfg = nullConf
-instance Configurable BotConf where cfg = nullBotConf
-instance Configurable User    where cfg = nullUser
-
 instance Configurable Config where
-    cfg = Config
+    conf = Config
       { stateDirectory = getUserDataDir $ "kibr" </> "state"
       , stateServer    = do dir <- getEnv "XDG_RUNTIME_DIR"
                             return ("127.0.0.1",UnixSocket (dir </> "kibr-state.socket"))
-      , webServer      = cfg
-      , ircBots        = [cfg {nick = "kibr", host = "chat.freenode.net",
-                               commandPrefix = "@", channels = fromList ["#sampla"],
-                               user = cfg {username = "kibr", realname = "Lojban IRC bot"}}]
+      , webServer      = conf
+      , ircBots        = [conf {nick = "kibr", host = "chat.freenode.net",
+                                commandPrefix = "@", channels = fromList ["#sampla"],
+                                user = conf {username = "kibr", realname = "Lojban IRC bot"}}]
       }
 
 -- | The @kibr@ executable.
