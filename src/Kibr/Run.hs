@@ -95,7 +95,9 @@ data Options = Options
 
 data OutputMode = Colored | Plain
 
-data Command = Import FilePath
+type TraceLevel = Int
+
+data Command = Import TraceLevel FilePath
              | Checkpoint
              | Serve [Service]
              | Lookup Language [Word]
@@ -117,7 +119,8 @@ optparser = Options
     service s  = lookup s [("dict",DICT), ("irc",IRC), ("state",State), ("web",Web)]
     word       = Just . fromString
     language   = (`HashMap.lookup` languageTags) . fromString
-    import'    = Import <$> argument str (metavar "FILE")
+    import'    = Import <$> option (long "trace-level" . metavar "0..4" . value 0 . help "Set the tracing level for the XML parser")
+                        <*> argument str (metavar "FILE")
     checkpoint = pure Checkpoint
     serve      = Serve  <$> arguments service (metavar "dict|irc|state|web..." . value [minBound..])
     lookup'    = Lookup <$> nullOption (reader language . long "language" . metavar "TAG" . value (English UnitedStates))
@@ -162,14 +165,14 @@ run (Serve services) = do
       do (_,port) <- stateServer
          acidServer state port
 
-run (Import doc) = do
+run (Import traceLevel doc) = do
     dict <- liftIO $ runX $ readDocument sys doc /> readDictionary
     output "Importing..."
     update_ $ ImportWords dict
     let total = sum $ map (length . snd) dict
     output [qq|Finished importing $total words.|]
   where
-    sys = [withHTTP [], withExpat True, withTrace 1]
+    sys = [withHTTP [], withExpat True, withTrace traceLevel]
 
 run Checkpoint = liftIO . createCheckpoint =<< asks state
 
