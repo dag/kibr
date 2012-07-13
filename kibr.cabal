@@ -77,7 +77,6 @@ library
                      network,
                      optparse-applicative      >= 0.1,
                      safecopy,
-                     terminal-progress-bar,
                      text,
                      unordered-containers,
                      xdg-basedir

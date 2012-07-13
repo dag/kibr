@@ -17,6 +17,7 @@ module Kibr.State
     , saveWordDefinition
     , listWordTypes
     , listWordDefinitions
+    , importWords
       -- ** Event Methods
       -- | #methods#
     , LookupWordType(..)
@@ -25,6 +26,7 @@ module Kibr.State
     , SaveWordDefinition(..)
     , ListWordTypes(..)
     , ListWordDefinitions(..)
+    , ImportWords(..)
     )
   where
 
@@ -32,7 +34,7 @@ import qualified Data.Foldable as F
 import qualified Data.IxSet    as IxSet
 import qualified Data.Map      as Map
 
-import Control.Monad        (void)
+import Control.Monad        (void, forM_)
 import Control.Monad.Reader (asks)
 import Control.Monad.State  (gets)
 import Control.Monad.Trans  (MonadIO)
@@ -135,6 +137,15 @@ listWordDefinitions word language = do
     wordL = getOneL word
     langL = mapL language
 
+-- | Import the data parsed from an XML export in one go.
+importWords :: [(Language,[(Word,WordType,WordDefinition)])] -> Update AppState ()
+importWords dict = do
+    forM_ dict $ \(language,words) ->
+      forM_ words $ \(word,wordType,wordDefinition) ->
+        do saveWordType word (Revision wordType SystemUser)
+           saveWordDefinition word language (Revision wordDefinition SystemUser)
+    return ()
+
 deriveSafeCopy 0 'base ''AppState
 makeAcidic ''AppState [ 'lookupWordType
                       , 'lookupWordDefinition
@@ -142,4 +153,5 @@ makeAcidic ''AppState [ 'lookupWordType
                       , 'saveWordDefinition
                       , 'listWordTypes
                       , 'listWordDefinitions
+                      , 'importWords
                       ]

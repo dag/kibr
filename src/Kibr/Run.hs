@@ -48,8 +48,7 @@ import System.Environment             (getEnv)
 import System.Environment.XDG.BaseDir (getUserDataDir)
 import System.Exit                    (exitFailure)
 import System.FilePath                ((</>))
-import System.IO                      (BufferMode(NoBuffering), hSetBuffering, hPutStr, stdout, stderr)
-import System.ProgressBar             (progressBar, msg, exact)
+import System.IO                      (hPutStr, stderr)
 import Text.PrettyPrint.ANSI.Leijen   (Doc, (<>), plain, linebreak)
 import Text.XML.HXT.Core              ((/>), runX, readDocument, withTrace)
 import Text.XML.HXT.Expat             (withExpat)
@@ -164,14 +163,8 @@ run (Serve services) = do
 
 run (Import doc) = do
     dict <- liftIO $ runX $ readDocument sys doc /> readDictionary
-    liftIO $ hSetBuffering stdout NoBuffering
-    forM_ dict $ \(language,words) ->
-      do let total = fromIntegral $ length words
-         forM_ (zip words [1..]) $ \((word,wordType,wordDefinition),index) ->
-           do void $ update $ SaveWordType word (Revision wordType SystemUser)
-              void $ update $ SaveWordDefinition word language (Revision wordDefinition SystemUser)
-              liftIO $ progressBar (msg $ show language) exact 80 index total
-         output ""
+    output "Importing..."
+    void $ update $ ImportWords dict
   where
     sys = [withHTTP [], withExpat True, withTrace 1]
 
