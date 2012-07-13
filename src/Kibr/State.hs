@@ -8,6 +8,7 @@ module Kibr.State
     , HasAcidState(..)
     , query
     , update
+    , update_
       -- * Event Definitions
       -- | These are exported for documentation purposes, but it's really
       -- the Event Methods ("Kibr.State#methods") that you use with /acid-state/.
@@ -72,6 +73,10 @@ update :: (UpdateEvent e, MonadIO m, HasAcidState m (MethodState e))
 update ev = do
     st <- getAcidState
     update' st ev
+
+update_ :: (UpdateEvent e, MonadIO m, HasAcidState m (MethodState e))
+        => e -> m ()
+update_ ev = update ev >> return ()
 
 getOneL :: (Ord a, Typeable k, Typeable a, Indexable a)
         => k -> GetterFamily (IxSet a) a' (Maybe a) b'

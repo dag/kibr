@@ -28,7 +28,7 @@ import qualified Data.HashMap.Lazy as HashMap
 import Config.Dyre                    (Params(..), wrapMain, defaultParams)
 import Control.Category               ((.))
 import Control.Exception              (bracket)
-import Control.Monad                  (forM_, void, when)
+import Control.Monad                  (forM_, when)
 import Control.Monad.Reader           (ReaderT, runReaderT, asks)
 import Control.Monad.Trans            (liftIO)
 import Data.Acid                      (AcidState, openLocalStateFrom, closeAcidState, createCheckpoint)
@@ -165,7 +165,7 @@ run (Serve services) = do
 run (Import doc) = do
     dict <- liftIO $ runX $ readDocument sys doc /> readDictionary
     output "Importing..."
-    void $ update $ ImportWords dict
+    update_ $ ImportWords dict
     let total = sum $ map (length . snd) dict
     output [qq|Finished importing $total words.|]
   where
