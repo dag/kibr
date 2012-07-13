@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, OverloadedStrings, RecordWildCards #-}
+{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, OverloadedStrings, QuasiQuotes, RecordWildCards #-}
 
 -- | Support for configuration via dynamic recompilation using
 -- "Config.Dyre".
@@ -49,6 +49,7 @@ import System.Environment.XDG.BaseDir (getUserDataDir)
 import System.Exit                    (exitFailure)
 import System.FilePath                ((</>))
 import System.IO                      (hPutStr, stderr)
+import Text.InterpolatedString.Perl6  (qq)
 import Text.PrettyPrint.ANSI.Leijen   (Doc, (<>), plain, linebreak)
 import Text.XML.HXT.Core              ((/>), runX, readDocument, withTrace)
 import Text.XML.HXT.Expat             (withExpat)
@@ -165,6 +166,8 @@ run (Import doc) = do
     dict <- liftIO $ runX $ readDocument sys doc /> readDictionary
     output "Importing..."
     void $ update $ ImportWords dict
+    let total = sum $ map (length . snd) dict
+    output [qq|Finished importing $total words.|]
   where
     sys = [withHTTP [], withExpat True, withTrace 1]
 

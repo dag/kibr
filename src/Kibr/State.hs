@@ -139,12 +139,11 @@ listWordDefinitions word language = do
 
 -- | Import the data parsed from an XML export in one go.
 importWords :: [(Language,[(Word,WordType,WordDefinition)])] -> Update AppState ()
-importWords dict = do
-    forM_ dict $ \(language,words) ->
+importWords dict =
+    void $ forM_ dict $ \(language,words) ->
       forM_ words $ \(word,wordType,wordDefinition) ->
         do saveWordType word (Revision wordType SystemUser)
            saveWordDefinition word language (Revision wordDefinition SystemUser)
-    return ()
 
 deriveSafeCopy 0 'base ''AppState
 makeAcidic ''AppState [ 'lookupWordType
