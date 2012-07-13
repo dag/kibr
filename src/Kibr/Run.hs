@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, RecordWildCards #-}
+{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, OverloadedStrings, RecordWildCards #-}
 
 -- | Support for configuration via dynamic recompilation using
 -- "Config.Dyre".
@@ -50,6 +50,7 @@ import System.Exit                    (exitFailure)
 import System.FilePath                ((</>))
 import System.IO                      (BufferMode(NoBuffering), hSetBuffering, hPutStr, stdout, stderr)
 import System.ProgressBar             (progressBar, msg, exact)
+import Text.PrettyPrint.ANSI.Leijen   (Doc, (<>), plain, linebreak)
 import Text.XML.HXT.Core              ((/>), runX, readDocument, withTrace)
 import Text.XML.HXT.Expat             (withExpat)
 import Text.XML.HXT.HTTP              (withHTTP)
@@ -88,8 +89,11 @@ type CompilationError = String
 
 data Options = Options
     { remote :: Bool
+    , outputMode :: OutputMode
     , cmd :: Command
     }
+
+data OutputMode = Colored | Plain
 
 data Command = Import FilePath
              | Checkpoint
@@ -98,9 +102,10 @@ data Command = Import FilePath
 
 data Service = DICT | IRC | State | Web deriving (Eq, Bounded, Enum)
 
-options :: Parser Options
-options = Options
+optparser :: Parser Options
+optparser = Options
     <$> switch (long "remote" . help "Connect to remote state service")
+    <*> flag Colored Plain (long "plain" . help "Output plain text with no ANSI codes")
     <*> subparser
           ( mkcmd "import" import' "Import words from an XML export"
           . mkcmd "checkpoint" checkpoint "Create a state checkpoint"
@@ -120,6 +125,7 @@ options = Options
 
 data Runtime = Runtime
     { config :: Config
+    , options :: Options
     , state  :: AcidState AppState
     }
 
@@ -127,11 +133,11 @@ data Runtime = Runtime
 main :: Either CompilationError Config -> IO ()
 main (Left msg) = hPutStr stderr msg >> exitFailure
 main (Right config@Config{..}) = do
-    Options{..} <- execParser parser
+    options@Options{..} <- execParser parser
     bracket (openAcidState remote) closeAcidState $ \state ->
-      runReaderT (run cmd) Runtime {config = config, state = state}
+      runReaderT (run cmd) Runtime {config = config, options = options, state = state}
   where
-    parser = info (helper <*> options) fullDesc
+    parser = info (helper <*> optparser) fullDesc
     openAcidState True  = do (host,port) <- stateServer
                              openRemoteState host port
     openAcidState False = do dir <- stateDirectory
@@ -139,6 +145,13 @@ main (Right config@Config{..}) = do
 
 instance Monad m => HasAcidState (ReaderT Runtime m) AppState where
     getAcidState = asks state
+
+output :: Doc -> ReaderT Runtime IO ()
+output doc = do
+    mode <- asks (outputMode . options)
+    case mode of
+      Colored -> liftIO $ prettyPrint (doc <> linebreak)
+      Plain -> liftIO $ prettyPrint (plain doc <> linebreak)
 
 run :: Command -> ReaderT Runtime IO ()
 
@@ -158,15 +171,14 @@ run (Import doc) = do
            do void $ update $ SaveWordType word (Revision wordType SystemUser)
               void $ update $ SaveWordDefinition word language (Revision wordDefinition SystemUser)
               liftIO $ progressBar (msg $ show language) exact 80 index total
-         liftIO $ putStrLn ""
+         output ""
   where
     sys = [withHTTP [], withExpat True, withTrace 1]
 
 run Checkpoint = liftIO . createCheckpoint =<< asks state
 
-run (Lookup language words) = do
+run (Lookup language words) =
     forM_ words $ \word ->
       do Just typ <- query $ LookupWordType word
          Just def <- query $ LookupWordDefinition word language
-         liftIO $ putStrLn "" >> prettyPrint (ppWord word typ def)
-    liftIO $ putStrLn ""
+         output $ linebreak <> ppWord word typ def
