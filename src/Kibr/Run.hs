@@ -93,7 +93,7 @@ data Options = Options
     , cmd :: Command
     }
 
-data OutputMode = Colored | Plain
+data OutputMode = Colored | Plain | Quiet
 
 type TraceLevel = Int
 
@@ -107,7 +107,7 @@ data Service = DICT | IRC | State | Web deriving (Eq, Bounded, Enum)
 optparser :: Parser Options
 optparser = Options
     <$> switch (long "remote" . help "Connect to remote state service")
-    <*> flag Colored Plain (long "plain" . help "Output plain text with no ANSI codes")
+    <*> nullOption (reader outputMode . long "output" . metavar "MODE" . value Colored . help "Control how output is printed (colored|plain|quiet)")
     <*> subparser
           ( mkcmd "import" import' "Import words from an XML export"
           . mkcmd "checkpoint" checkpoint "Create a state checkpoint"
@@ -116,6 +116,7 @@ optparser = Options
           )
   where
     mkcmd name parser desc = command name $ info (helper <*> parser) $ progDesc desc
+    outputMode s = lookup s [("colored",Colored), ("plain",Plain), ("quiet",Quiet)]
     service s  = lookup s [("dict",DICT), ("irc",IRC), ("state",State), ("web",Web)]
     word       = Just . fromString
     language   = (`HashMap.lookup` languageTags) . fromString
@@ -155,6 +156,7 @@ output doc = do
     case mode of
       Colored -> liftIO $ prettyPrint (doc <> linebreak)
       Plain -> liftIO $ prettyPrint (plain doc <> linebreak)
+      Quiet -> return ()
 
 run :: Command -> ReaderT Runtime IO ()
 
