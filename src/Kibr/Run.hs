@@ -104,28 +104,57 @@ data Command = Import TraceLevel FilePath
 
 data Service = DICT | IRC | State | Web deriving (Eq, Bounded, Enum)
 
-optparser :: Parser Options
-optparser = Options
+parseOptions :: Parser Options
+parseOptions = Options
     <$> switch (long "remote" . help "Connect to remote state service")
-    <*> nullOption (reader outputMode . long "output" . metavar "MODE" . value Colored . help "Control how output is printed (colored|plain|quiet)")
+    <*> nullOption
+          ( reader (flip lookup outputModes)
+          . long "output"
+          . metavar "MODE"
+          . value Colored
+          . help "Control how output is printed (colored|plain|quiet)"
+          )
     <*> subparser
-          ( mkcmd "import" import' "Import words from an XML export"
-          . mkcmd "checkpoint" checkpoint "Create a state checkpoint"
-          . mkcmd "serve"  serve   "Launch Internet services"
-          . mkcmd "lookup" lookup' "Look up words"
+          ( mkcmd "import"     parseImport     "Import words from an XML export"
+          . mkcmd "checkpoint" parseCheckpoint "Create a state checkpoint"
+          . mkcmd "serve"      parseServe      "Launch Internet services"
+          . mkcmd "lookup"     parseLookup     "Look up words"
           )
   where
     mkcmd name parser desc = command name $ info (helper <*> parser) $ progDesc desc
-    outputMode s = lookup s [("colored",Colored), ("plain",Plain), ("quiet",Quiet)]
-    service s  = lookup s [("dict",DICT), ("irc",IRC), ("state",State), ("web",Web)]
-    word       = Just . fromString
-    language   = (`HashMap.lookup` languageTags) . fromString
-    import'    = Import <$> option (long "trace-level" . metavar "0..4" . value 0 . help "Set the tracing level for the XML parser")
-                        <*> argument str (metavar "FILE")
-    checkpoint = pure Checkpoint
-    serve      = Serve  <$> arguments service (metavar "dict|irc|state|web..." . value [minBound..])
-    lookup'    = Lookup <$> nullOption (reader language . long "language" . metavar "TAG" . value (English UnitedStates))
-                        <*> arguments word (metavar "WORD...")
+    outputModes = [("colored",Colored), ("plain",Plain), ("quiet",Quiet)]
+
+parseImport :: Parser Command
+parseImport = Import
+    <$> option
+          ( long "trace-level"
+          . metavar "0..4"
+          . value 0
+          . help "Set the tracing level for the XML parser"
+          )
+    <*> argument str (metavar "FILE")
+
+parseCheckpoint :: Parser Command
+parseCheckpoint = pure Checkpoint
+
+parseServe :: Parser Command
+parseServe = Serve
+    <$> arguments (flip lookup services)
+          ( metavar "dict|irc|state|web..."
+          . value [minBound..]
+          )
+  where
+    services = [("dict",DICT), ("irc",IRC), ("state",State), ("web",Web)]
+
+parseLookup :: Parser Command
+parseLookup = Lookup
+    <$> nullOption
+          ( reader ((`HashMap.lookup` languageTags) . fromString)
+          . long "language"
+          . metavar "TAG"
+          . value (English UnitedStates)
+          )
+    <*> arguments (Just . fromString) (metavar "WORD...")
 
 data Runtime = Runtime
     { config :: Config
@@ -141,7 +170,7 @@ main (Right config@Config{..}) = do
     bracket (openAcidState remote) closeAcidState $ \state ->
       runReaderT (run cmd) Runtime {config = config, options = options, state = state}
   where
-    parser = info (helper <*> optparser) fullDesc
+    parser = info (helper <*> parseOptions) fullDesc
     openAcidState True  = do (host,port) <- stateServer
                              openRemoteState host port
     openAcidState False = do dir <- stateDirectory
