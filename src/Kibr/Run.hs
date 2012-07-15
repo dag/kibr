@@ -53,11 +53,11 @@ import System.IO                      (hPutStr, stdout, stderr)
 import Text.InterpolatedString.Perl6  (qq)
 import Text.PrettyPrint.ANSI.Leijen   (Doc, (<>), displayIO, renderPretty, plain, linebreak)
 import Text.XML.HXT.Core              ((/>), runX, readDocument, withTrace)
-import Text.XML.HXT.Expat             (withExpat)
 import Text.XML.HXT.HTTP              (withHTTP)
 
 #ifndef WINDOWS
 import System.Console.Terminfo        (getCapability, termColumns, setupTermFromEnv)
+import Text.XML.HXT.Expat             (withExpat)
 #endif
 
 -- | Application config.
@@ -214,7 +214,10 @@ run (Import traceLevel doc) = do
     let total = sum $ map (length . snd) dict
     output [qq|Finished importing $total words.|]
   where
-    sys = [withHTTP [], withExpat True, withTrace traceLevel]
+    sys = [withHTTP [], withTrace traceLevel]
+#ifndef WINDOWS
+            ++ [withExpat True]
+#endif
 
 run Checkpoint = liftIO . createCheckpoint =<< asks state
 

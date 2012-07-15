@@ -64,7 +64,6 @@ library
                      hashable,
                      hsx,
                      hxt                       == 9.*,
-                     hxt-expat,
                      hxt-http,
                      interpolatedstring-perl6,
                      irc,
@@ -83,4 +82,5 @@ library
   if os(windows)
     cpp-options    : -DWINDOWS
   else
-    build-depends  : terminfo
+    build-depends  : hxt-expat,
+                     terminfo
