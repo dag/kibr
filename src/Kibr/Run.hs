@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, OverloadedStrings, QuasiQuotes, RecordWildCards #-}
+{-# LANGUAGE CPP, FlexibleInstances, MultiParamTypeClasses, OverloadedStrings, QuasiQuotes, RecordWildCards #-}
 
 -- | Support for configuration via dynamic recompilation using
 -- "Config.Dyre".
@@ -35,6 +35,7 @@ import Data.Acid                      (AcidState, openLocalStateFrom, closeAcidS
 import Data.Acid.Remote               (acidServer, openRemoteState)
 import Data.Configurable              (Configurable(conf))
 import Data.Default                   (def)
+import Data.Maybe                     (fromMaybe)
 import Data.Packable                  (fromList)
 import Data.String                    (fromString)
 import Happstack.Server               (Conf)
@@ -48,12 +49,16 @@ import System.Environment             (getEnv)
 import System.Environment.XDG.BaseDir (getUserDataDir)
 import System.Exit                    (exitFailure)
 import System.FilePath                ((</>))
-import System.IO                      (hPutStr, stderr)
+import System.IO                      (hPutStr, stdout, stderr)
 import Text.InterpolatedString.Perl6  (qq)
-import Text.PrettyPrint.ANSI.Leijen   (Doc, (<>), plain, linebreak)
+import Text.PrettyPrint.ANSI.Leijen   (Doc, (<>), displayIO, renderPretty, plain, linebreak)
 import Text.XML.HXT.Core              ((/>), runX, readDocument, withTrace)
 import Text.XML.HXT.Expat             (withExpat)
 import Text.XML.HXT.HTTP              (withHTTP)
+
+#ifndef WINDOWS
+import System.Console.Terminfo        (getCapability, termColumns, setupTermFromEnv)
+#endif
 
 -- | Application config.
 data Config = Config
@@ -181,6 +186,12 @@ instance Monad m => HasAcidState (ReaderT Runtime m) AppState where
 
 output :: Doc -> ReaderT Runtime IO ()
 output doc = do
+#if WINDOWS
+    let width = Nothing
+#else
+    width <- liftIO $ fmap (`getCapability` termColumns) setupTermFromEnv
+#endif
+    let prettyPrint = displayIO stdout . renderPretty 1.0 (fromMaybe 80 width)
     mode <- asks (outputMode . options)
     case mode of
       Colored -> liftIO $ prettyPrint (doc <> linebreak)

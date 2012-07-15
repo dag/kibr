@@ -80,3 +80,7 @@ library
                      text,
                      unordered-containers,
                      xdg-basedir
+  if os(windows)
+    cpp-options    : -DWINDOWS
+  else
+    build-depends  : terminfo
