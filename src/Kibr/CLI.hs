@@ -50,7 +50,7 @@ import Options.Applicative
 import System.Environment             (getEnv)
 import System.Environment.XDG.BaseDir (getUserDataDir)
 import System.FilePath                ((</>))
-import System.IO                      (stdout)
+import System.IO                      (stdout, hIsTerminalDevice)
 import Text.PrettyPrint.ANSI.Leijen   (Doc, (<>), displayIO, renderPretty, plain, linebreak)
 
 #ifndef WINDOWS
@@ -115,8 +115,8 @@ parseOptions = Options
           ( reader (`lookup` outputModes)
           . long "output"
           . metavar "MODE"
-          . value Colored
-          . help "Control how output is printed (colored|plain|quiet)"
+          . value TTY
+          . help "Control how output is printed (tty|colored|plain|quiet)"
           )
     <*> subparser
           ( mkcmd "import"     parseImport     "Import words from an XML export"
@@ -126,7 +126,7 @@ parseOptions = Options
           )
   where
     mkcmd name parser desc = command name $ info (helper <*> parser) $ progDesc desc
-    outputModes = [("colored",Colored), ("plain",Plain), ("quiet",Quiet)]
+    outputModes = [("tty",TTY), ("colored",Colored), ("plain",Plain), ("quiet",Quiet)]
 
 parseImport :: Parser Command
 parseImport = Import
@@ -165,7 +165,10 @@ parseLookup = Lookup
 -- ***************************************************************************
 
 -- | How to print output on the console.
-data OutputMode = Colored | Plain | Quiet
+data OutputMode = TTY      -- ^ 'Colored' if output is a terminal, otherwise 'Plain'.
+                | Colored  -- ^ Print output with all formatting preserved.
+                | Plain    -- ^ Strip formatting from output.
+                | Quiet    -- ^ Don't output anything.
 
 -- | Monads with access to an 'OutputMode' allowing them to use the
 -- 'output' function.
@@ -184,12 +187,17 @@ output doc = do
 #else
     width <- io $ fmap (`getCapability` termColumns) setupTermFromEnv
 #endif
-    let prettyPrint = io . displayIO stdout . renderPretty 1.0 (fromMaybe 80 width)
+    let prettyPrint = io . displayIO stdout
+                         . renderPretty 1.0 (fromMaybe 80 width)
+                         . (<> linebreak)
     mode <- getOutputMode
     case mode of
-      Colored -> prettyPrint (doc <> linebreak)
-      Plain -> prettyPrint (plain doc <> linebreak)
-      Quiet -> return ()
+      Colored -> prettyPrint doc
+      Plain   -> prettyPrint $ plain doc
+      Quiet   -> return ()
+      TTY     ->
+        do tty <- io $ hIsTerminalDevice stdout
+           prettyPrint $ if tty then doc else plain doc
 
 
 -- * Programs
