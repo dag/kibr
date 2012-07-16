@@ -35,6 +35,7 @@ module Kibr.Run
     , ProgramT
     , Program
     , runProgramT
+    , io
     , output
     , run
     )
@@ -223,6 +224,10 @@ runProgramT (Program m) = runReaderT m
 instance Monad m => HasAcidState (ProgramT m) AppState where
     getAcidState = asks state
 
+-- | Convenient alias for 'liftIO'.
+io :: MonadIO m => IO a -> m a
+io = liftIO
+
 -- | Document printer that is aware of the 'OutputMode' and the width of
 -- the terminal if available.
 output :: Doc -> Program
@@ -230,13 +235,13 @@ output doc = do
 #if WINDOWS
     let width = Nothing
 #else
-    width <- liftIO $ fmap (`getCapability` termColumns) setupTermFromEnv
+    width <- io $ fmap (`getCapability` termColumns) setupTermFromEnv
 #endif
-    let prettyPrint = displayIO stdout . renderPretty 1.0 (fromMaybe 80 width)
+    let prettyPrint = io . displayIO stdout . renderPretty 1.0 (fromMaybe 80 width)
     mode <- asks (outputMode . options)
     case mode of
-      Colored -> liftIO $ prettyPrint (doc <> linebreak)
-      Plain -> liftIO $ prettyPrint (plain doc <> linebreak)
+      Colored -> prettyPrint (doc <> linebreak)
+      Plain -> prettyPrint (plain doc <> linebreak)
       Quiet -> return ()
 
 -- | Dispatches the commands.
@@ -245,12 +250,12 @@ run :: Command -> Program
 run (Serve services) = do
     state <- asks state
     Config{..} <- asks config
-    when (State `elem` services) $ liftIO $
+    when (State `elem` services) $ io $
       do (_,port) <- stateServer
          acidServer state port
 
 run (Import traceLevel doc) = do
-    dict <- liftIO $ runX $ readDocument sys doc /> readDictionary
+    dict <- io $ runX $ readDocument sys doc /> readDictionary
     output "Importing..."
     update_ $ ImportWords dict
     let total = sum $ map (length . snd) dict
@@ -261,7 +266,7 @@ run (Import traceLevel doc) = do
             ++ [withExpat True]
 #endif
 
-run Checkpoint = liftIO . createCheckpoint =<< asks state
+run Checkpoint = io . createCheckpoint =<< asks state
 
 run (Lookup language words) =
     forM_ words $ \word ->
