@@ -15,8 +15,25 @@
 -- as well.
 
 module Kibr.Run
-    ( Config(..)
+    ( -- * Main API for customization
+      Config(..)
     , kibr
+      -- * Command-line options
+    , Options(..)
+    , OutputMode(..)
+    , TraceLevel
+    , Command(..)
+    , Service(..)
+      -- ** Applicative option parsers
+    , parseOptions
+    , parseImport
+    , parseCheckpoint
+    , parseServe
+    , parseLookup
+      -- * Commands
+    , Runtime(..)
+    , output
+    , run
     )
   where
 
@@ -92,21 +109,27 @@ kibr cfg = run $ Right cfg
 -- | An error message from GHC if /dyre/ fails to compile a user configuration.
 type CompilationError = String
 
+-- | Command-line options.
 data Options = Options
     { remote :: Bool
     , outputMode :: OutputMode
     , cmd :: Command
     }
 
+-- | How to print output on the console.
 data OutputMode = Colored | Plain | Quiet
 
+-- | The level of debug output to print from the XML parser.
 type TraceLevel = Int
 
+-- | The sub-commands of the @kibr@ executable, and their individual
+-- options.
 data Command = Import TraceLevel FilePath
              | Checkpoint
              | Serve [Service]
              | Lookup Language [Word]
 
+-- | Services that can be launched with @kibr serve@.
 data Service = DICT | IRC | State | Web deriving (Eq, Bounded, Enum)
 
 parseOptions :: Parser Options
@@ -161,6 +184,7 @@ parseLookup = Lookup
           )
     <*> arguments (Just . fromString) (metavar "WORD...")
 
+-- | Runtime execution environment for @kibr@ commands.
 data Runtime = Runtime
     { config :: Config
     , options :: Options
@@ -184,6 +208,8 @@ main (Right config@Config{..}) = do
 instance Monad m => HasAcidState (ReaderT Runtime m) AppState where
     getAcidState = asks state
 
+-- | Document printer that is aware of the 'OutputMode' and the width of
+-- the terminal if available.
 output :: Doc -> ReaderT Runtime IO ()
 output doc = do
 #if WINDOWS
@@ -198,6 +224,7 @@ output doc = do
       Plain -> liftIO $ prettyPrint (plain doc <> linebreak)
       Quiet -> return ()
 
+-- | Dispatches the commands.
 run :: Command -> ReaderT Runtime IO ()
 
 run (Serve services) = do
