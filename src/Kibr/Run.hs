@@ -38,6 +38,9 @@ module Kibr.Run
     , io
     , output
     , run
+      -- * Compilation
+    , CompilationError
+    , main
     )
   where
 
@@ -109,9 +112,6 @@ kibr cfg = run $ Right cfg
         , showError   = const Left
         , realMain    = main
         }
-
--- | An error message from GHC if /dyre/ fails to compile a user configuration.
-type CompilationError = String
 
 -- | Command-line options.
 data Options = Options
@@ -187,6 +187,9 @@ parseLookup = Lookup
           . value (English UnitedStates)
           )
     <*> arguments (Just . fromString) (metavar "WORD...")
+
+-- | An error message from GHC if /dyre/ fails to compile a user configuration.
+type CompilationError = String
 
 -- | The actual entry-point for the @kibr@ executable.
 main :: Either CompilationError Config -> IO ()
