@@ -1,4 +1,4 @@
-{-# LANGUAGE CPP, FlexibleInstances, MultiParamTypeClasses, OverloadedStrings, QuasiQuotes, RecordWildCards #-}
+{-# LANGUAGE CPP, FlexibleInstances, GeneralizedNewtypeDeriving, MultiParamTypeClasses, OverloadedStrings, QuasiQuotes, RecordWildCards #-}
 
 -- | Support for configuration via dynamic recompilation using
 -- "Config.Dyre".
@@ -32,6 +32,9 @@ module Kibr.Run
     , parseLookup
       -- * Commands
     , Runtime(..)
+    , ProgramT
+    , Program
+    , runProgramT
     , output
     , run
     )
@@ -46,8 +49,8 @@ import Config.Dyre                    (Params(..), wrapMain, defaultParams)
 import Control.Category               ((.))
 import Control.Exception              (bracket)
 import Control.Monad                  (forM_, when)
-import Control.Monad.Reader           (ReaderT, runReaderT, asks)
-import Control.Monad.Trans            (liftIO)
+import Control.Monad.Reader           (MonadReader, ReaderT, runReaderT, asks)
+import Control.Monad.Trans            (MonadIO, liftIO)
 import Data.Acid                      (AcidState, openLocalStateFrom, closeAcidState, createCheckpoint)
 import Data.Acid.Remote               (acidServer, openRemoteState)
 import Data.Configurable              (Configurable(conf))
@@ -184,20 +187,13 @@ parseLookup = Lookup
           )
     <*> arguments (Just . fromString) (metavar "WORD...")
 
--- | Runtime execution environment for @kibr@ commands.
-data Runtime = Runtime
-    { config :: Config
-    , options :: Options
-    , state  :: AcidState AppState
-    }
-
 -- | The actual entry-point for the @kibr@ executable.
 main :: Either CompilationError Config -> IO ()
 main (Left msg) = hPutStr stderr msg >> exitFailure
 main (Right config@Config{..}) = do
     options@Options{..} <- execParser parser
     bracket (openAcidState remote) closeAcidState $ \state ->
-      runReaderT (run cmd) Runtime {config = config, options = options, state = state}
+      runProgramT (run cmd) Runtime {config = config, options = options, state = state}
   where
     parser = info (helper <*> parseOptions) fullDesc
     openAcidState True  = do (host,port) <- stateServer
@@ -205,12 +201,31 @@ main (Right config@Config{..}) = do
     openAcidState False = do dir <- stateDirectory
                              openLocalStateFrom dir def
 
-instance Monad m => HasAcidState (ReaderT Runtime m) AppState where
+-- | Runtime execution environment for @kibr@ commands.
+data Runtime = Runtime
+    { config :: Config
+    , options :: Options
+    , state  :: AcidState AppState
+    }
+
+-- | Monad transformer for monads with access to a 'Runtime' environment.
+newtype ProgramT m a = Program (ReaderT Runtime m a)
+                       deriving (Monad, MonadReader Runtime, MonadIO)
+
+-- | Programs usually run in the 'IO' monad and produce no value.
+type Program = ProgramT IO ()
+
+-- | Run a 'ProgramT' with a 'Runtime' environment and return the inner
+-- monad computation.
+runProgramT :: Monad m => ProgramT m a -> Runtime -> m a
+runProgramT (Program m) = runReaderT m
+
+instance Monad m => HasAcidState (ProgramT m) AppState where
     getAcidState = asks state
 
 -- | Document printer that is aware of the 'OutputMode' and the width of
 -- the terminal if available.
-output :: Doc -> ReaderT Runtime IO ()
+output :: Doc -> Program
 output doc = do
 #if WINDOWS
     let width = Nothing
@@ -225,7 +240,7 @@ output doc = do
       Quiet -> return ()
 
 -- | Dispatches the commands.
-run :: Command -> ReaderT Runtime IO ()
+run :: Command -> Program
 
 run (Serve services) = do
     state <- asks state
