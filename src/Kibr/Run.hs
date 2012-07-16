@@ -24,28 +24,28 @@ module Kibr.Run
 
 import Prelude hiding ((.))
 
-import Config.Dyre                    (Params(..), wrapMain, defaultParams)
-import Control.Category               ((.))
-import Control.Exception              (bracket)
-import Control.Monad                  (forM_, when)
-import Control.Monad.Reader           (asks)
-import Data.Acid                      (AcidState, openLocalStateFrom, closeAcidState, createCheckpoint)
-import Data.Acid.Remote               (acidServer, openRemoteState)
-import Data.Default                   (def)
+import Config.Dyre                   (Params(..), wrapMain, defaultParams)
+import Control.Category              ((.))
+import Control.Exception             (bracket)
+import Control.Monad                 (forM_, when)
+import Control.Monad.Reader          (asks)
+import Data.Acid                     (AcidState, openLocalStateFrom, closeAcidState, createCheckpoint)
+import Data.Acid.Remote              (acidServer, openRemoteState)
+import Data.Default                  (def)
 import Kibr.CLI
 import Kibr.State
-import Kibr.Text
-import Kibr.XML                       (readDictionary)
-import Options.Applicative
-import System.Exit                    (exitFailure)
-import System.IO                      (hPutStr, stderr)
-import Text.InterpolatedString.Perl6  (qq)
-import Text.PrettyPrint.ANSI.Leijen   ((<>), linebreak)
-import Text.XML.HXT.Core              ((/>), runX, readDocument, withTrace)
-import Text.XML.HXT.HTTP              (withHTTP)
+import Kibr.Text                     (ppWord)
+import Kibr.XML                      (readDictionary)
+import Options.Applicative           ((<*>), execParser, info, helper, fullDesc)
+import System.Exit                   (exitFailure)
+import System.IO                     (hPutStr, stderr)
+import Text.InterpolatedString.Perl6 (qq)
+import Text.PrettyPrint.ANSI.Leijen  ((<>), linebreak)
+import Text.XML.HXT.Core             ((/>), runX, readDocument, withTrace)
+import Text.XML.HXT.HTTP             (withHTTP)
 
 #ifndef WINDOWS
-import Text.XML.HXT.Expat             (withExpat)
+import Text.XML.HXT.Expat            (withExpat)
 #endif
 
 -- | The @kibr@ executable.
