@@ -10,10 +10,11 @@ module Kibr.XML
     )
   where
 
+import qualified Data.Set as Set
+
 import Prelude hiding ((.))
 import Control.Category ((.))
 
-import Data.Packable (fromList)
 import Data.String   (fromString)
 import Kibr.Data
 import Text.XML.HXT.Core
@@ -33,7 +34,7 @@ getWordType = proc valsi -> do
     typeName <-            getAttrValue "type"    -< valsi
     rafsi    <- listA    $ getElemText  "rafsi"   -< valsi
     selmaho  <- getMaybe $ getElemText  "selmaho" -< valsi
-    let affixForms = fromList $ map fromString rafsi
+    let affixForms = Set.fromList $ map fromString rafsi
         cls        = fmap fromString selmaho
     case typeName of
       "cmavo"   -> maybe zeroArrow (constA . ParticleWord affixForms) cls

@@ -29,14 +29,14 @@ module Kibr.Data
     )
   where
 
-import qualified Data.IxSet as IxSet
-import qualified Data.Map   as Map
+import qualified Data.HashMap.Lazy as HashMap
+import qualified Data.IxSet        as IxSet
+import qualified Data.Map          as Map
 
 import Data.Hashable                 (Hashable)
 import Data.HashMap.Lazy             (HashMap)
 import Data.IxSet                    (Indexable, ixSet, ixFun)
 import Data.Map                      (Map)
-import Data.Packable                 (fromList)
 import Data.SafeCopy                 (SafeCopy, deriveSafeCopy, base)
 import Data.Set                      (Set)
 import Data.String                   (IsString(fromString))
@@ -67,7 +67,7 @@ instance Show LanguageTag where
 
 -- | Known languages and their tags.
 languages :: Map Language LanguageTag
-languages = fromList
+languages = Map.fromList
     [ (Lojban               , "jbo"  )
     , (English Global       , "en"   )
     , (English UnitedStates , "en-US")
@@ -77,7 +77,7 @@ languages = fromList
 
 -- | The inverse of 'languages'.
 languageTags :: HashMap LanguageTag Language
-languageTags = fromList [(v,k) | (k,v) <- Map.toList languages]
+languageTags = HashMap.fromList [(v,k) | (k,v) <- Map.toList languages]
 
 
 -- * Revision Histories

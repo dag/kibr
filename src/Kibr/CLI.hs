@@ -32,6 +32,7 @@ import Prelude hiding ((.))
 import Kibr.Data hiding (User)
 
 import qualified Data.HashMap.Lazy as HashMap
+import qualified Data.Set          as Set
 
 import Control.Category               ((.))
 import Control.Monad.Reader           (MonadReader, ReaderT, runReaderT, asks)
@@ -40,7 +41,6 @@ import Data.Acid                      (AcidState)
 import Data.Configurable              (Configurable(conf))
 import Data.Has                       (Has(fetch))
 import Data.Maybe                     (fromMaybe)
-import Data.Packable                  (fromList)
 import Data.String                    (fromString)
 import Happstack.Server               (Conf)
 import Kibr.State
@@ -76,7 +76,7 @@ instance Configurable Config where
                             return ("127.0.0.1",UnixSocket (dir </> "kibr-state.socket"))
       , webServer      = conf
       , ircBots        = [conf {nick = "kibr", host = "chat.freenode.net",
-                                commandPrefix = "@", channels = fromList ["#sampla"],
+                                commandPrefix = "@", channels = Set.fromList ["#sampla"],
                                 user = conf {username = "kibr", realname = "Lojban IRC bot"}}]
       }
 

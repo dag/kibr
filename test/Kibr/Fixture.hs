@@ -17,7 +17,8 @@ module Kibr.Fixture
     )
   where
 
-import Data.Packable
+import qualified Data.Set as Set
+
 import Kibr.Data
 import Text.XML.HXT.Core
 import Text.XML.HXT.HSX
@@ -54,7 +55,7 @@ dictionary =
 ba'e :: Fixture
 ba'e = Fixture
     { fWord = "ba'e"
-    , fWordType = ParticleWord (fromList []) "BAhE"
+    , fWordType = ParticleWord (Set.fromList []) "BAhE"
     , fWordDefinition = "forethought emphasis indicator."
     , fXML =
         <valsi word="ba'e" type="cmavo">
@@ -66,7 +67,7 @@ ba'e = Fixture
 la'oi :: Fixture
 la'oi = Fixture
     { fWord = "la'oi"
-    , fWordType = ParticleWord (fromList []) ExperimentalParticle
+    , fWordType = ParticleWord (Set.fromList []) ExperimentalParticle
     , fWordDefinition = WordDefinition "single-word non-Lojban name."
                                 $ Just "See also {la'o}, {zo'oi}."
     , fXML =
@@ -80,7 +81,7 @@ la'oi = Fixture
 donri :: Fixture
 donri = Fixture
     { fWord = "donri"
-    , fWordType = RootWord (fromList ["dor", "do'i"]) OfficialRoot
+    , fWordType = RootWord (Set.fromList ["dor", "do'i"]) OfficialRoot
     , fWordDefinition = WordDefinition "$x_{1}$ is the daytime of day $x_{2}$."
                                 $ Just "See also {nicte}, {djedi}, {tcika}."
     , fXML =
@@ -95,7 +96,7 @@ donri = Fixture
 kibro :: Fixture
 kibro = Fixture
     { fWord = "kibro"
-    , fWordType = RootWord (fromList []) ExperimentalRoot
+    , fWordType = RootWord (Set.fromList []) ExperimentalRoot
     , fWordDefinition = "$x_1$ pertains to the internet in aspect $x_2$."
     , fXML =
         <valsi unofficial="true" word="kibro" type="experimental gismu">

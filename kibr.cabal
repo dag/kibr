@@ -20,6 +20,7 @@ test-suite test-kibr
                      data-default,
                      HUnit,
                      hxt,
+                     ixset,
                      kibr,
                      QuickCheck,
                      quickcheck-instances,
@@ -52,7 +53,6 @@ library
                      Kibr.XML
                      Data.Configurable
                      Data.Has
-                     Data.Packable
                      Text.XML.HXT.HSX
   build-depends    : acid-state,
                      ansi-wl-pprint,
