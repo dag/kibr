@@ -6,9 +6,8 @@ module Kibr.CLI
       Config(..)
       -- * Command-line options
     , Options(..)
-    , OutputMode(..)
-    , TraceLevel
     , Command(..)
+    , TraceLevel
     , Service(..)
       -- ** Applicative option parsers
     , parseOptions
@@ -16,13 +15,17 @@ module Kibr.CLI
     , parseCheckpoint
     , parseServe
     , parseLookup
+      -- * Printing output
+    , OutputMode(..)
+    , HasOutputMode(..)
+    , output
       -- * Programs
     , Runtime(..)
     , ProgramT
     , Program
     , runProgramT
+      -- * Utilities
     , io
-    , output
     )
   where
 
@@ -54,6 +57,10 @@ import Text.PrettyPrint.ANSI.Leijen   (Doc, (<>), displayIO, renderPretty, plain
 import System.Console.Terminfo        (getCapability, termColumns, setupTermFromEnv)
 #endif
 
+
+-- * Configuration
+-- ***************************************************************************
+
 -- | Application config.
 data Config = Config
     { stateDirectory :: IO FilePath           -- ^ Path to /acid-state/ log directory.
@@ -73,18 +80,16 @@ instance Configurable Config where
                                 user = conf {username = "kibr", realname = "Lojban IRC bot"}}]
       }
 
+
+-- * Command-line options
+-- ***************************************************************************
+
 -- | Command-line options.
 data Options = Options
     { remote :: Bool
     , outputMode :: OutputMode
     , cmd :: Command
     }
-
--- | How to print output on the console.
-data OutputMode = Colored | Plain | Quiet
-
--- | The level of debug output to print from the XML parser.
-type TraceLevel = Int
 
 -- | The sub-commands of the @kibr@ executable, and their individual
 -- options.
@@ -93,8 +98,15 @@ data Command = Import TraceLevel FilePath
              | Serve [Service]
              | Lookup Language [Word]
 
+-- | The level of debug output to print from the XML parser.
+type TraceLevel = Int
+
 -- | Services that can be launched with @kibr serve@.
 data Service = DICT | IRC | State | Web deriving (Eq, Bounded, Enum)
+
+
+-- * Applicative option parsers
+-- ***************************************************************************
 
 parseOptions :: Parser Options
 parseOptions = Options
@@ -148,6 +160,41 @@ parseLookup = Lookup
           )
     <*> arguments (Just . fromString) (metavar "WORD...")
 
+
+-- * Printing output
+-- ***************************************************************************
+
+-- | How to print output on the console.
+data OutputMode = Colored | Plain | Quiet
+
+-- | Monads with access to an 'OutputMode' allowing them to use the
+-- 'output' function.
+class HasOutputMode m where
+    getOutputMode :: m OutputMode
+
+instance Monad m => HasOutputMode (ProgramT m) where
+    getOutputMode = asks (outputMode . options)
+
+-- | Document printer that is aware of the 'OutputMode' and the width of
+-- the terminal if available.
+output :: (HasOutputMode m, MonadIO m) => Doc -> m ()
+output doc = do
+#if WINDOWS
+    let width = Nothing
+#else
+    width <- io $ fmap (`getCapability` termColumns) setupTermFromEnv
+#endif
+    let prettyPrint = io . displayIO stdout . renderPretty 1.0 (fromMaybe 80 width)
+    mode <- getOutputMode
+    case mode of
+      Colored -> prettyPrint (doc <> linebreak)
+      Plain -> prettyPrint (plain doc <> linebreak)
+      Quiet -> return ()
+
+
+-- * Programs
+-- ***************************************************************************
+
 -- | Runtime execution environment for @kibr@ commands.
 data Runtime = Runtime
     { config :: Config
@@ -170,22 +217,10 @@ runProgramT (Program m) = runReaderT m
 instance Monad m => HasAcidState (ProgramT m) AppState where
     getAcidState = asks state
 
+
+-- * Utilities
+-- ***************************************************************************
+
 -- | Convenient alias for 'liftIO'.
 io :: MonadIO m => IO a -> m a
 io = liftIO
-
--- | Document printer that is aware of the 'OutputMode' and the width of
--- the terminal if available.
-output :: Doc -> Program
-output doc = do
-#if WINDOWS
-    let width = Nothing
-#else
-    width <- io $ fmap (`getCapability` termColumns) setupTermFromEnv
-#endif
-    let prettyPrint = io . displayIO stdout . renderPretty 1.0 (fromMaybe 80 width)
-    mode <- asks (outputMode . options)
-    case mode of
-      Colored -> prettyPrint (doc <> linebreak)
-      Plain -> prettyPrint (plain doc <> linebreak)
-      Quiet -> return ()
