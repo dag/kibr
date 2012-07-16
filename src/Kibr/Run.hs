@@ -140,7 +140,7 @@ parseOptions :: Parser Options
 parseOptions = Options
     <$> switch (long "remote" . help "Connect to remote state service")
     <*> nullOption
-          ( reader (flip lookup outputModes)
+          ( reader (`lookup` outputModes)
           . long "output"
           . metavar "MODE"
           . value Colored
@@ -171,7 +171,7 @@ parseCheckpoint = pure Checkpoint
 
 parseServe :: Parser Command
 parseServe = Serve
-    <$> arguments (flip lookup services)
+    <$> arguments (`lookup` services)
           ( metavar "dict|irc|state|web..."
           . value [minBound..]
           )
