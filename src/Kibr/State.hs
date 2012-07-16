@@ -5,7 +5,6 @@ module Kibr.State
     ( -- * Application State Container
       AppState(AppState)
       -- * Environments with state
-    , HasAcidState(..)
     , query
     , update
     , update_
@@ -42,6 +41,7 @@ import Control.Monad.Trans  (MonadIO)
 import Data.Acid            (AcidState, Update, Query, QueryEvent, UpdateEvent, EventResult, makeAcidic)
 import Data.Acid.Advanced   (MethodState, query', update')
 import Data.Default         (Default(def))
+import Data.Has             (Has(fetch))
 import Data.IxSet           (IxSet, Indexable)
 import Data.SafeCopy        (deriveSafeCopy, base)
 import Data.Typeable        (Typeable)
@@ -59,22 +59,19 @@ mkLenses ''AppState
 
 instance Default AppState where def = AppState IxSet.empty
 
-class HasAcidState m st where
-    getAcidState :: m (AcidState st)
-
-query :: (QueryEvent e, MonadIO m, HasAcidState m (MethodState e))
+query :: (QueryEvent e, MonadIO m, Has (AcidState (MethodState e)) m)
       => e -> m (EventResult e)
 query ev = do
-    st <- getAcidState
+    st <- fetch
     query' st ev
 
-update :: (UpdateEvent e, MonadIO m, HasAcidState m (MethodState e))
+update :: (UpdateEvent e, MonadIO m, Has (AcidState (MethodState e)) m)
        => e -> m (EventResult e)
 update ev = do
-    st <- getAcidState
+    st <- fetch
     update' st ev
 
-update_ :: (UpdateEvent e, Functor m, MonadIO m, HasAcidState m (MethodState e))
+update_ :: (UpdateEvent e, Functor m, MonadIO m, Has (AcidState (MethodState e)) m)
         => e -> m ()
 update_ = void . update
 

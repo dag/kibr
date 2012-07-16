@@ -51,6 +51,7 @@ library
                      Kibr.Web
                      Kibr.XML
                      Data.Configurable
+                     Data.Has
                      Data.Packable
                      Text.XML.HXT.HSX
   build-depends    : acid-state,
