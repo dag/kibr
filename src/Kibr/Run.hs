@@ -214,7 +214,7 @@ data Runtime = Runtime
 
 -- | Monad transformer for monads with access to a 'Runtime' environment.
 newtype ProgramT m a = Program (ReaderT Runtime m a)
-                       deriving (Monad, MonadReader Runtime, MonadIO)
+                       deriving (Functor, Applicative, Monad, MonadReader Runtime, MonadIO)
 
 -- | Programs usually run in the 'IO' monad and produce no value.
 type Program = ProgramT IO ()

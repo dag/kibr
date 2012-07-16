@@ -74,9 +74,9 @@ update ev = do
     st <- getAcidState
     update' st ev
 
-update_ :: (UpdateEvent e, MonadIO m, HasAcidState m (MethodState e))
+update_ :: (UpdateEvent e, Functor m, MonadIO m, HasAcidState m (MethodState e))
         => e -> m ()
-update_ ev = update ev >> return ()
+update_ = void . update
 
 getOneL :: (Ord a, Typeable k, Typeable a, Indexable a)
         => k -> GetterFamily (IxSet a) a' (Maybe a) b'
