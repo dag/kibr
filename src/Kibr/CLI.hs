@@ -86,9 +86,9 @@ instance Configurable Config where
 
 -- | Command-line options.
 data Options = Options
-    { remote :: Bool
+    { remote     :: Bool
     , outputMode :: OutputMode
-    , cmd :: Command
+    , cmd        :: Command
     }
 
 -- | The sub-commands of the @kibr@ executable, and their individual
@@ -197,9 +197,9 @@ output doc = do
 
 -- | Runtime execution environment for @kibr@ commands.
 data Runtime = Runtime
-    { config :: Config
+    { config  :: Config
     , options :: Options
-    , state  :: AcidState AppState
+    , state   :: AcidState AppState
     }
 
 -- | Monad transformer for monads with access to a 'Runtime' environment.
