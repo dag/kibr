@@ -30,7 +30,7 @@ import Control.Concurrent            (forkIO, killThread)
 import Control.Exception             (bracket, catch, throw)
 import Control.Monad                 (forM_, when)
 import Control.Monad.Reader          (asks)
-import Data.Acid                     (AcidState, openLocalStateFrom, closeAcidState, createCheckpoint)
+import Data.Acid                     (AcidState, openLocalStateFrom, createCheckpoint)
 import Data.Acid.Remote              (acidServer, openRemoteState)
 import Data.Default                  (def)
 import Happstack.Server.SimpleHTTP   (waitForTermination)
@@ -71,8 +71,8 @@ main :: Either CompilationError Config -> IO ()
 main (Left msg) = hPutStr stderr msg >> exitFailure
 main (Right config@Config{..}) = do
     options@Options{..} <- execParser parser
-    bracket (openAcidState remote) closeAcidState $ \state ->
-      runProgramT (run cmd) Runtime {config = config, options = options, state = state}
+    state <- openAcidState remote
+    runProgramT (run cmd) Runtime {config = config, options = options, state = state}
   where
     parser = info (helper <*> parseOptions) fullDesc
     openAcidState True  = do (host,port) <- stateServer
