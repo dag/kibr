@@ -60,6 +60,7 @@ library
                      bytestring,
                      containers,
                      data-default,
+                     directory,
                      dyre,
                      filepath,
                      happstack-server          == 7.*,

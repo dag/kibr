@@ -22,23 +22,28 @@ module Kibr.Run
     )
   where
 
-import Prelude hiding ((.))
+import Prelude hiding ((.), catch)
 
 import Config.Dyre                   (Params(..), wrapMain, defaultParams)
 import Control.Category              ((.))
-import Control.Exception             (bracket)
+import Control.Concurrent            (forkIO, killThread)
+import Control.Exception             (bracket, catch, throw)
 import Control.Monad                 (forM_, when)
 import Control.Monad.Reader          (asks)
 import Data.Acid                     (AcidState, openLocalStateFrom, closeAcidState, createCheckpoint)
 import Data.Acid.Remote              (acidServer, openRemoteState)
 import Data.Default                  (def)
+import Happstack.Server.SimpleHTTP   (waitForTermination)
 import Kibr.CLI
 import Kibr.State
 import Kibr.Text                     (ppWord)
 import Kibr.XML                      (readDictionary)
+import Network                       (PortID(UnixSocket))
 import Options.Applicative           ((<*>), execParser, info, helper, fullDesc)
+import System.Directory              (removeFile)
 import System.Exit                   (exitFailure)
 import System.IO                     (hPutStr, stderr)
+import System.IO.Error               (isDoesNotExistError)
 import Text.InterpolatedString.Perl6 (qq)
 import Text.PrettyPrint.ANSI.Leijen  ((<>), linebreak)
 import Text.XML.HXT.Core             ((/>), runX, readDocument, withTrace)
@@ -83,7 +88,16 @@ run (Serve services) = do
     Config{..} <- asks config
     when (State `elem` services) $ io $
       do (_,port) <- stateServer
-         acidServer state port
+         bracket (forkIO $ acidServer state port)
+                 (\tid ->
+                   do killThread tid
+                      case port of
+                        UnixSocket path -> tryRemoveFile path
+                        _ -> return ())
+                 (const waitForTermination)
+  where
+    tryRemoveFile fp  = removeFile fp `catch` ignoreNotExists
+    ignoreNotExists e = if isDoesNotExistError e then return () else throw e
 
 run (Import traceLevel doc) = do
     dict <- io $ runX $ readDocument sys doc /> readDictionary
