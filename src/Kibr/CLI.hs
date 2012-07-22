@@ -47,8 +47,8 @@ import Kibr.State
 import Network                        (HostName, PortID(..))
 import Network.IRC.Bot                (BotConf(..), User(..))
 import Options.Applicative
-import System.Environment             (getEnv)
-import System.Environment.XDG.BaseDir (getUserDataDir)
+import System.Environment             (getEnvironment)
+import System.Environment.XDG.BaseDir (getUserDataDir, getUserCacheDir)
 import System.FilePath                ((</>))
 import System.IO                      (stdout, hIsTerminalDevice)
 import Text.PrettyPrint.ANSI.Leijen   (Doc, (<>), displayIO, renderPretty, plain, linebreak)
@@ -72,7 +72,8 @@ data Config = Config
 instance Configurable Config where
     conf = Config
       { stateDirectory = getUserDataDir $ "kibr" </> "state"
-      , stateServer    = do dir <- getEnv "XDG_RUNTIME_DIR"
+      , stateServer    = do xdg <- lookup "XDG_RUNTIME_DIR" <$> getEnvironment
+                            dir <- maybe (getUserCacheDir "kibr") return xdg
                             return ("127.0.0.1",UnixSocket (dir </> "kibr-state.socket"))
       , webServer      = conf
       , ircBots        = [conf {nick = "kibr", host = "chat.freenode.net",
