@@ -28,7 +28,7 @@ import Config.Dyre                   (Params(..), wrapMain, defaultParams)
 import Control.Category              ((.))
 import Control.Concurrent            (forkIO, killThread)
 import Control.Exception             (bracket, catch, throw)
-import Control.Monad                 (forM_, when)
+import Control.Monad                 (forM_, when, unless)
 import Control.Monad.Reader          (asks)
 import Data.Acid                     (AcidState, openLocalStateFrom, createCheckpoint)
 import Data.Acid.Remote              (acidServer, openRemoteState)
@@ -97,7 +97,7 @@ run (Serve services) = do
                  (const waitForTermination)
   where
     tryRemoveFile fp  = removeFile fp `catch` ignoreNotExists
-    ignoreNotExists e = if isDoesNotExistError e then return () else throw e
+    ignoreNotExists e = unless (isDoesNotExistError e) $ throw e
 
 run (Import traceLevel doc) = do
     dict <- io $ runX $ readDocument sys doc /> readDictionary
