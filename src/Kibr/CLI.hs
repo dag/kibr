@@ -76,9 +76,9 @@ instance Configurable Config where
                             dir <- maybe (getUserCacheDir "kibr") return xdg
                             return ("127.0.0.1",UnixSocket (dir </> "kibr-state.socket"))
       , webServer      = conf
-      , ircBots        = [conf {nick = "kibr", host = "chat.freenode.net",
-                                commandPrefix = "@", channels = Set.fromList ["#sampla"],
-                                user = conf {username = "kibr", realname = "Lojban IRC bot"}}]
+      , ircBots        = [conf{nick = "kibr", host = "chat.freenode.net",
+                               commandPrefix = "@", channels = Set.fromList ["#sampla"],
+                               user = conf{username = "kibr", realname = "Lojban IRC bot"}}]
       }
 
 

@@ -9,7 +9,7 @@
 -- >import Data.Configurable
 -- >import Happstack.Server
 -- >import Kibr.Run
--- >main = kibr conf {webServer = conf {port = 3000}}
+-- >main = kibr conf{webServer = conf{port = 3000}}
 --
 -- If you delete your configuration, you may need to wipe @~\/.cache\/kibr@
 -- as well.
@@ -72,7 +72,7 @@ main (Left msg) = hPutStr stderr msg >> exitFailure
 main (Right config@Config{..}) = do
     options@Options{..} <- execParser parser
     state <- openAcidState remote
-    runProgramT (run cmd) Runtime {config = config, options = options, state = state}
+    runProgramT (run cmd) Runtime{config = config, options = options, state = state}
   where
     parser = info (helper <*> parseOptions) fullDesc
     openAcidState True  = do (host,port) <- stateServer
