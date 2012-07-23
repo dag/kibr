@@ -57,7 +57,7 @@ import Text.XML.HXT.Expat            (withExpat)
 kibr :: Config -> IO ()
 kibr cfg = run $ Right cfg
   where
-    run = wrapMain $ defaultParams
+    run = wrapMain defaultParams
         { projectName = "kibr"
         , showError   = const Left
         , realMain    = main
