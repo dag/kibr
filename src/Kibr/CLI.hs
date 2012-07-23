@@ -28,14 +28,12 @@ module Kibr.CLI
     )
   where
 
-import Prelude hiding ((.))
 import Kibr.Data hiding (User)
 
 import qualified Data.HashMap.Lazy as HashMap
 import qualified Data.Set          as Set
 import qualified Happstack.Server  as Happstack
 
-import Control.Category               ((.))
 import Control.Monad.Reader           (MonadReader, ReaderT, runReaderT, asks)
 import Control.Monad.Trans            (MonadIO, liftIO)
 import Data.Acid                      (AcidState)
@@ -111,19 +109,19 @@ data Service = DICT | IRC | State | Web deriving (Eq, Bounded, Enum)
 
 parseOptions :: Parser Options
 parseOptions = Options
-    <$> switch (long "remote" . help "Connect to remote state service")
+    <$> switch (long "remote" & help "Connect to remote state service")
     <*> nullOption
           ( reader (`lookup` outputModes)
-          . long "output"
-          . metavar "MODE"
-          . value TTY
-          . help "Control how output is printed (tty|colored|plain|quiet)"
+          & long "output"
+          & metavar "MODE"
+          & value TTY
+          & help "Control how output is printed (tty|colored|plain|quiet)"
           )
     <*> subparser
           ( mkcmd "import"     parseImport     "Import words from an XML export"
-          . mkcmd "checkpoint" parseCheckpoint "Create a state checkpoint"
-          . mkcmd "serve"      parseServe      "Launch Internet services"
-          . mkcmd "lookup"     parseLookup     "Look up words"
+          & mkcmd "checkpoint" parseCheckpoint "Create a state checkpoint"
+          & mkcmd "serve"      parseServe      "Launch Internet services"
+          & mkcmd "lookup"     parseLookup     "Look up words"
           )
   where
     mkcmd name parser desc = command name $ info (helper <*> parser) $ progDesc desc
@@ -133,9 +131,9 @@ parseImport :: Parser Command
 parseImport = Import
     <$> option
           ( long "trace-level"
-          . metavar "0..4"
-          . value 0
-          . help "Set the tracing level for the XML parser"
+          & metavar "0..4"
+          & value 0
+          & help "Set the tracing level for the XML parser"
           )
     <*> argument str (metavar "FILE")
 
@@ -146,7 +144,7 @@ parseServe :: Parser Command
 parseServe = Serve
     <$> arguments (`lookup` services)
           ( metavar "dict|irc|state|web..."
-          . value [minBound..]
+          & value [minBound..]
           )
   where
     services = [("dict",DICT), ("irc",IRC), ("state",State), ("web",Web)]
@@ -155,9 +153,9 @@ parseLookup :: Parser Command
 parseLookup = Lookup
     <$> nullOption
           ( reader ((`HashMap.lookup` languageTags) . fromString)
-          . long "language"
-          . metavar "TAG"
-          . value (English UnitedStates)
+          & long "language"
+          & metavar "TAG"
+          & value (English UnitedStates)
           )
     <*> arguments (Just . fromString) (metavar "WORD...")
 
