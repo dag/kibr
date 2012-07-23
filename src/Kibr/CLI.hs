@@ -33,16 +33,16 @@ import Kibr.Data hiding (User)
 
 import qualified Data.HashMap.Lazy as HashMap
 import qualified Data.Set          as Set
+import qualified Happstack.Server  as Happstack
 
 import Control.Category               ((.))
 import Control.Monad.Reader           (MonadReader, ReaderT, runReaderT, asks)
 import Control.Monad.Trans            (MonadIO, liftIO)
 import Data.Acid                      (AcidState)
-import Data.Configurable              (Configurable(conf))
+import Data.Conf                      (Conf(conf))
 import Data.Has                       (Has(fetch))
 import Data.Maybe                     (fromMaybe)
 import Data.String                    (fromString)
-import Happstack.Server               (Conf)
 import Kibr.State
 import Network                        (HostName, PortID(..))
 import Network.IRC.Bot                (BotConf(..), User(..))
@@ -65,11 +65,11 @@ import System.Console.Terminfo        (getCapability, termColumns, setupTermFrom
 data Config = Config
     { stateDirectory :: IO FilePath           -- ^ Path to /acid-state/ log directory.
     , stateServer    :: IO (HostName,PortID)  -- ^ Location of remote /acid-state/ server.
-    , webServer      :: Conf                  -- ^ Configuration for the web server.
+    , webServer      :: Happstack.Conf        -- ^ Configuration for the web server.
     , ircBots        :: [BotConf]             -- ^ IRC bots to run.
     }
 
-instance Configurable Config where
+instance Conf Config where
     conf = Config
       { stateDirectory = getUserDataDir $ "kibr" </> "state"
       , stateServer    = do xdg <- lookup "XDG_RUNTIME_DIR" <$> getEnvironment
