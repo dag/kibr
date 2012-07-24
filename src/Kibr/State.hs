@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable, FlexibleContexts, MultiParamTypeClasses, Rank2Types, TemplateHaskell, TypeFamilies #-}
+{-# LANGUAGE DeriveDataTypeable, FlexibleContexts, MonadComprehensions, MultiParamTypeClasses, Rank2Types, TemplateHaskell, TypeFamilies #-}
 
 -- | Event definitions for /acid-state/.
 module Kibr.State
@@ -83,8 +83,7 @@ getOneL k = getting (IxSet.getOne . IxSet.getEQ k)
 lookupWordType :: Word -> Query AppState (Maybe WordType)
 lookupWordType word = do
     wd <- asks (^.wordData.wordL)
-    return $ do WordData _ (Revision wt _:_) _ <- wd
-                return wt
+    return [ t | WordData _ (Revision t _:_) _ <- wd ]
   where
     wordL = getOneL word
 
@@ -94,8 +93,7 @@ lookupWordDefinition :: Word -> Language
                      -> Query AppState (Maybe WordDefinition)
 lookupWordDefinition word language = do
     wd <- asks (^.wordData.wordL)
-    return $ do Revision def _:_ <- wd >>= (^.wordDefinition.langL)
-                return def
+    return [ d | Revision d _:_ <- wd >>= (^.wordDefinition.langL) ]
   where
     wordL = getOneL word
     langL = mapL language
