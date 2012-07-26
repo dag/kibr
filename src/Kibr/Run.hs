@@ -35,8 +35,9 @@ import Data.Acid.Remote              (acidServer, openRemoteState)
 import Data.Default                  (def)
 import Happstack.Server.SimpleHTTP   (waitForTermination)
 import Kibr.CLI
+import Kibr.Data
 import Kibr.State
-import Kibr.Text                     (ppWord)
+import Kibr.Text                     (ppWord, ppWords)
 import Kibr.XML                      (readDictionary)
 import Network                       (PortID(UnixSocket))
 import Options.Applicative           ((<*>), execParser, info, helper, fullDesc)
@@ -118,3 +119,7 @@ run (Lookup language words) =
       do Just typ <- query $ LookupWordType word
          Just def <- query $ LookupWordDefinition word language
          output $ linebreak <> ppWord word typ def
+
+run (Search language keywords) = do
+    words <- query $ SearchKeyWords (map (KeyWord language . DefinitionWord) keywords)
+    output $ ppWords words

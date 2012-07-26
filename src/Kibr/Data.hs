@@ -21,6 +21,8 @@ module Kibr.Data
     , WordType(..)
     , WordTranslations
     , WordDefinition(..)
+    , SearchWord(..)
+    , KeyWord(..)
     , Word(..)
     , WordData(WordData)
     , word
@@ -29,9 +31,11 @@ module Kibr.Data
     )
   where
 
+import qualified Data.Foldable     as F
 import qualified Data.HashMap.Lazy as HashMap
 import qualified Data.IxSet        as IxSet
 import qualified Data.Map          as Map
+import qualified Data.Text         as Text
 
 import Data.Hashable                 (Hashable)
 import Data.HashMap.Lazy             (HashMap)
@@ -127,6 +131,14 @@ data WordDefinition = WordDefinition Text (Maybe Text)
 instance IsString WordDefinition where
     fromString s = WordDefinition (fromString s) Nothing
 
+data SearchWord = DefinitionWord Text
+                | NotesWord Text
+                | DefinitionStem Text
+                | NotesStem Text
+                deriving (Eq, Ord, Typeable)
+
+data KeyWord = KeyWord Language SearchWord deriving (Eq, Ord, Typeable)
+
 newtype Word = Word Text deriving (Eq, Ord, Typeable, IsString, SafeCopy, ShowQ)
 
 instance Show Word where show (Word w) = show w
@@ -143,7 +155,17 @@ instance Show WordData where
     show (WordData w wt wd) = [qq|WordData $w $wt ($wd)|]
 
 instance Indexable WordData where
-    empty = ixSet [ixFun $ \WordData{..} -> [word]]
+    empty = ixSet [ ixFun $ \WordData{..} -> [word]
+                  , ixFun keyWord
+                  ]
+      where
+        keyWord WordData{_wordDefinition = wd} =
+            [ KeyWord language word
+              | (language,Revision (WordDefinition d n) _:_) <- Map.toList wd
+              , word <-
+                  map DefinitionWord (Text.words d)
+               ++ map NotesWord (F.concat $ fmap Text.words n)
+            ]
 
 
 -- * SafeCopy derivations
@@ -157,4 +179,6 @@ deriveSafeCopy 0 'base ''ParticleClass
 deriveSafeCopy 0 'base ''RootWordStatus
 deriveSafeCopy 0 'base ''WordType
 deriveSafeCopy 0 'base ''WordDefinition
+deriveSafeCopy 0 'base ''SearchWord
+deriveSafeCopy 0 'base ''KeyWord
 deriveSafeCopy 0 'base ''WordData

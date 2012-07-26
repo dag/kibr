@@ -5,6 +5,7 @@ module Kibr.Text
     ( -- * Console pretty-printing
       PrettyPrint(..)
     , ppWord
+    , ppWords
     )
   where
 
@@ -53,3 +54,6 @@ instance PrettyPrint WordDefinition where
 -- | Format a complete set of data for a 'Word'.
 ppWord :: Word -> WordType -> WordDefinition -> Doc
 ppWord word typ def = bold (pp word) <+> pp typ <$$> indent 4 (pp def)
+
+ppWords :: Set.Set Word -> Doc
+ppWords ws = vsep $ map (dquotes . pp) $ Set.toList ws

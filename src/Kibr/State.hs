@@ -11,6 +11,7 @@ module Kibr.State
       -- * Event Definitions
       -- | These are exported for documentation purposes, but it's really
       -- the Event Methods ("Kibr.State#methods") that you use with /acid-state/.
+    , searchKeyWords
     , lookupWordType
     , lookupWordDefinition
     , saveWordType
@@ -20,6 +21,7 @@ module Kibr.State
     , importWords
       -- ** Event Methods
       -- | #methods#
+    , SearchKeyWords(..)
     , LookupWordType(..)
     , LookupWordDefinition(..)
     , SaveWordType(..)
@@ -33,6 +35,7 @@ module Kibr.State
 import qualified Data.Foldable as F
 import qualified Data.IxSet    as IxSet
 import qualified Data.Map      as Map
+import qualified Data.Set      as Set
 
 import Control.Monad        (void, forM_)
 import Control.Monad.Reader (asks)
@@ -42,8 +45,9 @@ import Data.Acid            (AcidState, Update, Query, QueryEvent, UpdateEvent, 
 import Data.Acid.Advanced   (MethodState, query', update')
 import Data.Default         (Default(def))
 import Data.Has             (Has(fetch))
-import Data.IxSet           (IxSet, Indexable)
+import Data.IxSet           (IxSet, Indexable, (@=))
 import Data.SafeCopy        (deriveSafeCopy, base)
+import Data.Set             (Set)
 import Data.Typeable        (Typeable)
 import Kibr.Data
 import Lens.Family2         (GetterFamily, getting, (^%=), (^.))
@@ -78,6 +82,12 @@ update_ = void . update
 getOneL :: (Ord a, Typeable k, Typeable a, Indexable a)
         => k -> GetterFamily (IxSet a) a' (Maybe a) b'
 getOneL k = getting (IxSet.getOne . IxSet.getEQ k)
+
+searchKeyWords :: [KeyWord] -> Query AppState (Set Word)
+searchKeyWords ks = do
+    ix <- asks (^.wordData)
+    let matches = foldr (IxSet.intersection . (ix @=)) ix ks
+    return $ Set.map word $ IxSet.toSet matches
 
 -- | Look up the most current 'WordType' stored for a 'Word'.
 lookupWordType :: Word -> Query AppState (Maybe WordType)
@@ -146,7 +156,8 @@ importWords dict =
            saveWordDefinition word language (Revision wordDefinition SystemUser)
 
 deriveSafeCopy 0 'base ''AppState
-makeAcidic ''AppState [ 'lookupWordType
+makeAcidic ''AppState [ 'searchKeyWords
+                      , 'lookupWordType
                       , 'lookupWordDefinition
                       , 'saveWordType
                       , 'saveWordDefinition

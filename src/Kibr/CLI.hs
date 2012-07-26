@@ -41,6 +41,7 @@ import Data.Conf                      (Conf(conf))
 import Data.Has                       (Has(fetch))
 import Data.Maybe                     (fromMaybe)
 import Data.String                    (fromString)
+import Data.Text                      (Text)
 import Kibr.State
 import Network                        (HostName, PortID(..))
 import Network.IRC.Bot                (BotConf(..), User(..))
@@ -96,6 +97,7 @@ data Command = Import TraceLevel FilePath
              | Checkpoint
              | Serve [Service]
              | Lookup Language [Word]
+             | Search Language [Text]
 
 -- | The level of debug output to print from the XML parser.
 type TraceLevel = Int
@@ -122,6 +124,7 @@ parseOptions = Options
           & mkcmd "checkpoint" parseCheckpoint "Create a state checkpoint"
           & mkcmd "serve"      parseServe      "Launch Internet services"
           & mkcmd "lookup"     parseLookup     "Look up words"
+          & mkcmd "search"     parseSearch     "Search words in definitions"
           )
   where
     mkcmd name parser desc = command name $ info (helper <*> parser) $ progDesc desc
@@ -159,6 +162,15 @@ parseLookup = Lookup
           )
     <*> arguments (Just . fromString) (metavar "WORD...")
 
+parseSearch :: Parser Command
+parseSearch = Search
+    <$> nullOption
+          ( reader ((`HashMap.lookup` languageTags) . fromString)
+          & long "language"
+          & metavar "TAG"
+          & value (English UnitedStates)
+          )
+    <*> arguments (Just . fromString) (metavar "KEYWORD...")
 
 -- * Printing output
 -- ***************************************************************************
