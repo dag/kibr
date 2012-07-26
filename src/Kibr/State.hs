@@ -1,4 +1,5 @@
-{-# LANGUAGE DeriveDataTypeable, FlexibleContexts, MonadComprehensions, MultiParamTypeClasses, Rank2Types, TemplateHaskell, TypeFamilies #-}
+{-# LANGUAGE DeriveDataTypeable, FlexibleContexts, MonadComprehensions, TemplateHaskell, TypeFamilies #-}
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
 -- | Event definitions for /acid-state/.
 module Kibr.State
@@ -37,6 +38,8 @@ import qualified Data.IxSet    as IxSet
 import qualified Data.Map      as Map
 import qualified Data.Set      as Set
 
+import Control.Lens         (Getter, (^.), (=%=), (%=), to, valueAt)
+import Control.Lens.TH      (makeLenses)
 import Control.Monad        (void, forM_)
 import Control.Monad.Reader (asks)
 import Control.Monad.State  (gets)
@@ -50,16 +53,12 @@ import Data.SafeCopy        (deriveSafeCopy, base)
 import Data.Set             (Set)
 import Data.Typeable        (Typeable)
 import Kibr.Data
-import Lens.Family2         (GetterFamily, getting, (^%=), (^.))
-import Lens.Family2.State   ((%=))
-import Lens.Family2.Stock   (mapL)
-import Lens.Family2.TH      (mkLenses)
 
 data AppState = AppState
     { _wordData :: IxSet WordData
     }
 
-mkLenses ''AppState
+makeLenses ''AppState
 
 instance Default AppState where def = AppState IxSet.empty
 
@@ -79,9 +78,9 @@ update_ :: (UpdateEvent e, Functor m, MonadIO m, Has (AcidState (MethodState e))
         => e -> m ()
 update_ = void . update
 
-getOneL :: (Ord a, Typeable k, Typeable a, Indexable a)
-        => k -> GetterFamily (IxSet a) a' (Maybe a) b'
-getOneL k = getting (IxSet.getOne . IxSet.getEQ k)
+valueAtIx :: (Ord a, Typeable k, Typeable a, Indexable a)
+        => k -> Getter (IxSet a) b (Maybe a) d
+valueAtIx k = to (IxSet.getOne . IxSet.getEQ k)
 
 searchKeyWords :: [KeyWord] -> Query AppState (Set Word)
 searchKeyWords ks = do
@@ -92,27 +91,21 @@ searchKeyWords ks = do
 -- | Look up the most current 'WordType' stored for a 'Word'.
 lookupWordType :: Word -> Query AppState (Maybe WordType)
 lookupWordType word = do
-    wd <- asks (^.wordData.wordL)
+    wd <- asks (^.wordData.valueAtIx word)
     return [ t | WordData _ (Revision t _:_) _ <- wd ]
-  where
-    wordL = getOneL word
 
 -- | Look up the most current 'WordDefinition' stored for a 'Word' in
 -- a 'Language'.
 lookupWordDefinition :: Word -> Language
                      -> Query AppState (Maybe WordDefinition)
 lookupWordDefinition word language = do
-    wd <- asks (^.wordData.wordL)
-    return [ d | Revision d _:_ <- wd >>= (^.wordDefinition.langL) ]
-  where
-    wordL = getOneL word
-    langL = mapL language
+    wd <- asks (^.wordData.valueAtIx word)
+    return [ d | Revision d _:_ <- wd >>= (^.wordDefinition.valueAt language) ]
 
 modifyWordData :: Word -> (WordData -> WordData) -> Update AppState ()
 modifyWordData word modify =
-    gets (^.wordData.wordL) >>= maybe (create >> update new) update
+    gets (^.wordData.valueAtIx word) >>= maybe (create >> update new) update
   where
-    wordL = getOneL word
     create = wordData %= IxSet.insert new
     new = WordData word def def
     update wd = void $ wordData %= IxSet.updateIx word (modify wd)
@@ -120,32 +113,27 @@ modifyWordData word modify =
 -- | Save a revised 'WordType' for a 'Word'.
 saveWordType :: Word -> Revision WordType -> Update AppState ()
 saveWordType word revision =
-    modifyWordData word $ wordType ^%= (revision:)
+    modifyWordData word $ wordType =%= (revision:)
 
 -- | Save a revised 'WordDefinition' for a 'Word' in a 'Language'.
 saveWordDefinition :: Word -> Language -> Revision WordDefinition
                    -> Update AppState ()
 saveWordDefinition word language revision =
     modifyWordData word $
-      wordDefinition ^%= Map.insertWith (++) language [revision]
+      wordDefinition =%= Map.insertWith (++) language [revision]
 
 -- | List all 'WordType' revisions for a 'Word'.
 listWordTypes :: Word -> Query AppState (History WordType)
 listWordTypes word = do
-    wd <- asks (^.wordData.wordL)
+    wd <- asks (^.wordData.valueAtIx word)
     return $ F.concat $ fmap (^.wordType) wd
-  where
-    wordL = getOneL word
 
 -- | List all 'WordDefinition' revisions for a 'Word' in a 'Language'.
 listWordDefinitions :: Word -> Language
                     -> Query AppState (History WordDefinition)
 listWordDefinitions word language = do
-    wd <- asks (^.wordData.wordL)
-    return $ F.concat $ wd >>= (^.wordDefinition.langL)
-  where
-    wordL = getOneL word
-    langL = mapL language
+    wd <- asks (^.wordData.valueAtIx word)
+    return $ F.concat $ wd >>= (^.wordDefinition.valueAt language)
 
 -- | Import the data parsed from an XML export in one go.
 importWords :: [(Language,[(Word,WordType,WordDefinition)])] -> Update AppState ()

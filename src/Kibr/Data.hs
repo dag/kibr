@@ -1,4 +1,5 @@
-{-# LANGUAGE DeriveDataTypeable, FlexibleInstances, FunctionalDependencies, GeneralizedNewtypeDeriving, MultiParamTypeClasses, OverloadedStrings, QuasiQuotes, RecordWildCards, TemplateHaskell #-}
+{-# LANGUAGE DeriveDataTypeable, GeneralizedNewtypeDeriving, OverloadedStrings, QuasiQuotes, RecordWildCards, TemplateHaskell #-}
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
 -- | Application data model.
 module Kibr.Data
@@ -37,6 +38,7 @@ import qualified Data.IxSet        as IxSet
 import qualified Data.Map          as Map
 import qualified Data.Text         as Text
 
+import Control.Lens.TH               (makeLenses)
 import Data.Hashable                 (Hashable)
 import Data.HashMap.Lazy             (HashMap)
 import Data.IxSet                    (Indexable, ixSet, ixFun)
@@ -46,7 +48,6 @@ import Data.Set                      (Set)
 import Data.String                   (IsString(fromString))
 import Data.Text                     (Text)
 import Data.Typeable                 (Typeable)
-import Lens.Family2.TH               (mkLenses)
 import Text.InterpolatedString.Perl6 (ShowQ, qq)
 
 
@@ -149,7 +150,7 @@ data WordData = WordData
     , _wordDefinition :: WordTranslations
     } deriving (Eq, Ord, Typeable)
 
-mkLenses ''WordData
+makeLenses ''WordData
 
 instance Show WordData where
     show (WordData w wt wd) = [qq|WordData $w $wt ($wd)|]
