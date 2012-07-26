@@ -82,7 +82,7 @@ languages = Map.fromList
 
 -- | The inverse of 'languages'.
 languageTags :: HashMap LanguageTag Language
-languageTags = HashMap.fromList [(v,k) | (k,v) <- Map.toList languages]
+languageTags = HashMap.fromList [ (v,k) | (k,v) <- Map.toList languages ]
 
 
 -- * Revision Histories
