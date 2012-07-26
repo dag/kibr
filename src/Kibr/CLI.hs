@@ -87,6 +87,7 @@ instance Conf Config where
 -- | Command-line options.
 data Options = Options
     { remote     :: Bool
+    , language   :: Language
     , outputMode :: OutputMode
     , cmd        :: Command
     }
@@ -96,8 +97,8 @@ data Options = Options
 data Command = Import TraceLevel FilePath
              | Checkpoint
              | Serve [Service]
-             | Lookup Language [Word]
-             | Search Language [Text]
+             | Lookup [Word]
+             | Search [Text]
 
 -- | The level of debug output to print from the XML parser.
 type TraceLevel = Int
@@ -112,6 +113,13 @@ data Service = DICT | IRC | State | Web deriving (Eq, Bounded, Enum)
 parseOptions :: Parser Options
 parseOptions = Options
     <$> switch (long "remote" & help "Connect to remote state service")
+    <*> nullOption
+          ( reader ((`HashMap.lookup` languageTags) . fromString)
+          & long "language"
+          & metavar "TAG"
+          & value (English UnitedStates)
+          & help "Select language of dictionary"
+          )
     <*> nullOption
           ( reader (`lookup` outputModes)
           & long "output"
@@ -153,24 +161,10 @@ parseServe = Serve
     services = [("dict",DICT), ("irc",IRC), ("state",State), ("web",Web)]
 
 parseLookup :: Parser Command
-parseLookup = Lookup
-    <$> nullOption
-          ( reader ((`HashMap.lookup` languageTags) . fromString)
-          & long "language"
-          & metavar "TAG"
-          & value (English UnitedStates)
-          )
-    <*> arguments (Just . fromString) (metavar "WORD...")
+parseLookup = Lookup <$> arguments (Just . fromString) (metavar "WORD...")
 
 parseSearch :: Parser Command
-parseSearch = Search
-    <$> nullOption
-          ( reader ((`HashMap.lookup` languageTags) . fromString)
-          & long "language"
-          & metavar "TAG"
-          & value (English UnitedStates)
-          )
-    <*> arguments (Just . fromString) (metavar "KEYWORD...")
+parseSearch = Search <$> arguments (Just . fromString) (metavar "KEYWORD...")
 
 -- * Printing output
 -- ***************************************************************************

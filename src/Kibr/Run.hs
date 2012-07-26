@@ -114,12 +114,14 @@ run (Import traceLevel doc) = do
 
 run Checkpoint = io . createCheckpoint =<< asks state
 
-run (Lookup language words) =
+run (Lookup words) = do
+    language <- asks (language . options)
     forM_ words $ \word ->
       do Just typ <- query $ LookupWordType word
          Just def <- query $ LookupWordDefinition word language
          output $ linebreak <> ppWord word typ def
 
-run (Search language keywords) = do
+run (Search keywords) = do
+    language <- asks (language . options)
     words <- query $ SearchKeyWords (map (KeyWord language . DefinitionWord) keywords)
     output $ ppWords words
