@@ -16,9 +16,14 @@
 
 module Kibr.Run
     ( kibr
-    , run
     , CompilationError
     , main
+    , program
+    , runServe
+    , runImport
+    , runCheckpoint
+    , runLookup
+    , runSearch
     )
   where
 
@@ -33,6 +38,7 @@ import Control.Monad.Reader          (asks)
 import Data.Acid                     (AcidState, openLocalStateFrom, createCheckpoint)
 import Data.Acid.Remote              (acidServer, openRemoteState)
 import Data.Default                  (def)
+import Data.Text                     (Text)
 import Happstack.Server.SimpleHTTP   (waitForTermination)
 import Kibr.CLI
 import Kibr.Data
@@ -73,7 +79,7 @@ main (Left msg) = hPutStr stderr msg >> exitFailure
 main (Right config@Config{..}) = do
     options@Options{..} <- execParser parser
     state <- openAcidState remote
-    runProgramT (run cmd) Runtime{config = config, options = options, state = state}
+    runProgramT program Runtime{config = config, options = options, state = state}
   where
     parser = info (helper <*> parseOptions) fullDesc
     openAcidState True  = do (host,port) <- stateServer
@@ -82,9 +88,18 @@ main (Right config@Config{..}) = do
                              openLocalStateFrom dir def
 
 -- | Dispatches the commands.
-run :: Command -> Program
+program :: Program
+program = do
+    cmd <- asks (cmd . options)
+    case cmd of
+      Serve services        -> runServe services
+      Import traceLevel doc -> runImport traceLevel doc
+      Checkpoint            -> runCheckpoint
+      Lookup words          -> runLookup words
+      Search keywords       -> runSearch keywords
 
-run (Serve services) = do
+runServe :: [Service] -> Program
+runServe services = do
     state <- asks state
     Config{..} <- asks config
     when (State `elem` services) $ io $
@@ -100,7 +115,8 @@ run (Serve services) = do
     tryRemoveFile fp  = removeFile fp `catch` ignoreNotExists
     ignoreNotExists e = unless (isDoesNotExistError e) $ throw e
 
-run (Import traceLevel doc) = do
+runImport :: TraceLevel -> FilePath -> Program
+runImport traceLevel doc = do
     dict <- io $ runX $ readDocument sys doc /> readDictionary
     output "Importing..."
     update_ $ ImportWords dict
@@ -112,16 +128,19 @@ run (Import traceLevel doc) = do
             ++ [withExpat True]
 #endif
 
-run Checkpoint = io . createCheckpoint =<< asks state
+runCheckpoint :: Program
+runCheckpoint = io . createCheckpoint =<< asks state
 
-run (Lookup words) = do
+runLookup :: [Word] -> Program
+runLookup words = do
     language <- asks (language . options)
     forM_ words $ \word ->
       do Just typ <- query $ LookupWordType word
          Just def <- query $ LookupWordDefinition word language
          output $ linebreak <> ppWord word typ def
 
-run (Search keywords) = do
+runSearch :: [Text] -> Program
+runSearch keywords = do
     language <- asks (language . options)
     words <- query $ SearchKeyWords (map (KeyWord language . DefinitionWord) keywords)
     output $ ppWords words
