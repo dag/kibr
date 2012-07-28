@@ -4,6 +4,9 @@
 module Kibr.CLI
     ( -- * Configuration
       Config(..)
+    , baseConfig
+    , botConfig
+    , getRuntimeDir
       -- * Command-line options
     , Options(..)
     , Command(..)
@@ -40,7 +43,6 @@ import Kibr.Data hiding (User)
 
 import qualified Data.HashMap.Lazy as HashMap
 import qualified Data.Set          as Set
-import qualified Happstack.Server  as Happstack
 
 import Control.Concurrent             (forkIO, killThread)
 import Control.Exception              (bracket, catch, throw)
@@ -49,19 +51,19 @@ import Control.Monad.Reader           (MonadReader, ReaderT, runReaderT, asks)
 import Control.Monad.Trans            (MonadIO, liftIO)
 import Data.Acid                      (AcidState, createCheckpoint)
 import Data.Acid.Remote               (acidServer)
-import Data.Conf                      (Conf(conf))
 import Data.Has                       (Has(fetch))
 import Data.Maybe                     (fromMaybe)
 import Data.String                    (fromString)
 import Data.Text                      (Text)
+import Happstack.Server               (Conf, nullConf)
 import Happstack.Server.SimpleHTTP    (waitForTermination)
 import Kibr.State
 import Kibr.Text                      (ppWord, ppWords)
 import Kibr.XML                       (readDictionary)
 import Network                        (HostName, PortID(..))
-import Network.IRC.Bot                (BotConf(..), User(..))
+import Network.IRC.Bot                (BotConf(..), User(..), nullBotConf, nullUser)
 import Options.Applicative
-import System.Directory               (removeFile)
+import System.Directory               (createDirectoryIfMissing, removeFile)
 import System.Environment             (getEnvironment)
 import System.Environment.XDG.BaseDir (getUserDataDir, getUserCacheDir)
 import System.FilePath                ((</>))
@@ -85,21 +87,38 @@ import Text.XML.HXT.Expat             (withExpat)
 data Config = Config
     { stateDirectory :: IO FilePath           -- ^ Path to /acid-state/ log directory.
     , stateServer    :: IO (HostName,PortID)  -- ^ Location of remote /acid-state/ server.
-    , webServer      :: Happstack.Conf        -- ^ Configuration for the web server.
+    , webServer      :: Conf                  -- ^ Configuration for the web server.
     , ircBots        :: [BotConf]             -- ^ IRC bots to run.
     }
 
-instance Conf Config where
-    conf = Config
-      { stateDirectory = getUserDataDir $ "kibr" </> "state"
-      , stateServer    = do xdg <- lookup "XDG_RUNTIME_DIR" <$> getEnvironment
-                            dir <- maybe (getUserCacheDir "kibr") return xdg
-                            return ("127.0.0.1",UnixSocket (dir </> "kibr-state.socket"))
-      , webServer      = conf
-      , ircBots        = [conf{nick = "kibr", host = "chat.freenode.net",
-                               commandPrefix = "@", channels = Set.fromList ["#sampla"],
-                               user = conf{username = "kibr", realname = "Lojban IRC bot"}}]
-      }
+-- | Default configuration.
+baseConfig :: Config
+baseConfig = Config
+    { stateDirectory = getUserDataDir $ "kibr" </> "state"
+    , stateServer    = state
+    , webServer      = nullConf
+    , ircBots        = [botConfig]
+    }
+  where
+    state = do dir <- getRuntimeDir "kibr"
+               createDirectoryIfMissing True dir
+               return ("127.0.0.1",UnixSocket (dir </> "state"))
+
+-- | Default bot.
+botConfig :: BotConf
+botConfig = nullBotConf
+    { nick = "kibr"
+    , host = "chat.freenode.net"
+    , commandPrefix = "@"
+    , channels = Set.fromList ["#sampla"]
+    , user = nullUser{username = "kibr", realname = "Lojban IRC bot"}
+    }
+
+-- | Get the directory for runtime files such as sockets.
+getRuntimeDir :: FilePath -> IO FilePath
+getRuntimeDir dir = do
+    xdg <- lookup "XDG_RUNTIME_DIR" <$> getEnvironment
+    maybe (getUserCacheDir dir) (return . (</> dir)) xdg
 
 
 -- * Command-line options

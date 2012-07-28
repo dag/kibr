@@ -1,7 +1,7 @@
 module Main (main) where
 
-import Data.Conf (conf)
-import Kibr.Run  (kibr)
+import Kibr.Run (kibr)
+import Kibr.CLI (baseConfig)
 
 main :: IO ()
-main = kibr conf
+main = kibr baseConfig

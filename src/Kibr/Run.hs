@@ -6,10 +6,10 @@
 -- For example, to configure @kibr@ to run the web application on port
 -- 3000, write the following to the file @~\/.config\/kibr\/kibr.hs@:
 --
--- >import Data.Conf
 -- >import Happstack.Server
+-- >import Kibr.CLI
 -- >import Kibr.Run
--- >main = kibr conf{webServer = conf{port = 3000}}
+-- >main = kibr baseConfig{webServer = nullConf{port = 3000}}
 --
 -- If you delete your configuration, you may need to wipe @~\/.cache\/kibr@
 -- as well.
