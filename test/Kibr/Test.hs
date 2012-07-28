@@ -20,7 +20,7 @@ import Text.XML.HXT.Core
 
 import Test.Framework                       (Test)
 import Test.Framework.Providers.HUnit       (testCase)
-import Test.Framework.Providers.QuickCheck2 (testProperty)
+import Test.Framework.Providers.QuickCheck2 ()  -- (testProperty)
 import Test.Framework.TH                    (testGroupGenerator)
 import Test.QuickCheck.Instances            ()
 
