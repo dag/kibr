@@ -51,6 +51,7 @@ library
                      Kibr.Text
                      Kibr.Web
                      Kibr.XML
+                     Control.Lens.TH.Extra
                      Data.Conf
                      Data.Has
                      Text.XML.HXT.HSX
@@ -77,6 +78,7 @@ library
                      network,
                      optparse-applicative      >= 0.1,
                      safecopy,
+                     template-haskell,
                      text,
                      unordered-containers,
                      xdg-basedir

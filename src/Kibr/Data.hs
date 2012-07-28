@@ -25,7 +25,8 @@ module Kibr.Data
     , SearchWord(..)
     , KeyWord(..)
     , Word(..)
-    , WordData(WordData)
+    , WordData(..)
+      -- ** Lenses
     , word
     , wordType
     , wordDefinition
@@ -38,7 +39,7 @@ import qualified Data.IxSet        as IxSet
 import qualified Data.Map          as Map
 import qualified Data.Text         as Text
 
-import Control.Lens.TH               (makeLenses)
+import Control.Lens.TH.Extra         (makeLenses)
 import Data.Hashable                 (Hashable)
 import Data.HashMap.Lazy             (HashMap)
 import Data.IxSet                    (Indexable, ixSet, ixFun)
@@ -145,28 +146,32 @@ newtype Word = Word Text deriving (Eq, Ord, Typeable, IsString, SafeCopy, ShowQ)
 instance Show Word where show (Word w) = show w
 
 data WordData = WordData
-    { word            :: Word
-    , _wordType       :: History WordType
-    , _wordDefinition :: WordTranslations
+    { word'           :: Word
+    , wordType'       :: History WordType
+    , wordDefinition' :: WordTranslations
     } deriving (Eq, Ord, Typeable)
-
-makeLenses ''WordData
 
 instance Show WordData where
     show (WordData w wt wd) = [qq|WordData $w $wt ($wd)|]
 
 instance Indexable WordData where
-    empty = ixSet [ ixFun $ \WordData{..} -> [word]
+    empty = ixSet [ ixFun $ \WordData{..} -> [word']
                   , ixFun keyWord
                   ]
       where
-        keyWord WordData{_wordDefinition = wd} =
+        keyWord WordData{wordDefinition' = wd} =
             [ KeyWord language word
               | (language,Revision (WordDefinition d n) _:_) <- Map.toList wd
               , word <-
                   map DefinitionWord (Text.words d)
                ++ map NotesWord (F.concat $ fmap Text.words n)
             ]
+
+
+-- * Lenses
+-- ***************************************************************************
+
+makeLenses ''WordData
 
 
 -- * SafeCopy derivations

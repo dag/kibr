@@ -4,7 +4,10 @@
 -- | Event definitions for /acid-state/.
 module Kibr.State
     ( -- * Application State Container
-      AppState(AppState)
+      AppState(..)
+      -- ** Lenses
+    , wordData
+    , valueAtIx
       -- * Environments with state
     , query
     , update
@@ -38,27 +41,31 @@ import qualified Data.IxSet    as IxSet
 import qualified Data.Map      as Map
 import qualified Data.Set      as Set
 
-import Control.Lens         (Getter, (^.), (=%=), (%=), to, valueAt)
-import Control.Lens.TH      (makeLenses)
-import Control.Monad        (void, forM_)
-import Control.Monad.Reader (asks)
-import Control.Monad.State  (gets)
-import Control.Monad.Trans  (MonadIO)
-import Data.Acid            (AcidState, Update, Query, QueryEvent, UpdateEvent, EventResult, makeAcidic)
-import Data.Acid.Advanced   (MethodState, query', update')
-import Data.Default         (Default(def))
-import Data.Has             (Has(fetch))
-import Data.IxSet           (IxSet, Indexable, (@=))
-import Data.SafeCopy        (deriveSafeCopy, base)
-import Data.Set             (Set)
-import Data.Typeable        (Typeable)
+import Control.Lens          (Getter, (^.), (=%=), (%=), to, valueAt)
+import Control.Lens.TH.Extra (makeLenses)
+import Control.Monad         (void, forM_)
+import Control.Monad.Reader  (asks)
+import Control.Monad.State   (gets)
+import Control.Monad.Trans   (MonadIO)
+import Data.Acid             (AcidState, Update, Query, QueryEvent, UpdateEvent, EventResult, makeAcidic)
+import Data.Acid.Advanced    (MethodState, query', update')
+import Data.Default          (Default(def))
+import Data.Has              (Has(fetch))
+import Data.IxSet            (IxSet, Indexable, (@=))
+import Data.SafeCopy         (deriveSafeCopy, base)
+import Data.Set              (Set)
+import Data.Typeable         (Typeable)
 import Kibr.Data
 
 data AppState = AppState
-    { _wordData :: IxSet WordData
+    { wordData' :: IxSet WordData
     }
 
 makeLenses ''AppState
+
+valueAtIx :: (Ord a, Typeable k, Typeable a, Indexable a)
+        => k -> Getter (IxSet a) b (Maybe a) d
+valueAtIx k = to (IxSet.getOne . IxSet.getEQ k)
 
 instance Default AppState where def = AppState IxSet.empty
 
@@ -78,15 +85,11 @@ update_ :: (UpdateEvent e, Functor m, MonadIO m, Has (AcidState (MethodState e))
         => e -> m ()
 update_ = void . update
 
-valueAtIx :: (Ord a, Typeable k, Typeable a, Indexable a)
-        => k -> Getter (IxSet a) b (Maybe a) d
-valueAtIx k = to (IxSet.getOne . IxSet.getEQ k)
-
 searchKeyWords :: [KeyWord] -> Query AppState (Set Word)
 searchKeyWords ks = do
     ix <- asks (^.wordData)
     let matches = foldr (IxSet.intersection . (ix @=)) ix ks
-    return $ Set.map word $ IxSet.toSet matches
+    return $ Set.map word' $ IxSet.toSet matches
 
 -- | Look up the most current 'WordType' stored for a 'Word'.
 lookupWordType :: Word -> Query AppState (Maybe WordType)
