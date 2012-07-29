@@ -41,7 +41,7 @@ import qualified Data.IxSet    as IxSet
 import qualified Data.Map      as Map
 import qualified Data.Set      as Set
 
-import Control.Lens          (Getter, (^.), (=%=), (%=), to, valueAt)
+import Control.Lens          (Getter, (^.), (%~), (%=), to, valueAt)
 import Control.Lens.TH.Extra (makeLenses)
 import Control.Monad         (void, forM_)
 import Control.Monad.Reader  (asks)
@@ -116,14 +116,14 @@ modifyWordData word modify =
 -- | Save a revised 'WordType' for a 'Word'.
 saveWordType :: Word -> Revision WordType -> Update AppState ()
 saveWordType word revision =
-    modifyWordData word $ wordType =%= (revision:)
+    modifyWordData word $ wordType %~ (revision:)
 
 -- | Save a revised 'WordDefinition' for a 'Word' in a 'Language'.
 saveWordDefinition :: Word -> Language -> Revision WordDefinition
                    -> Update AppState ()
 saveWordDefinition word language revision =
     modifyWordData word $
-      wordDefinition =%= Map.insertWith (++) language [revision]
+      wordDefinition %~ Map.insertWith (++) language [revision]
 
 -- | List all 'WordType' revisions for a 'Word'.
 listWordTypes :: Word -> Query AppState (History WordType)
