@@ -75,7 +75,7 @@ library
                      lens                      >= 1.0,
                      mtl                       == 2.*,
                      network,
-                     optparse-applicative      >= 0.1,
+                     optparse-applicative      == 0.1.*,
                      safecopy,
                      template-haskell,
                      text,
