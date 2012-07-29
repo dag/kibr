@@ -9,3 +9,12 @@ install:
 	  --enable-library-profiling \
 	  --enable-tests \
 	  --haddock-hyperlink-source
+
+.PHONY: doc
+doc:
+	cabal haddock
+	xdg-open dist/doc/html/kibr/index.html
+
+.PHONY: test
+test:
+	cabal test --show-details=always --test-option=--color
