@@ -13,6 +13,10 @@ module Kibr.CLI
     , TraceLevel
     , Service(..)
       -- ** Applicative option parsers
+    , enumValues
+    , enumOption
+    , enumArguments
+    , valueAll
     , parseOptions
     , parseImport
     , parseCheckpoint
@@ -51,6 +55,7 @@ import Control.Monad.Reader           (MonadReader, ReaderT, runReaderT, asks)
 import Control.Monad.Trans            (MonadIO, liftIO)
 import Data.Acid                      (AcidState, createCheckpoint)
 import Data.Acid.Remote               (acidServer)
+import Data.Char                      (toLower)
 import Data.Has                       (Has(fetch))
 import Data.Maybe                     (fromMaybe)
 import Data.String                    (fromString)
@@ -144,11 +149,23 @@ data Command = Import TraceLevel FilePath
 type TraceLevel = Int
 
 -- | Services that can be launched with @kibr serve@.
-data Service = DICT | IRC | State | Web deriving (Eq, Bounded, Enum)
+data Service = DICT | IRC | State | Web deriving (Eq, Bounded, Enum, Show)
 
 
 -- * Applicative option parsers
 -- ***************************************************************************
+
+enumValues :: (Bounded a, Enum a, Show a) => [(String,a)]
+enumValues = map ((,) =<< map toLower . show) [minBound..]
+
+enumOption :: (Bounded a, Enum a, Show a) => Mod OptionFields a a b -> Parser b
+enumOption mod = nullOption (reader (`lookup` enumValues) & mod)
+
+enumArguments :: (Bounded a, Enum a, Show a) => Mod OptionFields a [a] b -> Parser b
+enumArguments = arguments (`lookup` enumValues)
+
+valueAll :: (Bounded a, Enum a) => Mod f a [a] [a]
+valueAll = value [minBound..]
 
 parseOptions :: Parser Options
 parseOptions = Options
@@ -160,9 +177,8 @@ parseOptions = Options
           & value (English UnitedStates)
           & help "Select language of dictionary"
           )
-    <*> nullOption
-          ( reader (`lookup` outputModes)
-          & long "output"
+    <*> enumOption
+          ( long "output"
           & metavar "MODE"
           & value TTY
           & help "Control how output is printed (tty|colored|plain|quiet)"
@@ -176,7 +192,6 @@ parseOptions = Options
           )
   where
     mkcmd name parser desc = command name $ info (helper <*> parser) $ progDesc desc
-    outputModes = [("tty",TTY), ("colored",Colored), ("plain",Plain), ("quiet",Quiet)]
 
 parseImport :: Parser Command
 parseImport = Import
@@ -192,13 +207,7 @@ parseCheckpoint :: Parser Command
 parseCheckpoint = pure Checkpoint
 
 parseServe :: Parser Command
-parseServe = Serve
-    <$> arguments (`lookup` services)
-          ( metavar "dict|irc|state|web..."
-          & value [minBound..]
-          )
-  where
-    services = [("dict",DICT), ("irc",IRC), ("state",State), ("web",Web)]
+parseServe = Serve <$> enumArguments (valueAll & metavar "dict|irc|state|web...")
 
 parseLookup :: Parser Command
 parseLookup = Lookup <$> arguments (Just . fromString) (metavar "WORD...")
@@ -214,6 +223,7 @@ data OutputMode = TTY      -- ^ 'Colored' if output is a terminal, otherwise 'Pl
                 | Colored  -- ^ Print output with all formatting preserved.
                 | Plain    -- ^ Strip formatting from output.
                 | Quiet    -- ^ Don't output anything.
+                deriving (Bounded, Enum, Show)
 
 -- | Document printer that is aware of the 'OutputMode' and the width of
 -- the terminal if available.
