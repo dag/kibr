@@ -158,13 +158,13 @@ data Service = DICT | IRC | State | Web deriving (Eq, Bounded, Enum, Show)
 enumValues :: (Bounded a, Enum a, Show a) => [(String,a)]
 enumValues = map ((,) =<< map toLower . show) [minBound..]
 
-enumOption :: (Bounded a, Enum a, Show a) => Mod OptionFields a a b -> Parser b
+enumOption :: (Bounded a, Enum a, Show a) => Mod OptionFields a -> Parser a
 enumOption mod = nullOption (reader (`lookup` enumValues) & mod)
 
-enumArguments :: (Bounded a, Enum a, Show a) => Mod OptionFields a [a] b -> Parser b
+enumArguments :: (Bounded a, Enum a, Show a) => Mod ArgumentFields [a] -> Parser [a]
 enumArguments = arguments (`lookup` enumValues)
 
-valueAll :: (Bounded a, Enum a) => Mod f a [a] [a]
+valueAll :: (Bounded a, Enum a) => Mod f [a]
 valueAll = value [minBound..]
 
 parseOptions :: Parser Options
