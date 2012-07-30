@@ -52,6 +52,7 @@ library
                      Kibr.Web
                      Kibr.XML
                      Control.Lens.TH.Extra
+                     Data.IxSet.Lens
                      Data.Has
                      Text.XML.HXT.HSX
   build-depends    : acid-state,
@@ -72,7 +73,7 @@ library
                      irc,
                      ircbot                    >= 0.5,
                      ixset,
-                     lens                      >= 1.0,
+                     lens                      >= 1.1,
                      mtl                       == 2.*,
                      network,
                      optparse-applicative      >= 0.3.1,

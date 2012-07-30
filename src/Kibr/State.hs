@@ -7,7 +7,6 @@ module Kibr.State
       AppState(..)
       -- ** Lenses
     , wordData
-    , valueAtIx
       -- * Environments with state
     , query
     , update
@@ -36,12 +35,14 @@ module Kibr.State
     )
   where
 
-import qualified Data.Foldable as F
-import qualified Data.IxSet    as IxSet
-import qualified Data.Map      as Map
-import qualified Data.Set      as Set
+import qualified Data.Foldable   as F
+import qualified Data.IxSet      as IxSet
+import qualified Data.IxSet.Lens as IxSet
+import qualified Data.Map        as Map
+import qualified Data.Map.Lens   as Map
+import qualified Data.Set        as Set
 
-import Control.Lens          (Getter, (^.), (%~), (%=), to, valueAt)
+import Control.Lens          ((^.), (%~), (%=))
 import Control.Lens.TH.Extra (makeLenses)
 import Control.Monad         (void, forM_)
 import Control.Monad.Reader  (asks)
@@ -51,10 +52,9 @@ import Data.Acid             (AcidState, Update, Query, QueryEvent, UpdateEvent,
 import Data.Acid.Advanced    (MethodState, query', update')
 import Data.Default          (Default(def))
 import Data.Has              (Has(fetch))
-import Data.IxSet            (IxSet, Indexable, (@=))
+import Data.IxSet            (IxSet, (@=))
 import Data.SafeCopy         (deriveSafeCopy, base)
 import Data.Set              (Set)
-import Data.Typeable         (Typeable)
 import Kibr.Data
 
 data AppState = AppState
@@ -62,10 +62,6 @@ data AppState = AppState
     }
 
 makeLenses ''AppState
-
-valueAtIx :: (Ord a, Typeable k, Typeable a, Indexable a)
-        => k -> Getter (IxSet a) b (Maybe a) d
-valueAtIx k = to (IxSet.getOne . IxSet.getEQ k)
 
 instance Default AppState where def = AppState IxSet.empty
 
@@ -94,7 +90,7 @@ searchKeyWords ks = do
 -- | Look up the most current 'WordType' stored for a 'Word'.
 lookupWordType :: Word -> Query AppState (Maybe WordType)
 lookupWordType word = do
-    wd <- asks (^.wordData.valueAtIx word)
+    wd <- asks (^.wordData.IxSet.at word)
     return [ t | WordData _ (Revision t _:_) _ <- wd ]
 
 -- | Look up the most current 'WordDefinition' stored for a 'Word' in
@@ -102,12 +98,12 @@ lookupWordType word = do
 lookupWordDefinition :: Word -> Language
                      -> Query AppState (Maybe WordDefinition)
 lookupWordDefinition word language = do
-    wd <- asks (^.wordData.valueAtIx word)
-    return [ d | Revision d _:_ <- wd >>= (^.wordDefinition.valueAt language) ]
+    wd <- asks (^.wordData.IxSet.at word)
+    return [ d | Revision d _:_ <- wd >>= (^.wordDefinition.Map.at language) ]
 
 modifyWordData :: Word -> (WordData -> WordData) -> Update AppState ()
 modifyWordData word modify =
-    gets (^.wordData.valueAtIx word) >>= maybe (create >> update new) update
+    gets (^.wordData.IxSet.at word) >>= maybe (create >> update new) update
   where
     create = wordData %= IxSet.insert new
     new = WordData word def def
@@ -128,15 +124,15 @@ saveWordDefinition word language revision =
 -- | List all 'WordType' revisions for a 'Word'.
 listWordTypes :: Word -> Query AppState (History WordType)
 listWordTypes word = do
-    wd <- asks (^.wordData.valueAtIx word)
+    wd <- asks (^.wordData.IxSet.at word)
     return $ F.concat $ fmap (^.wordType) wd
 
 -- | List all 'WordDefinition' revisions for a 'Word' in a 'Language'.
 listWordDefinitions :: Word -> Language
                     -> Query AppState (History WordDefinition)
 listWordDefinitions word language = do
-    wd <- asks (^.wordData.valueAtIx word)
-    return $ F.concat $ wd >>= (^.wordDefinition.valueAt language)
+    wd <- asks (^.wordData.IxSet.at word)
+    return $ F.concat $ wd >>= (^.wordDefinition.Map.at language)
 
 -- | Import the data parsed from an XML export in one go.
 importWords :: [(Language,[(Word,WordType,WordDefinition)])] -> Update AppState ()
