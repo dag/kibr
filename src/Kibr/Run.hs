@@ -24,6 +24,7 @@ module Kibr.Run
     , botConfig
       -- * Applicative option parsers
     , enumValues
+    , enumVars
     , enumOption
     , enumArguments
     , valueAll
@@ -57,6 +58,7 @@ import Data.Acid                      (openLocalStateFrom, createCheckpoint)
 import Data.Acid.Remote               (acidServer, openRemoteState)
 import Data.Char                      (toLower)
 import Data.Default                   (def)
+import Data.List                      (intercalate)
 import Data.String                    (fromString)
 import Data.Text                      (Text)
 import Happstack.Server               (nullConf)
@@ -150,6 +152,9 @@ botConfig = nullBotConf
 enumValues :: (Bounded a, Enum a, Show a) => [(String,a)]
 enumValues = map ((,) =<< map toLower . show) [minBound..]
 
+enumVars :: (Bounded a, Enum a, Show a) => a -> String
+enumVars a = intercalate "|" . map (map toLower . show) $ [a..]
+
 enumOption :: (Bounded a, Enum a, Show a) => Mod OptionFields a -> Parser a
 enumOption mod = nullOption (reader (`lookup` enumValues) & mod)
 
@@ -172,7 +177,7 @@ parseOptions = Options
           ( long "output"
           & metavar "MODE"
           & value TTY
-          & help "Control how output is printed (tty|colored|plain|quiet)"
+          & help [qq|Control how output is printed ({enumVars TTY})|]
           )
     <*> subparser
           ( mkcmd "import"     parseImport     "Import words from an XML export"
@@ -198,7 +203,7 @@ parseCheckpoint :: Parser Command
 parseCheckpoint = pure Checkpoint
 
 parseServe :: Parser Command
-parseServe = Serve <$> enumArguments (valueAll & metavar "dict|irc|state|web...")
+parseServe = Serve <$> enumArguments (valueAll & metavar [qq|{enumVars DICT}...|])
 
 parseLookup :: Parser Command
 parseLookup = Lookup <$> arguments (Just . fromString) (metavar "WORD...")
