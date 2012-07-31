@@ -131,8 +131,7 @@ getRuntimeDir dir = do
 
 -- | Command-line options.
 data Options = Options
-    { remote     :: Bool
-    , language   :: Language
+    { language   :: Language
     , outputMode :: OutputMode
     , cmd        :: Command
     }
@@ -169,8 +168,7 @@ valueAll = value [minBound..]
 
 parseOptions :: Parser Options
 parseOptions = Options
-    <$> switch (long "remote" & help "Connect to remote state service")
-    <*> nullOption
+    <$> nullOption
           ( reader ((`HashMap.lookup` languageTags) . fromString)
           & long "language"
           & metavar "TAG"

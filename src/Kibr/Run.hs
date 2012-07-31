@@ -21,7 +21,11 @@ module Kibr.Run
     )
   where
 
+import Prelude hiding (catch)
+
 import Config.Dyre         (Params(..), wrapMain, defaultParams)
+import Control.Exception   (catch, throw)
+import Control.Monad       (unless)
 import Data.Acid           (openLocalStateFrom)
 import Data.Acid.Remote    (openRemoteState)
 import Data.Default        (def)
@@ -29,6 +33,7 @@ import Kibr.CLI
 import Options.Applicative ((<*>), execParser, info, helper, fullDesc)
 import System.Exit         (exitFailure)
 import System.IO           (hPutStr, stderr)
+import System.IO.Error     (isDoesNotExistError)
 
 -- | The @kibr@ executable.
 kibr :: Config -> IO ()
@@ -47,12 +52,14 @@ type CompilationError = String
 main :: Either CompilationError Config -> IO ()
 main (Left msg) = hPutStr stderr msg >> exitFailure
 main (Right config@Config{..}) = do
-    options@Options{..} <- execParser parser
-    state <- openAcidState remote
-    runProgramT program Runtime{config = config, options = options, state = state}
+    options <- execParser parser
+    state   <- openRemote `catch` tryLocal
+    runProgramT program Runtime{..}
   where
-    parser = info (helper <*> parseOptions) fullDesc
-    openAcidState True  = do (host,port) <- stateServer
-                             openRemoteState host port
-    openAcidState False = do dir <- stateDirectory
-                             openLocalStateFrom dir def
+    parser     = info (helper <*> parseOptions) fullDesc
+    openRemote = do (host,port) <- stateServer
+                    openRemoteState host port
+    openLocal  = do dir <- stateDirectory
+                    openLocalStateFrom dir def
+    tryLocal e = do unless (isDoesNotExistError e) $ throw e
+                    openLocal
