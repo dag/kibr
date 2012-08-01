@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable, GeneralizedNewtypeDeriving, OverloadedStrings, QuasiQuotes, RecordWildCards, TemplateHaskell #-}
+{-# LANGUAGE CPP, DeriveDataTypeable, GeneralizedNewtypeDeriving, OverloadedStrings, QuasiQuotes, RecordWildCards, TemplateHaskell #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
 -- | Application data model.
@@ -39,6 +39,10 @@ import qualified Data.IxSet        as IxSet
 import qualified Data.Map          as Map
 import qualified Data.Text         as Text
 
+#ifndef WINDOWS
+import qualified Data.Text.ICU     as ICU
+#endif
+
 import Control.Lens.TH.Extra         (makeLenses)
 import Data.Hashable                 (Hashable)
 import Data.HashMap.Lazy             (HashMap)
@@ -50,6 +54,10 @@ import Data.String                   (IsString(fromString))
 import Data.Text                     (Text)
 import Data.Typeable                 (Typeable)
 import Text.InterpolatedString.Perl6 (ShowQ, qq)
+
+#ifndef WINDOWS
+import Data.Text.ICU                 (LocaleName(Locale), breaks, breakWord, brkBreak, brkStatus)
+#endif
 
 
 -- * Users
@@ -163,9 +171,22 @@ instance Indexable WordData where
             [ KeyWord language word
               | (language,Revision (WordDefinition d n) _:_) <- Map.toList wd
               , word <-
-                  map DefinitionWord (Text.words d)
-               ++ map NotesWord (F.concat $ fmap Text.words n)
+                  map DefinitionWord (splitWords language d)
+               ++ map NotesWord (F.concat $ fmap (splitWords language) n)
             ]
+
+        splitWords lang txt =
+#if WINDOWS
+            Text.words txt
+#else
+            case Map.lookup lang languages of
+              Nothing -> Text.words txt
+              Just (LanguageTag tag) ->
+                [ brkBreak br
+                  | br <- breaks (breakWord $ Locale $ Text.unpack tag) txt
+                  , brkStatus br /= ICU.Uncategorized
+                ]
+#endif
 
 
 -- * Lenses
