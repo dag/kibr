@@ -4,12 +4,17 @@ module Control.Lens.TH.Extra
     )
   where
 
-import Control.Lens.TH     (makeLensesBy)
+import Control.Lens        ((<~))
+import Control.Lens.TH     (makeLensesWith, fieldLensRule, isoLensRule, defaultLensRules)
 import Language.Haskell.TH (Name, DecsQ)
 
 prime :: String -> Maybe String
-prime s | last s == '\'' = Just $ take (length s - 1) s
+prime s | last s == '\'' = Just $ init s
         | otherwise      = Nothing
 
 makeLenses :: Name -> DecsQ
-makeLenses = makeLensesBy prime
+makeLenses =
+    makeLensesWith
+      $ fieldLensRule <~ prime
+      $ isoLensRule   <~ const Nothing
+      $ defaultLensRules

@@ -1,5 +1,4 @@
 {-# LANGUAGE DeriveDataTypeable, FlexibleContexts, MonadComprehensions, TemplateHaskell, TypeFamilies #-}
-{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
 -- | Event definitions for /acid-state/.
 module Kibr.State
@@ -42,7 +41,7 @@ import qualified Data.Map        as Map
 import qualified Data.Map.Lens   as Map
 import qualified Data.Set        as Set
 
-import Control.Lens          ((^.), (%~), (%=))
+import Control.Lens          (Iso, isomorphic, (^.), (%~), (%=))
 import Control.Lens.TH.Extra (makeLenses)
 import Control.Monad         (void, forM_)
 import Control.Monad.Reader  (asks)
