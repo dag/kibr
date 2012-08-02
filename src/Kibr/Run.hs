@@ -50,6 +50,7 @@ import qualified Data.HashMap.Lazy as HashMap
 import qualified Data.Set          as Set
 
 import Config.Dyre                    (Params(..), wrapMain, defaultParams)
+import Control.Arrow                  ((&&&))
 import Control.Concurrent             (forkIO, killThread)
 import Control.Exception              (bracket, catch, throw)
 import Control.Monad                  (forM_, when, unless)
@@ -150,7 +151,7 @@ botConfig = nullBotConf
 -- ***************************************************************************
 
 enumValues :: (Bounded a, Enum a, Show a) => [(String,a)]
-enumValues = map ((,) =<< map toLower . show) [minBound..]
+enumValues = map (map toLower . show &&& id) [minBound..]
 
 enumVars :: (Bounded a, Enum a, Show a) => a -> String
 enumVars a = intercalate "|" . map (map toLower . show) $ [a..]
