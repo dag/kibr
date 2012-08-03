@@ -42,7 +42,7 @@ import qualified Data.Map        as Map
 import qualified Data.Map.Lens   as Map
 import qualified Data.Set        as Set
 
-import Control.Lens          (Iso, isomorphic, (^.), (%~), (%=))
+import Control.Lens          (Lens, (^.), (%~), (%=))
 import Control.Lens.TH.Extra (makeLenses)
 import Control.Monad         (void, forM_)
 import Control.Monad.Reader  (asks)
