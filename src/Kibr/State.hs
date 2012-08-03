@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable, FlexibleContexts, MonadComprehensions, TemplateHaskell, TypeFamilies #-}
+{-# LANGUAGE DeriveDataTypeable, FlexibleContexts, MonadComprehensions, MultiParamTypeClasses, TemplateHaskell, TypeFamilies #-}
 
 -- | Event definitions for /acid-state/.
 module Kibr.State
@@ -7,6 +7,7 @@ module Kibr.State
       -- ** Lenses
     , wordData
       -- * Environments with state
+    , HasAcidState(..)
     , query
     , update
     , update_
@@ -50,7 +51,6 @@ import Control.Monad.Trans   (MonadIO)
 import Data.Acid             (AcidState, Update, Query, QueryEvent, UpdateEvent, EventResult, makeAcidic)
 import Data.Acid.Advanced    (MethodState, query', update')
 import Data.Default          (Default(def))
-import Data.Has              (Has(fetch))
 import Data.IxSet            (IxSet, (@=))
 import Data.SafeCopy         (deriveSafeCopy, base)
 import Data.Set              (Set)
@@ -64,19 +64,22 @@ makeLenses ''AppState
 
 instance Default AppState where def = AppState IxSet.empty
 
-query :: (QueryEvent e, MonadIO m, Has (AcidState (MethodState e)) m)
+class HasAcidState m st where
+    getAcidState :: m (AcidState st)
+
+query :: (QueryEvent e, MonadIO m, HasAcidState m (MethodState e))
       => e -> m (EventResult e)
 query ev = do
-    st <- fetch
+    st <- getAcidState
     query' st ev
 
-update :: (UpdateEvent e, MonadIO m, Has (AcidState (MethodState e)) m)
+update :: (UpdateEvent e, MonadIO m, HasAcidState m (MethodState e))
        => e -> m (EventResult e)
 update ev = do
-    st <- fetch
+    st <- getAcidState
     update' st ev
 
-update_ :: (UpdateEvent e, Functor m, MonadIO m, Has (AcidState (MethodState e)) m)
+update_ :: (UpdateEvent e, Functor m, MonadIO m, HasAcidState m (MethodState e))
         => e -> m ()
 update_ = void . update
 

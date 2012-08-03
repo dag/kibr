@@ -53,7 +53,6 @@ library
                      Kibr.XML
                      Control.Lens.TH.Extra
                      Data.IxSet.Lens
-                     Data.Has
                      Text.XML.HXT.HSX
   build-depends    : acid-state,
                      ansi-wl-pprint,

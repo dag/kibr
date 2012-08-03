@@ -18,6 +18,8 @@ module Kibr.CLI
     , runProgramT
       -- * Utilities
     , io
+      -- ** Output
+    , HasOutputMode(..)
     , output
     )
   where
@@ -29,7 +31,6 @@ import Control.Applicative            (Applicative, (<$>))
 import Control.Monad.Reader           (MonadReader, ReaderT, runReaderT, asks)
 import Control.Monad.Trans            (MonadIO, liftIO)
 import Data.Acid                      (AcidState)
-import Data.Has                       (Has(fetch))
 import Data.Maybe                     (fromMaybe)
 import Data.Text                      (Text)
 import Happstack.Server               (Conf)
@@ -119,11 +120,11 @@ type Program = ProgramT IO ()
 runProgramT :: Monad m => ProgramT m a -> Runtime -> m a
 runProgramT (Program m) = runReaderT m
 
-instance Monad m => Has (AcidState AppState) (ProgramT m) where
-    fetch = asks state
+instance Monad m => HasAcidState (ProgramT m) AppState where
+    getAcidState = asks state
 
-instance Monad m => Has OutputMode (ProgramT m) where
-    fetch = asks (outputMode . options)
+instance Monad m => HasOutputMode (ProgramT m) where
+    getOutputMode = asks (outputMode . options)
 
 
 -- * Utilities
@@ -133,9 +134,12 @@ instance Monad m => Has OutputMode (ProgramT m) where
 io :: MonadIO m => IO a -> m a
 io = liftIO
 
+class HasOutputMode m where
+    getOutputMode :: m OutputMode
+
 -- | Document printer that is aware of the 'OutputMode' and the width of
 -- the terminal if available.
-output :: (Has OutputMode m, MonadIO m) => Doc -> m ()
+output :: (HasOutputMode m, MonadIO m) => Doc -> m ()
 output doc = do
 #if WINDOWS
     let width = Nothing
@@ -145,7 +149,7 @@ output doc = do
     let prettyPrint = io . displayIO stdout
                          . renderPretty 1.0 (fromMaybe 80 width)
                          . (<> linebreak)
-    mode <- fetch
+    mode <- getOutputMode
     case mode of
       Colored -> prettyPrint doc
       Plain   -> prettyPrint $ plain doc
