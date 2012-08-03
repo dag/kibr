@@ -48,6 +48,7 @@ import Kibr.Data hiding (User)
 
 import qualified Data.HashMap.Lazy as HashMap
 import qualified Data.Set          as Set
+import qualified Data.Text         as Text
 
 import Config.Dyre                    (Params(..), wrapMain, defaultParams)
 import Control.Arrow                  ((&&&))
@@ -207,7 +208,10 @@ parseServe :: Parser Command
 parseServe = Serve <$> enumArguments (valueAll & metavar [qq|{enumVars DICT}...|])
 
 parseLookup :: Parser Command
-parseLookup = Lookup <$> arguments (Just . fromString) (metavar "WORD...")
+parseLookup = Lookup
+    <$> arguments (Just . Word . Text.replace "h" "'" . fromString)
+          ( metavar "WORD..."
+          )
 
 parseSearch :: Parser Command
 parseSearch = Search <$> arguments (Just . fromString) (metavar "KEYWORD...")
