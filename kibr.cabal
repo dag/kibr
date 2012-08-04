@@ -11,6 +11,7 @@ test-suite test-kibr
   default-language : Haskell2010
   ghc-options      : -Wall -fno-warn-name-shadowing
                      -threaded -rtsopts -with-rtsopts=-N
+  ghc-prof-options : -fprof-auto
   other-modules    : Kibr.Fixture
                      Kibr.Test
   build-depends    : acid-state,
@@ -34,7 +35,8 @@ executable kibr
   main-is          : kibr.hs
   hs-source-dirs   : bin
   default-language : Haskell2010
-  ghc-options      : -Wall -fno-warn-name-shadowing
+  ghc-options      : -Wall -fno-warn-name-shadowing -rtsopts
+  ghc-prof-options : -fprof-auto
   build-depends    : base == 4.*,
                      kibr
 
@@ -42,6 +44,7 @@ library
   hs-source-dirs   : src
   default-language : Haskell2010
   ghc-options      : -Wall -fno-warn-name-shadowing
+  ghc-prof-options : -fprof-auto
   exposed-modules  : Kibr.CLI
                      Kibr.Data
                      Kibr.DICT
