@@ -74,10 +74,10 @@ data Language = Lojban | English Region | Latin deriving (Show, Eq, Ord)
 data Region = UnitedStates | GreatBritain | Global deriving (Show, Eq, Ord)
 
 -- | IETF language tag.
-newtype LanguageTag = LanguageTag Text deriving (Eq, Hashable, IsString, SafeCopy)
+newtype LanguageTag = LanguageTag{unLanguageTag :: Text} deriving (Eq, Hashable, IsString, SafeCopy)
 
 instance Show LanguageTag where
-    show (LanguageTag t) = show t
+    show = show . unLanguageTag
 
 -- | Known languages and their tags.
 languages :: Map Language LanguageTag
@@ -108,9 +108,9 @@ data Revision a = Revision a User deriving (Eq, Show, Ord, Typeable)
 type AffixForms = Set Affix
 
 -- | Short affix form associated with a particle or root.
-newtype Affix = Affix Text deriving (Eq, Ord, IsString, SafeCopy)
+newtype Affix = Affix{unAffix :: Text} deriving (Eq, Ord, IsString, SafeCopy)
 
-instance Show Affix where show (Affix a) = show a
+instance Show Affix where show = show . unAffix
 
 -- | The grammatical class a particle belongs to, unless it is experimental.
 data ParticleClass = GrammaticalClass Text
@@ -149,9 +149,9 @@ data SearchWord = DefinitionWord Text
 
 data KeyWord = KeyWord Language SearchWord deriving (Eq, Ord, Typeable)
 
-newtype Word = Word Text deriving (Eq, Ord, Typeable, IsString, SafeCopy, ShowQ)
+newtype Word = Word{unWord :: Text} deriving (Eq, Ord, Typeable, IsString, SafeCopy, ShowQ)
 
-instance Show Word where show (Word w) = show w
+instance Show Word where show = show . unWord
 
 data WordData = WordData
     { word'           :: Word

@@ -177,7 +177,7 @@ parseOptions = Options
           & long "language"
           & metavar "TAG"
           & value (English UnitedStates)
-          & completeWith (map (\(LanguageTag t) -> Text.unpack t) $ HashMap.keys languageTags)
+          & completeWith (map (Text.unpack . unLanguageTag) $ HashMap.keys languageTags)
           & help "Select language of dictionary"
           )
     <*> enumOption

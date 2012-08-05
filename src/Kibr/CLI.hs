@@ -109,7 +109,7 @@ data Runtime = Runtime
     }
 
 -- | Monad transformer for monads with access to a 'Runtime' environment.
-newtype ProgramT m a = Program (ReaderT Runtime m a)
+newtype ProgramT m a = ProgramT{unProgramT :: ReaderT Runtime m a}
                        deriving (Functor, Applicative, Monad, MonadReader Runtime, MonadIO)
 
 -- | Programs usually run in the 'IO' monad and produce no value.
@@ -118,7 +118,7 @@ type Program = ProgramT IO ()
 -- | Run a 'ProgramT' with a 'Runtime' environment and return the inner
 -- monad computation.
 runProgramT :: Monad m => ProgramT m a -> Runtime -> m a
-runProgramT (Program m) = runReaderT m
+runProgramT = runReaderT . unProgramT
 
 instance Monad m => HasAcidState (ProgramT m) AppState where
     getAcidState = asks state

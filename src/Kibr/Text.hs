@@ -23,10 +23,10 @@ instance PrettyPrint Text.Text where
     pp = fillSep . map text . words . Text.unpack
 
 instance PrettyPrint Affix where
-    pp (Affix a) = pp a
+    pp = pp . unAffix
 
 instance PrettyPrint Word where
-    pp (Word w) = pp w
+    pp = pp . unWord
 
 instance PrettyPrint ParticleClass where
     pp (GrammaticalClass cls) = pp cls
