@@ -40,14 +40,14 @@ instance PrettyPrint AffixForms where
       | otherwise           = " -" <> hcat (punctuate "-" (map pp $ Set.toList affixForms)) <> "-"
 
 instance PrettyPrint WordType where
-    pp (ParticleWord affixForms ExperimentalParticle) = underline "particle" <+> "(experimental)" <> pp affixForms
-    pp (ParticleWord affixForms cls)                  = underline "particle" <> pp affixForms <+>  (bold . green . brackets $ pp cls)
-    pp (RootWord affixForms ExperimentalRoot)         = underline "root word" <+> "(experimental)" <> pp affixForms
-    pp (RootWord affixForms _)                        = underline "root word" <> pp affixForms
-    pp CompoundWord                                   = underline "compound"
-    pp LoanWord                                       = underline "loan"
-    pp NameWord                                       = underline "name"
-    pp ParticleCluster                                = underline "cluster"
+    pp (ParticleWord affixForms ExperimentalParticle) = dullyellow "particle" <+> "(experimental)" <> pp affixForms
+    pp (ParticleWord affixForms cls)                  = dullyellow "particle" <> pp affixForms <+>  (bold . green . brackets $ pp cls)
+    pp (RootWord affixForms ExperimentalRoot)         = dullyellow "root word" <+> "(experimental)" <> pp affixForms
+    pp (RootWord affixForms _)                        = dullyellow "root word" <> pp affixForms
+    pp CompoundWord                                   = dullyellow "compound"
+    pp LoanWord                                       = dullyellow "loan"
+    pp NameWord                                       = dullyellow "name"
+    pp ParticleCluster                                = dullyellow "cluster"
 
 instance PrettyPrint WordDefinition where
     pp (WordDefinition def Nothing)      = ppDef def
