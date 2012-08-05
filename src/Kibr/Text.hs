@@ -12,7 +12,9 @@ module Kibr.Text
 import qualified Data.Text as Text
 import qualified Data.Set  as Set
 
+import Data.Attoparsec.Text         (parseOnly)
 import Kibr.Data
+import Kibr.TeX                     (Inline(..), Expr(..), tex)
 import Text.PrettyPrint.ANSI.Leijen
 
 -- | Format a textual representation of values for printing on the console.
@@ -48,8 +50,39 @@ instance PrettyPrint WordType where
     pp ParticleCluster                                = underline "cluster"
 
 instance PrettyPrint WordDefinition where
-    pp (WordDefinition def Nothing)      = pp def
-    pp (WordDefinition def (Just notes)) = pp def <> linebreak <> linebreak <> pp notes
+    pp (WordDefinition def Nothing)      = ppDef def
+    pp (WordDefinition def (Just notes)) = ppDef def <> linebreak <> linebreak <> pp notes
+
+instance PrettyPrint Inline where
+    pp (Str txt) = pp txt
+    pp (Emph txt) = underline $ pp txt
+    pp (Bold txt) = bold $ pp txt
+    pp (Expr expr) = pp expr
+
+instance PrettyPrint Expr where
+    pp (Lit txt) = pp txt
+    pp (Sub e1 (Lit e2)) = pp e1 <> pp (Text.map toSub e2)
+    pp (Sub e1 e2) = pp e1 <> pp e2
+    pp (Sup e1 e2) = pp e1 <> pp e2
+
+toSub :: Char -> Char
+toSub '0' = '₀'
+toSub '1' = '₁'
+toSub '2' = '₂'
+toSub '3' = '₃'
+toSub '4' = '₄'
+toSub '5' = '₅'
+toSub '6' = '₆'
+toSub '7' = '₇'
+toSub '8' = '₈'
+toSub '9' = '₉'
+toSub c   = c
+
+ppDef :: Text.Text -> Doc
+ppDef def =
+    case parseOnly tex def of
+      Left _ -> pp def
+      Right is -> fillSep $ map pp is
 
 -- | Format a complete set of data for a 'Word'.
 ppWord :: Word -> WordType -> WordDefinition -> Doc
