@@ -14,6 +14,7 @@ module Kibr.TeX
     , lit
     , sub
     , sup
+    , eql
     )
   where
 
@@ -33,6 +34,7 @@ data Inline = Str Text   -- ^ A sequence of text.
 data Expr = Lit Text       -- ^ A literal number or variable.
           | Sub Expr Expr  -- ^ Subscript.
           | Sup Expr Expr  -- ^ Superscript.
+          | Eql [Expr]     -- ^ A sequence of equations.
           deriving (Eq, Show)
 
 tex :: Parser TeX
@@ -48,7 +50,7 @@ bold :: Parser Inline
 bold = Bold <$> ("\\textbf{" .*> P.takeWhile (/= '}') <* P.take 1) <?> "bold"
 
 expr :: Parser Inline
-expr = Expr <$> (char '$' *> (sub <|> sup) <* char '$') <?> "expr"
+expr = Expr <$> (char '$' *> (eql <|> sub <|> sup) <* char '$') <?> "expr"
 
 lit :: Parser Expr
 lit =
@@ -63,3 +65,9 @@ sub = Sub <$> lit <*> (char '_' *> lit) <?> "sub"
 
 sup :: Parser Expr
 sup = Sup <$> lit <*> (char '^' *> lit) <?> "sup"
+
+eql :: Parser Expr
+eql =
+    Eql <$> ((:) <$> e <*> some (char '=' *> e)) <?> "eql"
+  where
+    e = sub <|> sup <|> lit

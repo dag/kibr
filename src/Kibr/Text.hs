@@ -64,6 +64,7 @@ instance PrettyPrint Expr where
     pp (Sub e1 (Lit e2)) = pp e1 <> pp (Text.map toSub e2)
     pp (Sub e1 e2) = pp e1 <> pp e2
     pp (Sup e1 e2) = pp e1 <> pp e2
+    pp (Eql es) = hcat $ punctuate "=" (map pp es)
 
 toSub :: Char -> Char
 toSub '0' = '₀'
