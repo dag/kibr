@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable, FlexibleContexts, MonadComprehensions, MultiParamTypeClasses, TemplateHaskell, TypeFamilies #-}
+{-# LANGUAGE DeriveDataTypeable, FlexibleContexts, MonadComprehensions, MultiParamTypeClasses, RecordWildCards, TemplateHaskell, TypeFamilies #-}
 
 -- | Event definitions for /acid-state/.
 module Kibr.State
@@ -14,6 +14,7 @@ module Kibr.State
       -- * Event Definitions
       -- | These are exported for documentation purposes, but it's really
       -- the Event Methods ("Kibr.State#methods") that you use with /acid-state/.
+    , completeWords
     , searchKeyWords
     , lookupWordType
     , lookupWordDefinition
@@ -24,6 +25,7 @@ module Kibr.State
     , importWords
       -- ** Event Methods
       -- | #methods#
+    , CompleteWords(..)
     , SearchKeyWords(..)
     , LookupWordType(..)
     , LookupWordDefinition(..)
@@ -41,6 +43,7 @@ import qualified Data.IxSet.Lens as IxSet
 import qualified Data.Map        as Map
 import qualified Data.Map.Lens   as Map
 import qualified Data.Set        as Set
+import qualified Data.Text       as Text
 
 import Control.Lens          (Lens, (^.), (%~), (%=))
 import Control.Lens.TH.Extra (makeLenses)
@@ -54,6 +57,7 @@ import Data.Default          (Default(def))
 import Data.IxSet            (IxSet, (@=))
 import Data.SafeCopy         (deriveSafeCopy, base)
 import Data.Set              (Set)
+import Data.Text             (Text)
 import Kibr.Data
 
 data AppState = AppState
@@ -82,6 +86,13 @@ update ev = do
 update_ :: (UpdateEvent e, Functor m, MonadIO m, HasAcidState m (MethodState e))
         => e -> m ()
 update_ = void . update
+
+completeWords :: Text -> Query AppState (Set Word)
+completeWords txt = do
+    ix <- asks (^.wordData)
+    return $ Set.map word' $ Set.filter complete $ IxSet.toSet ix
+  where
+    complete WordData{..} = txt `Text.isPrefixOf` unWord word'
 
 searchKeyWords :: [KeyWord] -> Query AppState (Set Word)
 searchKeyWords ks = do
@@ -145,7 +156,8 @@ importWords dict =
            saveWordDefinition word language (Revision wordDefinition SystemUser)
 
 deriveSafeCopy 0 'base ''AppState
-makeAcidic ''AppState [ 'searchKeyWords
+makeAcidic ''AppState [ 'completeWords
+                      , 'searchKeyWords
                       , 'lookupWordType
                       , 'lookupWordDefinition
                       , 'saveWordType

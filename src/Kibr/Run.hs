@@ -47,6 +47,7 @@ module Kibr.Run
 import Prelude   hiding (catch)
 import Kibr.Data hiding (User)
 
+import qualified Data.Acid         as Acid
 import qualified Data.HashMap.Lazy as HashMap
 import qualified Data.Set          as Set
 import qualified Data.Text         as Text
@@ -57,7 +58,7 @@ import Control.Concurrent             (forkIO, killThread)
 import Control.Exception              (bracket, catch, throw)
 import Control.Monad                  (forM_, when, unless)
 import Control.Monad.Reader           (asks)
-import Data.Acid                      (openLocalStateFrom, createCheckpoint)
+import Data.Acid                      (AcidState, openLocalStateFrom, createCheckpoint)
 import Data.Acid.Remote               (acidServer, openRemoteState)
 import Data.Char                      (toLower)
 import Data.Default                   (def)
@@ -73,6 +74,7 @@ import Kibr.XML                       (readDictionary)
 import Network                        (PortID(..))
 import Network.IRC.Bot                (BotConf(..), User(..), nullBotConf, nullUser)
 import Options.Applicative
+import Options.Applicative.Types      (Completer(..))
 import System.Directory               (createDirectoryIfMissing, removeFile)
 import System.Environment.XDG.BaseDir (getUserDataDir)
 import System.Exit                    (exitFailure)
@@ -110,10 +112,15 @@ main :: Either CompilationError Config -> IO ()
 main (Left msg) = hPutStr stderr msg >> exitFailure
 main (Right config@Config{..}) = do
     options <- execParser parser
-    state   <- openRemote `catch` tryLocal
+    state   <- openAcidState config
     runProgramT program Runtime{..}
   where
-    parser     = info (helper <*> parseOptions) fullDesc
+    parser = info (helper <*> parseOptions config) fullDesc
+
+openAcidState :: Config -> IO (AcidState AppState)
+openAcidState Config{..} =
+    openRemote `catch` tryLocal
+  where
     openRemote = do (host,port) <- stateServer
                     openRemoteState host port
     openLocal  = do dir <- stateDirectory
@@ -170,8 +177,8 @@ enumArguments = arguments (`lookup` enumValues)
 valueAll :: (Bounded a, Enum a) => Mod f [a]
 valueAll = value [minBound..]
 
-parseOptions :: Parser Options
-parseOptions = Options
+parseOptions :: Config -> Parser Options
+parseOptions config = Options
     <$> nullOption
           ( reader ((`HashMap.lookup` languageTags) . fromString)
           & long "language"
@@ -188,11 +195,11 @@ parseOptions = Options
           & help [qq|Control how output is printed ({enumVars TTY})|]
           )
     <*> subparser
-          ( mkcmd "import"     parseImport     "Import words from an XML export"
-          & mkcmd "checkpoint" parseCheckpoint "Create a state checkpoint"
-          & mkcmd "serve"      parseServe      "Launch Internet services"
-          & mkcmd "lookup"     parseLookup     "Look up words"
-          & mkcmd "search"     parseSearch     "Search words in definitions"
+          ( mkcmd "import"     parseImport          "Import words from an XML export"
+          & mkcmd "checkpoint" parseCheckpoint      "Create a state checkpoint"
+          & mkcmd "serve"      parseServe           "Launch Internet services"
+          & mkcmd "lookup"     (parseLookup config) "Look up words"
+          & mkcmd "search"     parseSearch          "Search words in definitions"
           )
   where
     mkcmd name parser desc = command name $ info (helper <*> parser) $ progDesc desc
@@ -218,11 +225,16 @@ parseServe = Serve
           & completeWith (enumNames DICT)
           )
 
-parseLookup :: Parser Command
-parseLookup = Lookup
+parseLookup :: Config -> Parser Command
+parseLookup config = Lookup
     <$> arguments (Just . Word . Text.replace "h" "'" . fromString)
           ( metavar "WORD..."
+          & completer (Completer complete)
           )
+  where
+    complete str = do state <- openAcidState config
+                      words <- Acid.query state $ CompleteWords (Text.pack str)
+                      return (map (Text.unpack . unWord) $ Set.toList words)
 
 parseSearch :: Parser Command
 parseSearch = Search <$> arguments (Just . fromString) (metavar "KEYWORD...")
