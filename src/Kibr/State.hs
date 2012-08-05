@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable, FlexibleContexts, MonadComprehensions, MultiParamTypeClasses, RecordWildCards, TemplateHaskell, TypeFamilies #-}
+{-# LANGUAGE DeriveDataTypeable, FlexibleContexts, MonadComprehensions, MultiParamTypeClasses, RecordWildCards, TemplateHaskell, TupleSections, TypeFamilies #-}
 
 -- | Event definitions for /acid-state/.
 module Kibr.State
@@ -18,6 +18,7 @@ module Kibr.State
     , searchKeyWords
     , lookupWordType
     , lookupWordDefinition
+    , lookupWords
     , saveWordType
     , saveWordDefinition
     , listWordTypes
@@ -29,6 +30,7 @@ module Kibr.State
     , SearchKeyWords(..)
     , LookupWordType(..)
     , LookupWordDefinition(..)
+    , LookupWords(..)
     , SaveWordType(..)
     , SaveWordDefinition(..)
     , ListWordTypes(..)
@@ -45,9 +47,10 @@ import qualified Data.Map.Lens   as Map
 import qualified Data.Set        as Set
 import qualified Data.Text       as Text
 
+import Control.Applicative   ((<$>), (<*>))
 import Control.Lens          (Lens, (^.), (%~), (%=))
 import Control.Lens.TH.Extra (makeLenses)
-import Control.Monad         (void, forM_)
+import Control.Monad         (void, forM, forM_)
 import Control.Monad.Reader  (asks)
 import Control.Monad.State   (gets)
 import Control.Monad.Trans   (MonadIO)
@@ -55,6 +58,7 @@ import Data.Acid             (AcidState, Update, Query, QueryEvent, UpdateEvent,
 import Data.Acid.Advanced    (MethodState, query', update')
 import Data.Default          (Default(def))
 import Data.IxSet            (IxSet, (@=))
+import Data.Maybe            (catMaybes)
 import Data.SafeCopy         (deriveSafeCopy, base)
 import Data.Set              (Set)
 import Data.Text             (Text)
@@ -114,6 +118,14 @@ lookupWordDefinition word language = do
     wd <- asks (^.wordData.IxSet.at word)
     return [ d | Revision d _:_ <- wd >>= (^.wordDefinition.Map.at language) ]
 
+lookupWords :: [Word] -> Language -> Query AppState [(Word,WordType,WordDefinition)]
+lookupWords words language = do
+    ms <- forM words $ \word ->
+      do typ <- lookupWordType word
+         def <- lookupWordDefinition word language
+         return $ (word,,) <$> typ <*> def
+    return $ catMaybes ms
+
 modifyWordData :: Word -> (WordData -> WordData) -> Update AppState ()
 modifyWordData word modify =
     gets (^.wordData.IxSet.at word) >>= maybe (create >> update new) update
@@ -160,6 +172,7 @@ makeAcidic ''AppState [ 'completeWords
                       , 'searchKeyWords
                       , 'lookupWordType
                       , 'lookupWordDefinition
+                      , 'lookupWords
                       , 'saveWordType
                       , 'saveWordDefinition
                       , 'listWordTypes

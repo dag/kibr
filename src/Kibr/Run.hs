@@ -290,10 +290,8 @@ runCheckpoint = io . createCheckpoint =<< asks state
 runLookup :: [Word] -> Program
 runLookup words = do
     language <- asks (language . options)
-    forM_ words $ \word ->
-      do Just typ <- query $ LookupWordType word
-         Just def <- query $ LookupWordDefinition word language
-         output $ linebreak <> ppWord word typ def
+    ds <- query $ LookupWords words language
+    forM_ ds $ \(word,typ,def) -> output $ linebreak <> ppWord word typ def
 
 runSearch :: [Text] -> Program
 runSearch keywords = do
