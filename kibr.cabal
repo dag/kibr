@@ -80,7 +80,7 @@ library
                      lens                      >= 1.4.1 && < 1.5,
                      mtl                       == 2.*,
                      network,
-                     optparse-applicative      >= 0.3.1 && < 0.4,
+                     optparse-applicative      == 0.4.*,
                      safecopy,
                      template-haskell,
                      text,
