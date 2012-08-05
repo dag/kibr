@@ -51,6 +51,7 @@ library
                      Kibr.IRC
                      Kibr.Run
                      Kibr.State
+                     Kibr.TeX
                      Kibr.Text
                      Kibr.Web
                      Kibr.XML
@@ -59,6 +60,7 @@ library
                      Text.XML.HXT.HSX
   build-depends    : acid-state,
                      ansi-wl-pprint,
+                     attoparsec,
                      base                      == 4.*,
                      bytestring,
                      containers,
