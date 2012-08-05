@@ -24,6 +24,7 @@ module Kibr.Run
     , botConfig
       -- * Applicative option parsers
     , enumValues
+    , enumNames
     , enumVars
     , enumOption
     , enumArguments
@@ -154,8 +155,11 @@ botConfig = nullBotConf
 enumValues :: (Bounded a, Enum a, Show a) => [(String,a)]
 enumValues = map (map toLower . show &&& id) [minBound..]
 
-enumVars :: (Bounded a, Enum a, Show a) => a -> String
-enumVars a = intercalate "|" . map (map toLower . show) $ [a..]
+enumNames :: (Enum a, Show a) => a -> [String]
+enumNames a = map (map toLower . show) [a..]
+
+enumVars :: (Enum a, Show a) => a -> String
+enumVars a = intercalate "|" $ enumNames a
 
 enumOption :: (Bounded a, Enum a, Show a) => Mod OptionFields a -> Parser a
 enumOption mod = nullOption (reader (`lookup` enumValues) & mod)
@@ -173,12 +177,14 @@ parseOptions = Options
           & long "language"
           & metavar "TAG"
           & value (English UnitedStates)
+          & completeWith (map (\(LanguageTag t) -> Text.unpack t) $ HashMap.keys languageTags)
           & help "Select language of dictionary"
           )
     <*> enumOption
           ( long "output"
           & metavar "MODE"
           & value TTY
+          & completeWith (enumNames TTY)
           & help [qq|Control how output is printed ({enumVars TTY})|]
           )
     <*> subparser
@@ -199,13 +205,18 @@ parseImport = Import
           & value 0
           & help "Set the tracing level for the XML parser"
           )
-    <*> argument str (metavar "FILE")
+    <*> argument str (metavar "FILE" & action "file")
 
 parseCheckpoint :: Parser Command
 parseCheckpoint = pure Checkpoint
 
 parseServe :: Parser Command
-parseServe = Serve <$> enumArguments (valueAll & metavar [qq|{enumVars DICT}...|])
+parseServe = Serve
+    <$> enumArguments
+          ( valueAll
+          & metavar [qq|{enumVars DICT}...|]
+          & completeWith (enumNames DICT)
+          )
 
 parseLookup :: Parser Command
 parseLookup = Lookup
