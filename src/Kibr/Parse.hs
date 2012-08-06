@@ -48,13 +48,13 @@ tex :: Parser TeX
 tex = many (emph <|> bold <|> expr <|> str) <?> "tex"
 
 str :: Parser Inline
-str = Str <$> P.takeWhile1 (\chr -> chr /= '\\' && chr /= '$') <?> "str"
+str = Str <$> P.takeWhile1 ((&&) <$> (/= '\\') <*> (/= '$')) <?> "str"
 
 emph :: Parser Inline
-emph = Emph <$> ("\\emph{" .*> P.takeWhile (/= '}') <* P.take 1) <?> "emph"
+emph = Emph <$> ("\\emph{" .*> P.takeWhile (/= '}') <*. "}") <?> "emph"
 
 bold :: Parser Inline
-bold = Bold <$> ("\\textbf{" .*> P.takeWhile (/= '}') <* P.take 1) <?> "bold"
+bold = Bold <$> ("\\textbf{" .*> P.takeWhile (/= '}') <*. "}") <?> "bold"
 
 expr :: Parser Inline
 expr = Expr <$> (char '$' *> (eql <|> sub <|> sup) <* char '$') <?> "expr"
