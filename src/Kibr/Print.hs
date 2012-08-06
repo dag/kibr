@@ -15,7 +15,7 @@ import qualified Data.Set  as Set
 import Data.Attoparsec.Text         (parseOnly)
 import Data.Maybe                   (fromMaybe)
 import Kibr.Data
-import Kibr.Parse                   (Inline(..), Expr(..), tex)
+import Kibr.Parse                   (Inline(..), Expr(..), NotesPart(..), tex, notes)
 import Text.PrettyPrint.ANSI.Leijen
 
 -- | Format a textual representation of values for printing on the console.
@@ -52,7 +52,7 @@ instance PrettyPrint WordType where
 
 instance PrettyPrint WordDefinition where
     pp (WordDefinition def Nothing)      = ppDef def
-    pp (WordDefinition def (Just notes)) = ppDef def <> linebreak <> linebreak <> pp notes
+    pp (WordDefinition def (Just notes)) = ppDef def <> linebreak <> linebreak <> ppNotes notes
 
 instance PrettyPrint Inline where
     pp (Str txt) = pp txt
@@ -68,6 +68,10 @@ instance PrettyPrint Expr where
     pp (Sup e1 e2)       = pp e1 <> pp e2
     pp (Eql es)          = hcat $ punctuate "=" (map pp es)
 
+instance PrettyPrint NotesPart where
+    pp (NotesText txt) = pp txt
+    pp (WordLink w)    = underline $ pp w
+
 toSub :: Char -> Char
 toSub c = fromMaybe c $ lookup c $ zip ['0'..'9'] ['₀'..'₉']
 
@@ -79,6 +83,12 @@ ppDef def =
     case parseOnly tex def of
       Left _ -> pp def
       Right is -> fillSep $ map pp is
+
+ppNotes :: Text.Text -> Doc
+ppNotes note =
+    case parseOnly notes note of
+      Left _ -> pp note
+      Right ps -> fillSep $ map pp ps
 
 -- | Format a complete set of data for a 'Word'.
 ppWord :: Word -> WordType -> WordDefinition -> Doc

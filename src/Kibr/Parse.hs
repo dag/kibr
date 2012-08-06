@@ -15,6 +15,12 @@ module Kibr.Parse
     , sub
     , sup
     , eql
+      -- * Notes with word links
+    , Notes
+    , NotesPart(..)
+    , notes
+    , notesText
+    , wordLink
     )
   where
 
@@ -22,6 +28,7 @@ import Control.Applicative
 import Data.Char
 import Data.Text (Text)
 import Data.Attoparsec.Text as P
+import Kibr.Data
 
 type TeX = [Inline]
 
@@ -71,3 +78,18 @@ eql =
     Eql <$> ((:) <$> e <*> some (char '=' *> e)) <?> "eql"
   where
     e = sub <|> sup <|> lit
+
+type Notes = [NotesPart]
+
+data NotesPart = NotesText Text
+               | WordLink Word
+               deriving (Eq, Show)
+
+notes :: Parser Notes
+notes = many (wordLink <|> notesText) <?> "notes"
+
+notesText :: Parser NotesPart
+notesText = NotesText <$> P.takeWhile1 (/= '{') <?> "notesText"
+
+wordLink :: Parser NotesPart
+wordLink = (WordLink . Word) <$> ("{" .*> P.takeWhile (/= '}') <*. "}") <?> "wordLink"
