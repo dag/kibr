@@ -1,8 +1,8 @@
 {-# LANGUAGE FlexibleInstances, OverloadedStrings, TypeSynonymInstances #-}
 
--- | Text manipulation.
-module Kibr.Text
-    ( -- * Console pretty-printing
+-- | Pretty-printing.
+module Kibr.Print
+    ( -- * Console
       PrettyPrint(..)
     , ppWord
     , ppWords
@@ -14,7 +14,7 @@ import qualified Data.Set  as Set
 
 import Data.Attoparsec.Text         (parseOnly)
 import Kibr.Data
-import Kibr.TeX                     (Inline(..), Expr(..), tex)
+import Kibr.Parse                   (Inline(..), Expr(..), tex)
 import Text.PrettyPrint.ANSI.Leijen
 
 -- | Format a textual representation of values for printing on the console.

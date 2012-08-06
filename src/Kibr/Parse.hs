@@ -1,11 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Kibr.TeX
-    ( -- * Types
+-- | Text parsing.
+module Kibr.Parse
+    ( -- * TeX
       TeX
     , Inline(..)
     , Expr(..)
-      -- * Parsers
     , tex
     , str
     , emph

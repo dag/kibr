@@ -68,8 +68,8 @@ import Data.Text                      (Text)
 import Happstack.Server               (nullConf)
 import Happstack.Server.SimpleHTTP    (waitForTermination)
 import Kibr.CLI
+import Kibr.Print                     (ppWord, ppWords)
 import Kibr.State
-import Kibr.Text                      (ppWord, ppWords)
 import Kibr.XML                       (readDictionary)
 import Network                        (PortID(..))
 import Network.IRC.Bot                (BotConf(..), User(..), nullBotConf, nullUser)

@@ -49,10 +49,10 @@ library
                      Kibr.Data
                      Kibr.DICT
                      Kibr.IRC
+                     Kibr.Parse
+                     Kibr.Print
                      Kibr.Run
                      Kibr.State
-                     Kibr.TeX
-                     Kibr.Text
                      Kibr.Web
                      Kibr.XML
                      Control.Lens.TH.Extra
