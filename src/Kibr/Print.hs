@@ -61,14 +61,18 @@ instance PrettyPrint Inline where
     pp (Expr expr) = pp expr
 
 instance PrettyPrint Expr where
-    pp (Lit txt) = pp txt
+    pp (Lit txt)         = pp txt
     pp (Sub e1 (Lit e2)) = pp e1 <> pp (Text.map toSub e2)
-    pp (Sub e1 e2) = pp e1 <> pp e2
-    pp (Sup e1 e2) = pp e1 <> pp e2
-    pp (Eql es) = hcat $ punctuate "=" (map pp es)
+    pp (Sub e1 e2)       = pp e1 <> pp e2
+    pp (Sup e1 (Lit e2)) = pp e1 <> pp (Text.map toSup e2)
+    pp (Sup e1 e2)       = pp e1 <> pp e2
+    pp (Eql es)          = hcat $ punctuate "=" (map pp es)
 
 toSub :: Char -> Char
 toSub c = fromMaybe c $ lookup c $ zip ['0'..'9'] ['₀'..'₉']
+
+toSup :: Char -> Char
+toSup c = fromMaybe c $ lookup c $ zip ['0'..'9'] ['⁰'..'⁹']
 
 ppDef :: Text.Text -> Doc
 ppDef def =
