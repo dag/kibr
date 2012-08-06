@@ -72,7 +72,7 @@ toSub :: Char -> Char
 toSub c = fromMaybe c $ lookup c $ zip ['0'..'9'] ['₀'..'₉']
 
 toSup :: Char -> Char
-toSup c = fromMaybe c $ lookup c $ zip ['0'..'9'] ['⁰'..'⁹']
+toSup c = fromMaybe c $ lookup c $ zip "+-0123456789" "⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹"
 
 ppDef :: Text.Text -> Doc
 ppDef def =

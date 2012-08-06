@@ -56,7 +56,7 @@ lit :: Parser Expr
 lit =
     Lit <$> (open *> alnum <* close <|> alnum) <?> "lit"
   where
-    alnum = takeWhile1 isAlphaNum
+    alnum = takeWhile1 $ (||) <$> isAlphaNum <*> inClass "+-"
     open  = char '{'
     close = char '}'
 
