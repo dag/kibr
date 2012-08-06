@@ -13,6 +13,7 @@ import qualified Data.Text as Text
 import qualified Data.Set  as Set
 
 import Data.Attoparsec.Text         (parseOnly)
+import Data.Maybe                   (fromMaybe)
 import Kibr.Data
 import Kibr.Parse                   (Inline(..), Expr(..), tex)
 import Text.PrettyPrint.ANSI.Leijen
@@ -67,17 +68,7 @@ instance PrettyPrint Expr where
     pp (Eql es) = hcat $ punctuate "=" (map pp es)
 
 toSub :: Char -> Char
-toSub '0' = '₀'
-toSub '1' = '₁'
-toSub '2' = '₂'
-toSub '3' = '₃'
-toSub '4' = '₄'
-toSub '5' = '₅'
-toSub '6' = '₆'
-toSub '7' = '₇'
-toSub '8' = '₈'
-toSub '9' = '₉'
-toSub c   = c
+toSub c = fromMaybe c $ lookup c $ zip ['0'..'9'] ['₀'..'₉']
 
 ppDef :: Text.Text -> Doc
 ppDef def =
