@@ -13,6 +13,7 @@ import qualified Data.Text as Text
 import qualified Data.Set  as Set
 
 import Data.Attoparsec.Text         (parseOnly)
+import Data.Char                    (isSpace)
 import Data.Maybe                   (fromMaybe)
 import Kibr.Data
 import Kibr.Parse                   (Inline(..), Expr(..), tex)
@@ -23,7 +24,11 @@ class PrettyPrint a where
     pp :: a -> Doc
 
 instance PrettyPrint Text.Text where
-    pp = fillSep . map text . words . Text.unpack
+    pp t =
+        pre <> (fillSep . map text . words . Text.unpack $ t) <> suf
+      where
+        pre = text $ Text.unpack $ Text.takeWhile isSpace t
+        suf = if " " `Text.isSuffixOf` t then " " else ""
 
 instance PrettyPrint Affix where
     pp = pp . unAffix
@@ -79,7 +84,7 @@ ppDef :: Text.Text -> Doc
 ppDef def =
     case parseOnly tex def of
       Left _ -> pp def
-      Right is -> fillSep $ map pp is
+      Right is -> fillCat $ map pp is
 
 -- | Format a complete set of data for a 'Word'.
 ppWord :: Word -> WordType -> WordDefinition -> Doc
