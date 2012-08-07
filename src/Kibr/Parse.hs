@@ -8,6 +8,7 @@ module Kibr.Parse
     , Expr(..)
     , tex
     , str
+    , link
     , emph
     , bold
     , expr
@@ -15,12 +16,6 @@ module Kibr.Parse
     , sub
     , sup
     , eql
-      -- * Notes with word links
-    , Notes
-    , NotesPart(..)
-    , notes
-    , notesText
-    , wordLink
     )
   where
 
@@ -33,6 +28,7 @@ import Kibr.Data
 type TeX = [Inline]
 
 data Inline = Str Text   -- ^ A sequence of text.
+            | Link Word  -- ^ A reference to a word.
             | Emph Text  -- ^ Emphasized text.
             | Bold Text  -- ^ Bold text.
             | Expr Expr  -- ^ A mathematical expression.
@@ -45,10 +41,13 @@ data Expr = Lit Text       -- ^ A literal number or variable.
           deriving (Eq, Show)
 
 tex :: Parser TeX
-tex = many (emph <|> bold <|> expr <|> str) <?> "tex"
+tex = many (emph <|> bold <|> expr <|> link <|> str) <?> "tex"
 
 str :: Parser Inline
-str = Str <$> P.takeWhile1 ((&&) <$> (/= '\\') <*> (/= '$')) <?> "str"
+str = Str <$> P.takeWhile1 (notInClass "\\${") <?> "str"
+
+link :: Parser Inline
+link = (Link . Word) <$> ("{" .*> P.takeWhile (/= '}') <*. "}") <?> "link"
 
 emph :: Parser Inline
 emph = Emph <$> ("\\emph{" .*> P.takeWhile (/= '}') <*. "}") <?> "emph"
@@ -78,18 +77,3 @@ eql =
     Eql <$> ((:) <$> e <*> some (char '=' *> e)) <?> "eql"
   where
     e = sub <|> sup <|> lit
-
-type Notes = [NotesPart]
-
-data NotesPart = NotesText Text
-               | WordLink Word
-               deriving (Eq, Show)
-
-notes :: Parser Notes
-notes = many (wordLink <|> notesText) <?> "notes"
-
-notesText :: Parser NotesPart
-notesText = NotesText <$> P.takeWhile1 (/= '{') <?> "notesText"
-
-wordLink :: Parser NotesPart
-wordLink = (WordLink . Word) <$> ("{" .*> P.takeWhile (/= '}') <*. "}") <?> "wordLink"
