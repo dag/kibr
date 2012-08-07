@@ -1,4 +1,5 @@
-{-# LANGUAGE Arrows, TypeOperators #-}
+{-# LANGUAGE Arrows #-}
+{-# LANGUAGE TypeOperators #-}
 
 -- | Support for reading jbovlaste XML exports.
 module Kibr.XML

@@ -1,4 +1,7 @@
-{-# LANGUAGE CPP, OverloadedStrings, RecordWildCards, QuasiQuotes #-}
+{-# LANGUAGE CPP #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RecordWildCards #-}
 
 -- | Support for configuration via dynamic recompilation using
 -- "Config.Dyre".

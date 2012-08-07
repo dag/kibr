@@ -1,4 +1,11 @@
-{-# LANGUAGE DeriveDataTypeable, FlexibleContexts, MonadComprehensions, MultiParamTypeClasses, RecordWildCards, TemplateHaskell, TupleSections, TypeFamilies #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE MonadComprehensions #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE TypeFamilies #-}
 
 -- | Event definitions for /acid-state/.
 module Kibr.State
