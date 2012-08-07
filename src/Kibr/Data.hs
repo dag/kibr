@@ -42,7 +42,6 @@ import qualified Data.Text         as Text
 import qualified Data.Text.ICU     as ICU
 #endif
 
-import Control.Lens                  (Lens)
 import Control.Lens.TH.Extra         (makeLenses)
 import Data.Hashable                 (Hashable)
 import Data.HashMap.Lazy             (HashMap)

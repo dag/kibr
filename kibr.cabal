@@ -77,7 +77,7 @@ library
                      irc,
                      ircbot                    == 0.5.*,
                      ixset,
-                     lens                      >= 1.4.1 && < 1.5,
+                     lens                      == 1.6.*,
                      mtl                       == 2.*,
                      network,
                      optparse-applicative      == 0.4.*,

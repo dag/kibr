@@ -48,7 +48,7 @@ import qualified Data.Set        as Set
 import qualified Data.Text       as Text
 
 import Control.Applicative   ((<$>), (<*>))
-import Control.Lens          (Lens, (^.), (%~), (%=))
+import Control.Lens          ((^.), (%~), (%=))
 import Control.Lens.TH.Extra (makeLenses)
 import Control.Monad         (void, forM, forM_)
 import Control.Monad.Reader  (asks)
