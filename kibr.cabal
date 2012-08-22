@@ -58,7 +58,7 @@ library
                      Control.Lens.TH.Extra
                      Data.IxSet.Lens
                      Text.XML.HXT.HSX
-  build-depends    : acid-state,
+  build-depends    : acid-state                == 0.7.*,
                      ansi-wl-pprint,
                      attoparsec,
                      base                      == 4.*,
@@ -77,7 +77,7 @@ library
                      irc,
                      ircbot                    == 0.5.*,
                      ixset,
-                     lens                      == 2.1.*,
+                     lens                      == 2.*,
                      mtl                       == 2.*,
                      network,
                      optparse-applicative      == 0.4.*,
