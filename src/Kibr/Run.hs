@@ -61,7 +61,7 @@ import Control.Concurrent             (forkIO, killThread)
 import Control.Exception              (bracket, catch, throw)
 import Control.Monad                  (forM_, when, unless)
 import Control.Monad.Reader           (asks)
-import Data.Acid                      (AcidState, openLocalStateFrom, createCheckpoint)
+import Data.Acid                      (AcidState, openLocalStateFrom, createCheckpoint, closeAcidState)
 import Data.Acid.Remote               (acidServer, openRemoteState)
 import Data.Char                      (toLower)
 import Data.Default                   (def)
@@ -115,8 +115,8 @@ main :: Either CompilationError Config -> IO ()
 main (Left msg) = hPutStr stderr msg >> exitFailure
 main (Right config@Config{..}) = do
     options <- execParser parser
-    state   <- openAcidState config
-    runProgramT program Runtime{..}
+    bracket (openAcidState config) closeAcidState $ \state ->
+      runProgramT program Runtime{..}
   where
     parser = info (helper <*> parseOptions config) fullDesc
 
