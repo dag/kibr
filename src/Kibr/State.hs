@@ -50,12 +50,11 @@ import qualified Data.Foldable   as F
 import qualified Data.IxSet      as IxSet
 import qualified Data.IxSet.Lens as IxSet
 import qualified Data.Map        as Map
-import qualified Data.Map.Lens   as Map
 import qualified Data.Set        as Set
 import qualified Data.Text       as Text
 
 import Control.Applicative   ((<$>), (<*>))
-import Control.Lens          ((^.), (%~), (%=))
+import Control.Lens          ((^.), (%~), (%=), at)
 import Control.Lens.TH.Extra (makeLenses)
 import Control.Monad         (void, forM, forM_)
 import Control.Monad.Reader  (asks)
@@ -123,7 +122,7 @@ lookupWordDefinition :: Word -> Language
                      -> Query AppState (Maybe WordDefinition)
 lookupWordDefinition word language = do
     wd <- asks (^.wordData.IxSet.at word)
-    return [ d | Revision d _:_ <- wd >>= (^.wordDefinition.Map.at language) ]
+    return [ d | Revision d _:_ <- wd >>= (^.wordDefinition.at language) ]
 
 lookupWords :: [Word] -> Language -> Query AppState [(Word,WordType,WordDefinition)]
 lookupWords words language = do
@@ -164,7 +163,7 @@ listWordDefinitions :: Word -> Language
                     -> Query AppState (History WordDefinition)
 listWordDefinitions word language = do
     wd <- asks (^.wordData.IxSet.at word)
-    return $ F.concat $ wd >>= (^.wordDefinition.Map.at language)
+    return $ F.concat $ wd >>= (^.wordDefinition.at language)
 
 -- | Import the data parsed from an XML export in one go.
 importWords :: [(Language,[(Word,WordType,WordDefinition)])] -> Update AppState ()

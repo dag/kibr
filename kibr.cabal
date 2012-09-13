@@ -78,7 +78,7 @@ library
                      irc,
                      ircbot                    == 0.5.*,
                      ixset,
-                     lens                      == 2.*,
+                     lens                      == 2.9.*,
                      lojbanParser,
                      mtl                       == 2.*,
                      network,
