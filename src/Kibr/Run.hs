@@ -37,6 +37,7 @@ module Kibr.Run
     , parseCheckpoint
     , parseServe
     , parseLookup
+    , parseSearch
       -- * Commands
     , program
     , runServe
