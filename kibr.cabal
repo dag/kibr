@@ -14,6 +14,7 @@ test-suite test-kibr
   ghc-prof-options : -fprof-auto
   other-modules    : Kibr.Fixture
                      Kibr.Test
+                     Text.XML.HXT.HSX
   build-depends    : acid-state,
                      base == 4.*,
                      bytestring,
@@ -55,9 +56,8 @@ library
                      Kibr.State
                      Kibr.Web
                      Kibr.XML
-                     Control.Lens.TH.Extra
+  other-modules    : Control.Lens.TH.Extra
                      Data.IxSet.Lens
-                     Text.XML.HXT.HSX
   build-depends    : acid-state                == 0.7.*,
                      ansi-wl-pprint,
                      attoparsec,
