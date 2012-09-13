@@ -38,6 +38,7 @@ module Kibr.Run
     , parseServe
     , parseLookup
     , parseSearch
+    , parseParse
       -- * Commands
     , program
     , runServe
@@ -75,6 +76,7 @@ import Kibr.CLI
 import Kibr.Print                     (ppWord, ppWords)
 import Kibr.State
 import Kibr.XML                       (readDictionary)
+import Language.Lojban.Parser         (parse)
 import Network                        (PortID(..))
 import Network.IRC.Bot                (BotConf(..), User(..), nullBotConf, nullUser)
 import Options.Applicative
@@ -85,6 +87,7 @@ import System.Exit                    (exitFailure)
 import System.FilePath                ((</>))
 import System.IO                      (hPutStr, stderr)
 import System.IO.Error                (isDoesNotExistError)
+import Text.Groom                     (groom)
 import Text.InterpolatedString.Perl6  (qq)
 import Text.PrettyPrint.ANSI.Leijen   ((<>), linebreak)
 import Text.XML.HXT.Core              ((/>), runX, readDocument, withTrace)
@@ -204,6 +207,7 @@ parseOptions config = Options
           & mkcmd "serve"      parseServe           "Launch Internet services"
           & mkcmd "lookup"     (parseLookup config) "Look up words"
           & mkcmd "search"     parseSearch          "Search words in definitions"
+          & mkcmd "parse"      parseParse           "Parse Lojban"
           )
   where
     mkcmd name parser desc = command name $ info (helper <*> parser) $ progDesc desc
@@ -243,6 +247,9 @@ parseLookup config = Lookup
 parseSearch :: Parser Command
 parseSearch = Search <$> arguments (Just . fromString) (metavar "KEYWORD...")
 
+parseParse :: Parser Command
+parseParse = Parse <$> argument Just (metavar "TEXT")
+
 
 -- * Commands
 -- ***************************************************************************
@@ -257,6 +264,7 @@ program = do
       Checkpoint            -> runCheckpoint
       Lookup words          -> runLookup words
       Search keywords       -> runSearch keywords
+      Parse lojban          -> runParse lojban
 
 runServe :: [Service] -> Program
 runServe services = do
@@ -302,3 +310,11 @@ runSearch keywords = do
     language <- asks (language . options)
     words <- query $ SearchKeyWords (map (KeyWord language . DefinitionWord) keywords)
     output $ ppWords words
+
+runParse :: String -> Program
+runParse lojban =
+    case parse lojban of
+      Right ast -> output $ fromString $ groom ast
+      Left err  -> io $
+        do hPutStr stderr $ show err
+           exitFailure

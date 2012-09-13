@@ -94,6 +94,7 @@ data Command = Import TraceLevel FilePath
              | Serve [Service]
              | Lookup [Word]
              | Search [Text]
+             | Parse String
 
 -- | The level of debug output to print from the XML parser.
 type TraceLevel = Int
